@@ -81,7 +81,7 @@ func (l *Layer) TransparencyProtected() bool {
 
 // Visible returns whether the layer is visible.
 func (l *Layer) Visible() bool {
-	return l.Flags&2 != 0
+	return l.Flags&2 == 0
 }
 
 // HasImage returns whether the layer has an image data.
