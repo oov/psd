@@ -146,7 +146,7 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 		}
 		pal := make(color.Palette, len(colorModeData)/3)
 		for i := range pal {
-			c := color.RGBA{
+			c := color.NRGBA{
 				colorModeData[i],
 				colorModeData[i+256],
 				colorModeData[i+512],
