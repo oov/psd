@@ -97,7 +97,7 @@ func (p *pickerGray1) Bounds() image.Rectangle                       { return p.
 func (p *pickerGray1) At(x, y int) color.Color {
 	xx := x - p.Rect.Min.X
 	pos := (p.Rect.Dx()+7)>>3*(y-p.Rect.Min.Y) + xx>>3
-	return psdColor.Gray1{p.Src[pos]&(1<<uint(^xx&7)) == 0}
+	return psdColor.Gray1{B: p.Src[pos]&(1<<uint(^xx&7)) == 0}
 }
 
 type pickerGray8 struct {
@@ -227,11 +227,11 @@ func (p *pickerNCMYK8) Bounds() image.Rectangle { return p.Rect }
 func (p *pickerNCMYK8) At(x, y int) color.Color {
 	pos := (y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X
 	return psdColor.NCMYKA{
-		0xff - p.C[pos],
-		0xff - p.M[pos],
-		0xff - p.Y[pos],
-		0xff - p.K[pos],
-		0xff,
+		C: p.C[pos],
+		M: p.M[pos],
+		Y: p.Y[pos],
+		K: p.K[pos],
+		A: 0xff,
 	}
 }
 
@@ -248,10 +248,10 @@ func (p *pickerNCMYKA8) Bounds() image.Rectangle { return p.Rect }
 func (p *pickerNCMYKA8) At(x, y int) color.Color {
 	pos := (y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X
 	return psdColor.NCMYKA{
-		0xff - p.C[pos],
-		0xff - p.M[pos],
-		0xff - p.Y[pos],
-		0xff - p.K[pos],
-		p.A[pos],
+		C: p.C[pos],
+		M: p.M[pos],
+		Y: p.Y[pos],
+		K: p.K[pos],
+		A: p.A[pos],
 	}
 }

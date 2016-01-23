@@ -54,6 +54,7 @@ func gray1Model(c color.Color) color.Color {
 
 // NCMYKA represents a non-alpha-premultiplied CMYK color, having 8 bits for each of cyan,
 // magenta, yellow, black and alpha.
+// NCMYKA is different from color.CMYK, CMYK is inverted value.
 //
 // It is not associated with any particular color profile.
 type NCMYKA struct {
@@ -62,20 +63,19 @@ type NCMYKA struct {
 
 // RGBA implements color.Color interface's method.
 func (c NCMYKA) RGBA() (uint32, uint32, uint32, uint32) {
-	w := uint32(0xffff - uint32(c.K)*0x101)
-	r := uint32(0xffff-uint32(c.C)*0x101) * w / 0xffff
-	g := uint32(0xffff-uint32(c.M)*0x101) * w / 0xffff
-	b := uint32(0xffff-uint32(c.Y)*0x101) * w / 0xffff
+	w := uint32(c.K) * 0x10201
+	r := uint32(c.C) * w / 0xffff
+	g := uint32(c.M) * w / 0xffff
+	b := uint32(c.Y) * w / 0xffff
 	if c.A == 0xff {
 		return r, g, b, 0xffff
 	}
-	r *= uint32(c.A)
-	r /= 0xff
-	g *= uint32(c.A)
-	g /= 0xff
-	b *= uint32(c.A)
-	b /= 0xff
-	return r, g, b, uint32(c.A) * 0x101
+
+	a := uint32(c.A) * 0x101
+	r = r * a / 0xffff
+	g = g * a / 0xffff
+	b = b * a / 0xffff
+	return r, g, b, a
 }
 
 func ncmykaModel(c color.Color) color.Color {
@@ -88,7 +88,7 @@ func ncmykaModel(c color.Color) color.Color {
 	mm = uint8((uint32(mm) * 0xffff) / a)
 	yy = uint8((uint32(yy) * 0xffff) / a)
 	kk = uint8((uint32(kk) * 0xffff) / a)
-	return NCMYKA{cc, mm, yy, kk, uint8(a >> 8)}
+	return NCMYKA{255 - cc, 255 - mm, 255 - yy, 255 - kk, uint8(a >> 8)}
 }
 
 // These are color model.
