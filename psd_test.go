@@ -99,6 +99,10 @@ var testImages = []testImage{
 	// 	Name: "CMYK Depth 16bit with Background layer",
 	// 	PSD:  "cmyk16bit.psd",
 	// },
+	{
+		Name: "Clipping Mask",
+		PSD:  "clipping.psd",
+	},
 }
 
 func verifyChannel(t *testing.T, name string, filename string, ch image.Image) error {
@@ -310,7 +314,7 @@ func abs(a uint32) uint32 {
 
 func TestOneShot(t *testing.T) {
 	Debug = log.New(os.Stdout, "psd: ", log.Lshortfile)
-	tImg := testImages[18]
+	tImg := testImages[19]
 	testOne(tImg, t)
 }
 

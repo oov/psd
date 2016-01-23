@@ -20,7 +20,7 @@ type Layer struct {
 	Channel               map[int]Channel
 	BlendMode             BlendMode
 	Opacity               uint8
-	Clipping              int
+	Clipping              bool
 	Flags                 uint8
 	Data                  []byte
 	Picker                Picker
@@ -356,7 +356,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 		}
 		layer.BlendMode = BlendMode(b[4:8])
 		layer.Opacity = b[8]
-		layer.Clipping = int(b[9])
+		layer.Clipping = b[9] != 0
 		layer.Flags = b[10]
 		// b[11] - Filler(zero)
 		if l, err = readLayerExtraData(r, layer, colorMode, depth); err != nil {
