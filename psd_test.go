@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"image"
 	"image/png"
-	"log"
 	"os"
+	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -234,7 +235,7 @@ func processLayer(t *testing.T, f string, l *Layer) error {
 }
 
 func testOne(tImg testImage, t *testing.T) {
-	fmt.Printf("%s begin\n", tImg.Name)
+	t.Logf("%s begin\n", tImg.Name)
 	filepath := "testdata/" + tImg.PSD
 	f, err := os.Open(filepath)
 	if err != nil {
@@ -311,8 +312,38 @@ func abs(a uint32) uint32 {
 	return a
 }
 
+type testLogger struct {
+	t *testing.T
+}
+
+func (l *testLogger) Printf(format string, v ...interface{}) {
+	if _, file, line, ok := runtime.Caller(1); ok {
+		if index := strings.LastIndex(file, "/"); index >= 0 {
+			file = file[index+1:]
+		} else if index = strings.LastIndex(file, "\\"); index >= 0 {
+			file = file[index+1:]
+		}
+		l.t.Log(fmt.Sprintf("%s:%d:", file, line), fmt.Sprintf(format, v...))
+		return
+	}
+	l.t.Logf(format, v...)
+}
+
+func (l *testLogger) Println(v ...interface{}) {
+	if _, file, line, ok := runtime.Caller(1); ok {
+		if index := strings.LastIndex(file, "/"); index >= 0 {
+			file = file[index+1:]
+		} else if index = strings.LastIndex(file, "\\"); index >= 0 {
+			file = file[index+1:]
+		}
+		l.t.Log(fmt.Sprintf("%s:%d:", file, line), strings.TrimRight(fmt.Sprintln(v...), "\r\n"))
+		return
+	}
+	l.t.Log(v...)
+}
+
 func TestOneShot(t *testing.T) {
-	Debug = log.New(os.Stdout, "psd: ", log.Lshortfile)
+	Debug = &testLogger{t}
 	tImg := testImages[20]
 	testOne(tImg, t)
 }
