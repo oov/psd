@@ -21,6 +21,7 @@ type Layer struct {
 	BlendMode             BlendMode
 	Opacity               uint8
 	Clipping              bool
+	BlendClippedElements  bool
 	Flags                 uint8
 	Mask                  Mask
 	Picker                Picker
@@ -360,6 +361,14 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 		if data, ok := layer.AdditionalLayerInfo[AdditionalInfoKeyUnicodeLayerName]; ok && data != nil {
 			layer.Name = readUnicodeString(data)
 			delete(layer.AdditionalLayerInfo, AdditionalInfoKeyUnicodeLayerName)
+		}
+
+		// this is called "Blend Clipped Layers as Group" in Photoshop's Layer Style dialog.
+		if data, ok := layer.AdditionalLayerInfo[AdditionalInfoKeyBlendClippingElements]; ok && data != nil {
+			layer.BlendClippedElements = data[0] != 0
+			delete(layer.AdditionalLayerInfo, AdditionalInfoKeyBlendClippingElements)
+		} else {
+			layer.BlendClippedElements = true
 		}
 
 		if layer.SectionDividerSetting.Type,

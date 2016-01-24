@@ -30,6 +30,7 @@ const (
 	AdditionalInfoKeyLayerInfo16           = AdditionalInfoKey("Lr16")
 	AdditionalInfoKeyLayerInfo32           = AdditionalInfoKey("Lr32")
 	AdditionalInfoKeyUnicodeLayerName      = AdditionalInfoKey("luni")
+	AdditionalInfoKeyBlendClippingElements = AdditionalInfoKey("clbl")
 	AdditionalInfoKeySectionDividerSetting = AdditionalInfoKey("lsct")
 )
 
