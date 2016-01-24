@@ -128,6 +128,11 @@ type Mask struct {
 	RealRect            image.Rectangle
 	RealBackgroundColor int
 	RealFlags           int
+
+	UserMaskDensity   int
+	UserMaskFeather   float64
+	VectorMaskDensity int
+	VectorMaskFeather float64
 }
 
 // Channel represents a channel of the color.
@@ -398,6 +403,14 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 			Debug.Println("    Type:", layer.SectionDividerSetting.Type)
 			Debug.Println("    BlendMode:", layer.SectionDividerSetting.BlendMode)
 			Debug.Println("    SubType:", layer.SectionDividerSetting.SubType)
+			Debug.Println("  LayerMask:")
+			Debug.Println("    Rect:", layer.Mask.Rect)
+			Debug.Println("    DefaultColor:", layer.Mask.DefaultColor)
+			Debug.Println("    Flags:", layer.Mask.Flags)
+			Debug.Println("      Position relative to layer:", layer.Mask.Flags&1 != 0)
+			Debug.Println("      Layer mask disabled:", layer.Mask.Flags&2 != 0)
+			Debug.Println("      Invert layer mask when blending (Obsolete):", layer.Mask.Flags&4 != 0)
+			Debug.Println("      The user mask actually came from rendering other data:", layer.Mask.Flags&8 != 0)
 			Debug.Printf("end - layer #%d structure", i)
 		}
 	}
@@ -521,7 +534,65 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 		layer.Mask.DefaultColor = int(b[0])
 		layer.Mask.Flags = int(b[1])
 
-		if maskLen > 20 {
+		layer.Mask.UserMaskDensity = 255
+		layer.Mask.VectorMaskDensity = 255
+
+		// Mask Parameters. Only present if bit 4 of Flags set above.
+		if layer.Mask.Flags&16 != 0 {
+			if l, err = io.ReadFull(r, b[:1]); err != nil {
+				return read, err
+			}
+			read += l
+			readMask += l
+
+			// Mask Parameters bit flags present as follows:
+			// bit 0 = user mask density, 1 byte
+			// bit 1 = user mask feather, 8 byte, double
+			// bit 2 = vector mask density, 1 byte
+			// bit 3 = vector mask feather, 8 bytes, double
+			maskParam := int(b[0])
+			if maskParam&1 != 0 {
+				if l, err = io.ReadFull(r, b[:1]); err != nil {
+					return read, err
+				}
+				read += l
+				readMask += l
+				layer.Mask.UserMaskDensity = int(b[0])
+			}
+			if maskParam&2 != 0 {
+				if l, err = io.ReadFull(r, b[:8]); err != nil {
+					return read, err
+				}
+				read += l
+				readMask += l
+				layer.Mask.UserMaskFeather = readFloat64(b, 0)
+			}
+			if maskParam&4 != 0 {
+				if l, err = io.ReadFull(r, b[:1]); err != nil {
+					return read, err
+				}
+				read += l
+				readMask += l
+				layer.Mask.VectorMaskDensity = int(b[0])
+			}
+			if maskParam&8 != 0 {
+				if l, err = io.ReadFull(r, b[:8]); err != nil {
+					return read, err
+				}
+				read += l
+				readMask += l
+				layer.Mask.VectorMaskFeather = readFloat64(b, 0)
+			}
+		}
+
+		if maskLen == 20 {
+			// Padding. Only present if size = 20.
+			if l, err = io.ReadFull(r, b[:2]); err != nil {
+				return read, err
+			}
+			read += l
+			readMask += l
+		} else {
 			if l, err = io.ReadFull(r, b[:2]); err != nil {
 				return read, err
 			}
@@ -539,13 +610,6 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 				int(readUint32(b, 4)), int(readUint32(b, 0)),
 				int(readUint32(b, 12)), int(readUint32(b, 8)),
 			)
-		} else {
-			// Padding
-			if l, err = io.ReadFull(r, b[:2]); err != nil {
-				return read, err
-			}
-			read += l
-			readMask += l
 		}
 		if maskLen != readMask {
 			return read, errors.New("Layer mask / adjustment layer data read size mismatched. expected " + itoa(maskLen) + " actual " + itoa(readMask))
