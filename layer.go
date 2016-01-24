@@ -22,7 +22,7 @@ type Layer struct {
 	Opacity               uint8
 	Clipping              bool
 	Flags                 uint8
-	Data                  []byte
+	Mask                  Mask
 	Picker                Picker
 	AdditionalLayerInfo   map[AdditionalInfoKey][]byte
 	SectionDividerSetting struct {
@@ -118,11 +118,16 @@ func (l *Layer) String() string {
 	return l.Name
 }
 
-// type Mask struct {
-// 	Rect         image.Rectangle
-// 	DefaultColor int
-// 	Flags        int
-// }
+// Mask represents layer mask and vector mask.
+type Mask struct {
+	Rect         image.Rectangle
+	DefaultColor int
+	Flags        int
+
+	RealRect            image.Rectangle
+	RealBackgroundColor int
+	RealFlags           int
+}
 
 // Channel represents a channel of the color.
 type Channel struct {
@@ -322,8 +327,6 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 		numChannels := int(readUint16(b, 0))
 		layer.Channel = map[int]Channel{}
 		chLen[i] = make([][2]int, numChannels)
-		plane := (layer.Rect.Dx()*depth + 7) >> 3 * layer.Rect.Dy()
-		layer.Data = make([]byte, plane*numChannels)
 		for j := 0; j < numChannels; j++ {
 			if l, err = io.ReadFull(r, b[:6]); err != nil {
 				return nil, read, err
@@ -331,21 +334,11 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 			read += l
 			id := int(int16(readUint16(b, 0)))
 			layer.Channel[id] = Channel{
-				Data:   layer.Data[plane*j : plane*(j+1) : plane*(j+1)],
 				Picker: findGrayPicker(depth, false),
 			}
 			layer.Channel[id].Picker.SetSource(layer.Rect, layer.Channel[id].Data)
 			chLen[i][j] = [2]int{id, int(readUint32(b, 2))}
 		}
-		chs := make([][]byte, colorMode.Channels(), 8)
-		for j := range chs {
-			chs[j] = layer.Channel[j].Data
-		}
-		if ch, ok := layer.Channel[-1]; ok {
-			chs = append(chs, ch.Data)
-		}
-		layer.Picker = findPicker(depth, colorMode, colorMode.Channels() < len(chs))
-		layer.Picker.SetSource(layerSlice[i].Rect, chs...)
 
 		if l, err = io.ReadFull(r, b[:12]); err != nil {
 			return nil, read, err
@@ -411,10 +404,30 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 
 			cmpMethod := CompressionMethod(readUint16(b, 0))
 			if Debug != nil {
-				Debug.Printf("  layer #%d channel #%d image data", i, j[0])
+				Debug.Printf("  layer #%d %q channel #%d image data", i, layer.Name, j[0])
 				Debug.Println("    length:", j[1], "compression method:", cmpMethod)
+				if sk, ok := r.(io.Seeker); ok {
+					pos, err := sk.Seek(0, 1)
+					if err != nil {
+						return nil, read, err
+					}
+					Debug.Printf("    file offset: 0x%08x", pos)
+				}
 			}
-			if l, err = cmpMethod.Decode(ch.Data, r, int64(j[1]-2), layer.Rect, depth, 1); err != nil {
+
+			var rect image.Rectangle
+			switch j[0] {
+			case -3:
+				rect = layer.Mask.RealRect
+			case -2:
+				rect = layer.Mask.Rect
+			default:
+				rect = layer.Rect
+			}
+			ch.Data = make([]byte, (rect.Dx()*depth+7)>>3*rect.Dy())
+			ch.Picker.SetSource(rect, ch.Data)
+
+			if l, err = cmpMethod.Decode(ch.Data, r, int64(j[1]-2), rect, depth, 1); err != nil {
 				return nil, read, err
 			}
 			readCh += l
@@ -423,7 +436,20 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 			if readCh != j[1] {
 				return nil, read, errors.New("psd: layer: " + itoa(i) + " channel: " + itoa(j[0]) + " read size mismatched. expected " + itoa(j[1]) + " actual " + itoa(readCh))
 			}
+
+			layer.Channel[j[0]] = ch
 		}
+
+		chs := make([][]byte, colorMode.Channels(), 8)
+		for j := range chs {
+			chs[j] = layer.Channel[j].Data
+		}
+		if ch, ok := layer.Channel[-1]; ok {
+			chs = append(chs, ch.Data)
+		}
+		layer.Picker = findPicker(depth, colorMode, colorMode.Channels() < len(chs))
+		layer.Picker.SetSource(layer.Rect, chs...)
+		layerSlice[i] = layer
 	}
 	if l, err = adjustAlign4(r, read+4-layerInfoLen); err != nil {
 		return nil, read, err
@@ -464,30 +490,57 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 	}
 	read += l
 	if maskLen := int(readUint32(b, 0)); maskLen > 0 {
-		if Debug != nil {
-			Debug.Println("  layer mask info skipped:", maskLen)
-		}
-		// TODO(oov): implement
-		if l, err = io.ReadFull(r, make([]byte, maskLen)); err != nil {
+		var readMask int
+		// Layer mask / adjustment layer data
+		// Can be 40 bytes, 24 bytes, or 4 bytes if no layer mask.
+		// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_22582
+		if l, err = io.ReadFull(r, b); err != nil {
 			return read, err
 		}
 		read += l
-		//			var mask Mask
-		//
-		//			// Rectangle enclosing layer mask: Top, left, bottom, right
-		//			if l, err = io.ReadFull(r, b); err != nil {
-		//				return nil, read, err
-		//			}
-		//			read += l
-		//			mask.Rect = image.Rect(
-		//				int(readUint32(b, 4)), int(readUint32(b, 0)),
-		//				int(readUint32(b, 12)), int(readUint32(b, 8)),
-		//			)
+		readMask += l
+		layer.Mask.Rect = image.Rect(
+			int(readUint32(b, 4)), int(readUint32(b, 0)),
+			int(readUint32(b, 12)), int(readUint32(b, 8)),
+		)
 
-		//			if l, err = io.ReadFull(r, b[:4]); err != nil {
-		//				return nil, read, err
-		//			}
-		//			read += l
+		if l, err = io.ReadFull(r, b[:2]); err != nil {
+			return read, err
+		}
+		read += l
+		readMask += l
+		layer.Mask.DefaultColor = int(b[0])
+		layer.Mask.Flags = int(b[1])
+
+		if maskLen > 20 {
+			if l, err = io.ReadFull(r, b[:2]); err != nil {
+				return read, err
+			}
+			read += l
+			readMask += l
+			layer.Mask.RealFlags = int(b[0])
+			layer.Mask.RealBackgroundColor = int(b[1])
+
+			if l, err = io.ReadFull(r, b); err != nil {
+				return read, err
+			}
+			read += l
+			readMask += l
+			layer.Mask.RealRect = image.Rect(
+				int(readUint32(b, 4)), int(readUint32(b, 0)),
+				int(readUint32(b, 12)), int(readUint32(b, 8)),
+			)
+		} else {
+			// Padding
+			if l, err = io.ReadFull(r, b[:2]); err != nil {
+				return read, err
+			}
+			read += l
+			readMask += l
+		}
+		if maskLen != readMask {
+			return read, errors.New("Layer mask / adjustment layer data read size mismatched. expected " + itoa(maskLen) + " actual " + itoa(readMask))
+		}
 	}
 
 	// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_21332

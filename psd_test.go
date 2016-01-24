@@ -103,26 +103,32 @@ var testImages = []testImage{
 		Name: "Clipping Mask",
 		PSD:  "clipping.psd",
 	},
+	{
+		Name: "Layer Mask & Vector Mask",
+		PSD:  "mask.psd",
+	},
 }
 
-func verifyChannel(t *testing.T, name string, filename string, ch image.Image) error {
+func verifyChannel(t *testing.T, name string, filename string, ch image.Image) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return err
+		t.Errorf("%s: cannot open %s %v", name, filename, err)
+		return
 	}
 	defer file.Close()
 	img, _, err := image.Decode(file)
 	if err != nil {
-		return err
+		t.Errorf("%s: cannot decode %s %v", name, filename, err)
+		return
 	}
 	w, h := ch.Bounds().Dx(), ch.Bounds().Dy()
 	if img.Bounds().Dx() != w {
 		t.Errorf("%s: width: want %d got %d", name, img.Bounds().Dx(), w)
-		return nil
+		return
 	}
 	if img.Bounds().Dy() != h {
 		t.Errorf("%s: height: want %d got %d", name, img.Bounds().Dy(), h)
-		return nil
+		return
 	}
 	ofsX, ofsY := ch.Bounds().Min.X, ch.Bounds().Min.Y
 	for x := 0; x < w; x++ {
@@ -134,25 +140,28 @@ func verifyChannel(t *testing.T, name string, filename string, ch image.Image) e
 			}
 		}
 	}
-	return nil
 }
 
-func verifyImage(t *testing.T, name string, filename string, l image.Image) error {
+func verifyImage(t *testing.T, name string, filename string, l image.Image) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return err
+		t.Errorf("%s: cannot open %s %v", name, filename, err)
+		return
 	}
 	defer file.Close()
 	img, _, err := image.Decode(file)
 	if err != nil {
-		return err
+		t.Errorf("%s: cannot decode %s %v", name, filename, err)
+		return
 	}
 	w, h := l.Bounds().Dx(), l.Bounds().Dy()
 	if img.Bounds().Dx() != w {
-		return fmt.Errorf("%s width: want %d got %d", name, img.Bounds().Dx(), w)
+		t.Errorf("%s width: want %d got %d", name, img.Bounds().Dx(), w)
+		return
 	}
 	if img.Bounds().Dy() != h {
-		return fmt.Errorf("%s height: want %d got %d", name, img.Bounds().Dy(), h)
+		t.Errorf("%s height: want %d got %d", name, img.Bounds().Dy(), h)
+		return
 	}
 	ofsX, ofsY := l.Bounds().Min.X, l.Bounds().Min.Y
 	for x := 0; x < w; x++ {
@@ -172,7 +181,6 @@ func verifyImage(t *testing.T, name string, filename string, l image.Image) erro
 			}
 		}
 	}
-	return nil
 }
 
 func processLayer(t *testing.T, f string, l *Layer) error {
@@ -202,14 +210,12 @@ func processLayer(t *testing.T, f string, l *Layer) error {
 	}
 
 	for id, ch := range l.Channel {
-		if err := verifyChannel(
+		verifyChannel(
 			t,
 			fmt.Sprintf("%s Ch:%d", f, id),
 			fmt.Sprintf("png/%s_Ch%d.png", f, id),
 			&ch,
-		); err != nil {
-			return err
-		}
+		)
 	}
 
 	// write layer image
@@ -223,9 +229,7 @@ func processLayer(t *testing.T, f string, l *Layer) error {
 		return err
 	}
 
-	if err := verifyImage(t, f, fmt.Sprintf("png/%s.png", f), l); err != nil {
-		return err
-	}
+	verifyImage(t, f, fmt.Sprintf("png/%s.png", f), l)
 	return nil
 }
 
@@ -266,14 +270,12 @@ func testOne(tImg testImage, t *testing.T) {
 		}()
 	}
 	for id, ch := range psdImg.Channel {
-		if err := verifyChannel(
+		verifyChannel(
 			t,
 			fmt.Sprintf("%s !merged Ch:%d", tImg.Name, id),
 			fmt.Sprintf("png/%s_!merged_Ch%d.png", fnBase, id),
 			&ch,
-		); err != nil {
-			t.Errorf("%s: error occurred in verifying:%v", tImg.Name, err)
-		}
+		)
 	}
 
 	for i, layer := range psdImg.Layer {
@@ -294,15 +296,12 @@ func testOne(tImg testImage, t *testing.T) {
 			t.Errorf("%s: cannot encode to %q\n%v", tImg.Name, filename, err)
 		}
 	}()
-
-	if err := verifyImage(
+	verifyImage(
 		t,
 		tImg.Name,
 		fmt.Sprintf("png/%s_!merged.png", fnBase),
 		psdImg,
-	); err != nil {
-		t.Errorf("%s: error occurred in verifying:%v", tImg.Name, err)
-	}
+	)
 }
 
 func abs(a uint32) uint32 {
@@ -314,7 +313,7 @@ func abs(a uint32) uint32 {
 
 func TestOneShot(t *testing.T) {
 	Debug = log.New(os.Stdout, "psd: ", log.Lshortfile)
-	tImg := testImages[18]
+	tImg := testImages[20]
 	testOne(tImg, t)
 }
 
