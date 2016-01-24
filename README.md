@@ -125,25 +125,24 @@ It is not implemented any blending functions because layer composition isn't cov
 ### Implemented
 
 - Bitmap 1bit
-- Grayscale without Alpha 8bit
-- Grayscale without Alpha 16bit
-- Grayscale without Alpha 32bit
+- Grayscale 8bit
+- Grayscale 16bit
 - Indexed
 - RGB 8bit
 - RGB 16bit
 - CMYK 8bit
+- CMYK 16bit
 
 ### Not implemented
 
-- Grayscale with Alpha 8bit
-- Grayscale with Alpha 16bit
-- Grayscale with Alpha 32bit
+- Grayscale 32bit
 - RGB 32bit
-- CMYK 16bit
 - CMYK 32bit
 - Multichannel
 - Duotone
 - Lab
+
+It can read Grayscale 32bit already but cannot convert to RGBA correctly at present.
 
 ## Compression Methods
 
