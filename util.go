@@ -2,6 +2,7 @@ package psd
 
 import (
 	"io"
+	"math"
 	"unicode/utf16"
 )
 
@@ -37,6 +38,19 @@ func writeUint16(b []byte, v uint16, offset int) {
 
 func readUint32(b []byte, offset int) uint32 {
 	return uint32(b[offset])<<24 | uint32(b[offset+1])<<16 | uint32(b[offset+2])<<8 | uint32(b[offset+3])
+}
+
+func readUint64(b []byte, offset int) uint64 {
+	return uint64(b[offset])<<56 | uint64(b[offset+1])<<48 | uint64(b[offset+2])<<40 | uint64(b[offset+3])<<32 |
+		uint64(b[offset+4])<<24 | uint64(b[offset+5])<<16 | uint64(b[offset+6])<<8 | uint64(b[offset+7])
+}
+
+func readFloat32(b []byte, offset int) float32 {
+	return math.Float32frombits(readUint32(b, offset))
+}
+
+func readFloat64(b []byte, offset int) float64 {
+	return math.Float64frombits(readUint64(b, offset))
 }
 
 func writeUint32(b []byte, v uint32, offset int) {

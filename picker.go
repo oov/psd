@@ -3,7 +3,6 @@ package psd
 import (
 	"image"
 	"image/color"
-	"math"
 
 	psdColor "github.com/oov/psd/color"
 )
@@ -221,7 +220,7 @@ func (p *pickerGray32) ColorModel() color.Model                       { return p
 func (p *pickerGray32) Bounds() image.Rectangle                       { return p.Rect }
 func (p *pickerGray32) At(x, y int) color.Color {
 	pos := ((y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X) << 2
-	return psdColor.Gray32{Y: math.Float32frombits(readUint32(p.Y, pos))}
+	return psdColor.Gray32{Y: readFloat32(p.Y, pos)}
 }
 
 type pickerNGray32 struct {
@@ -236,7 +235,7 @@ func (p *pickerNGray32) ColorModel() color.Model { return psdColor.NGrayA64Model
 func (p *pickerNGray32) Bounds() image.Rectangle { return p.Rect }
 func (p *pickerNGray32) At(x, y int) color.Color {
 	pos := ((y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X) << 2
-	return psdColor.NGrayA64{Y: math.Float32frombits(readUint32(p.Y, pos)), A: 1}
+	return psdColor.NGrayA64{Y: readFloat32(p.Y, pos), A: 1}
 }
 
 type pickerNGrayA32 struct {
@@ -252,8 +251,8 @@ func (p *pickerNGrayA32) Bounds() image.Rectangle { return p.Rect }
 func (p *pickerNGrayA32) At(x, y int) color.Color {
 	pos := ((y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X) << 2
 	return psdColor.NGrayA64{
-		Y: math.Float32frombits(readUint32(p.Y, pos)),
-		A: math.Float32frombits(readUint32(p.A, pos)),
+		Y: readFloat32(p.Y, pos),
+		A: readFloat32(p.A, pos),
 	}
 }
 
