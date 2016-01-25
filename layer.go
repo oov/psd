@@ -542,6 +542,12 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 		read += l
 		readMask += l
 		layer.Mask.DefaultColor = int(b[0])
+
+		// bit 0 = position relative to layer
+		// bit 1 = layer mask disabled
+		// bit 2 = invert layer mask when blending (Obsolete)
+		// bit 3 = indicates that the user mask actually came from rendering other data
+		// bit 4 = indicates that the user and/or vector masks have parameters applied to them
 		layer.Mask.Flags = int(b[1])
 
 		layer.Mask.UserMaskDensity = 255
