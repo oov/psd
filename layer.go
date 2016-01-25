@@ -135,6 +135,16 @@ type Mask struct {
 	VectorMaskFeather float64
 }
 
+// Enabled returns whether the mask is enabled.
+func (m *Mask) Enabled() bool {
+	return m.Flags&2 == 0
+}
+
+// RealEnabled returns whether the user real mask is enabled.
+func (m *Mask) RealEnabled() bool {
+	return m.RealFlags&2 == 0
+}
+
 // Channel represents a channel of the color.
 type Channel struct {
 	// Data is uncompressed channel image data.
@@ -408,7 +418,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 			Debug.Println("    DefaultColor:", layer.Mask.DefaultColor)
 			Debug.Println("    Flags:", layer.Mask.Flags)
 			Debug.Println("      Position relative to layer:", layer.Mask.Flags&1 != 0)
-			Debug.Println("      Layer mask disabled:", layer.Mask.Flags&2 != 0)
+			Debug.Println("      Layer mask enabled:", layer.Mask.Enabled())
 			Debug.Println("      Invert layer mask when blending (Obsolete):", layer.Mask.Flags&4 != 0)
 			Debug.Println("      The user mask actually came from rendering other data:", layer.Mask.Flags&8 != 0)
 			Debug.Printf("end - layer #%d structure", i)
