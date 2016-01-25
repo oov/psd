@@ -622,7 +622,7 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 			)
 		}
 		if maskLen != readMask {
-			return read, errors.New("Layer mask / adjustment layer data read size mismatched. expected " + itoa(maskLen) + " actual " + itoa(readMask))
+			return read, errors.New("psd: layer mask / adjustment layer data read size mismatched. expected " + itoa(maskLen) + " actual " + itoa(readMask))
 		}
 	}
 
