@@ -394,6 +394,16 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 		}
 		delete(layer.AdditionalLayerInfo, AdditionalInfoKeySectionDividerSetting)
 
+		// convert mask position from relative to absolute.
+		if layer.Mask.Flags&1 != 0 {
+			layer.Mask.Rect = layer.Mask.Rect.Sub(layer.Rect.Min)
+			layer.Mask.Flags &= ^1
+		}
+		if layer.Mask.RealFlags&1 != 0 {
+			layer.Mask.RealRect = layer.Mask.RealRect.Sub(layer.Rect.Min)
+			layer.Mask.RealFlags &= ^1
+		}
+
 		if Debug != nil {
 			Debug.Printf("layer #%d", i)
 			Debug.Println("  Name:", layer.Name)
