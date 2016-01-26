@@ -189,27 +189,31 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD) (read int, err error) {
 	}
 
 	var layer []Layer
-	if layer, l, err = readLayerInfo(r, psd.Config.ColorMode, psd.Config.Depth); err != nil {
-		return read, err
-	}
-	read += l
-
-	// Global layer mask info
-	// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_17115
-	if l, err = io.ReadFull(r, b); err != nil {
-		return read, err
-	}
-	read += l
-	if globalLayerMaskInfoLen := int(readUint32(b, 0)); globalLayerMaskInfoLen > 0 {
-		if Debug != nil {
-			Debug.Println("  globalLayerMaskInfoLen:", globalLayerMaskInfoLen)
-			reportReaderPosition("    file offset: 0x%08x", r)
-		}
-		// TODO(oov): implement
-		if l, err = io.ReadFull(r, make([]byte, globalLayerMaskInfoLen)); err != nil {
+	if read < layerAndMaskInfoLen+4 {
+		if layer, l, err = readLayerInfo(r, psd.Config.ColorMode, psd.Config.Depth); err != nil {
 			return read, err
 		}
 		read += l
+	}
+
+	if read < layerAndMaskInfoLen+4 {
+		// Global layer mask info
+		// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_17115
+		if l, err = io.ReadFull(r, b); err != nil {
+			return read, err
+		}
+		read += l
+		if globalLayerMaskInfoLen := int(readUint32(b, 0)); globalLayerMaskInfoLen > 0 {
+			if Debug != nil {
+				Debug.Println("  globalLayerMaskInfoLen:", globalLayerMaskInfoLen)
+				reportReaderPosition("    file offset: 0x%08x", r)
+			}
+			// TODO(oov): implement
+			if l, err = io.ReadFull(r, make([]byte, globalLayerMaskInfoLen)); err != nil {
+				return read, err
+			}
+			read += l
+		}
 	}
 
 	if read < layerAndMaskInfoLen+4 {
