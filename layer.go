@@ -201,7 +201,7 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD) (read int, err error) {
 	read += l
 	if globalLayerMaskInfoLen := int(readUint32(b, 0)); globalLayerMaskInfoLen > 0 {
 		if Debug != nil {
-			Debug.Println("   globalLayerMaskInfoLen:", layerAndMaskInfoLen)
+			Debug.Println("   globalLayerMaskInfoLen:", globalLayerMaskInfoLen)
 		}
 		// TODO(oov): implement
 		if l, err = io.ReadFull(r, make([]byte, globalLayerMaskInfoLen)); err != nil {
