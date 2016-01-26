@@ -184,7 +184,8 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD) (read int, err error) {
 		return read, nil
 	}
 	if Debug != nil {
-		Debug.Println(" layerAndMaskInfoLen:", layerAndMaskInfoLen)
+		Debug.Println("  layerAndMaskInfoLen:", layerAndMaskInfoLen)
+		reportReaderPosition("  file offset: 0x%08x", r)
 	}
 
 	var layer []Layer
@@ -201,7 +202,8 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD) (read int, err error) {
 	read += l
 	if globalLayerMaskInfoLen := int(readUint32(b, 0)); globalLayerMaskInfoLen > 0 {
 		if Debug != nil {
-			Debug.Println("   globalLayerMaskInfoLen:", globalLayerMaskInfoLen)
+			Debug.Println("  globalLayerMaskInfoLen:", globalLayerMaskInfoLen)
+			reportReaderPosition("    file offset: 0x%08x", r)
 		}
 		// TODO(oov): implement
 		if l, err = io.ReadFull(r, make([]byte, globalLayerMaskInfoLen)); err != nil {
@@ -448,13 +450,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 			if Debug != nil {
 				Debug.Printf("  layer #%d %q channel #%d image data", i, layer.Name, j[0])
 				Debug.Println("    length:", j[1], "compression method:", cmpMethod)
-				if sk, ok := r.(io.Seeker); ok {
-					pos, err := sk.Seek(0, 1)
-					if err != nil {
-						return nil, read, err
-					}
-					Debug.Printf("    file offset: 0x%08x", pos)
-				}
+				reportReaderPosition("    file offset: 0x%08x", r)
 			}
 
 			var rect image.Rectangle

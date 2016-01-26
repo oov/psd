@@ -102,3 +102,17 @@ func readPascalString(r io.Reader) (str string, read int, err error) {
 	}
 	return string(buf), len(buf) + 1, nil
 }
+
+func reportReaderPosition(format string, r io.Reader) error {
+	sk, ok := r.(io.Seeker)
+	if !ok {
+		return nil
+	}
+
+	pos, err := sk.Seek(0, 1)
+	if err != nil {
+		return err
+	}
+	Debug.Printf(format, pos)
+	return nil
+}
