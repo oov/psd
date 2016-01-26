@@ -244,7 +244,7 @@ func testOne(tImg testImage, t *testing.T) {
 	}
 	defer f.Close()
 
-	psdImg, _, err := Decode(f)
+	psdImg, _, err := Decode(f, nil)
 	if err != nil {
 		t.Errorf("%s: error occurred in psd.Decode\n%v", tImg.Name, err)
 		return

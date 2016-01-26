@@ -174,8 +174,18 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 	return cfg, read, nil
 }
 
+// DecodeOptions are the decoding options.
+type DecodeOptions struct {
+	SkipLayerImage  bool
+	SkipMergedImage bool
+}
+
 // Decode reads a image from r and returns it.
-func Decode(r io.Reader) (psd *PSD, read int, err error) {
+// Default parameters are used if a nil *DecodeOptions is passed.
+func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
+	if o == nil {
+		o = &DecodeOptions{}
+	}
 	psd = &PSD{}
 	var l int
 	if psd.Config, l, err = DecodeConfig(r); err != nil {
@@ -185,44 +195,46 @@ func Decode(r io.Reader) (psd *PSD, read int, err error) {
 
 	b := make([]byte, 4)
 
-	if l, err = readLayerAndMaskInfo(r, psd); err != nil {
+	if l, err = readLayerAndMaskInfo(r, psd, o); err != nil {
 		return nil, read, err
 	}
 	read += l
 
-	// allocate image buffer.
-	// `+7` and `>>3` is the padding for the 1bit depth color mode.
-	plane := (psd.Config.Rect.Dx()*psd.Config.Depth + 7) >> 3 * psd.Config.Rect.Dy()
-	psd.Data = make([]byte, plane*psd.Config.Channels)
-	chs := make([][]byte, psd.Config.Channels)
-	psd.Channel = make(map[int]Channel)
-	for i := 0; i < psd.Config.Channels; i++ {
-		psd.Channel[i] = Channel{
-			Data:   psd.Data[plane*i : plane*(i+1) : plane*(i+1)],
-			Picker: findGrayPicker(psd.Config.Depth, false),
+	if !o.SkipMergedImage {
+		// allocate image buffer.
+		// `+7` and `>>3` is the padding for the 1bit depth color mode.
+		plane := (psd.Config.Rect.Dx()*psd.Config.Depth + 7) >> 3 * psd.Config.Rect.Dy()
+		psd.Data = make([]byte, plane*psd.Config.Channels)
+		chs := make([][]byte, psd.Config.Channels)
+		psd.Channel = make(map[int]Channel)
+		for i := 0; i < psd.Config.Channels; i++ {
+			psd.Channel[i] = Channel{
+				Data:   psd.Data[plane*i : plane*(i+1) : plane*(i+1)],
+				Picker: findGrayPicker(psd.Config.Depth, false),
+			}
+			psd.Channel[i].Picker.SetSource(psd.Config.Rect, psd.Channel[i].Data)
+			chs[i] = psd.Channel[i].Data
 		}
-		psd.Channel[i].Picker.SetSource(psd.Config.Rect, psd.Channel[i].Data)
-		chs[i] = psd.Channel[i].Data
-	}
-	psd.Config.Picker.SetSource(psd.Config.Rect, chs...)
+		psd.Config.Picker.SetSource(psd.Config.Rect, chs...)
 
-	if l, err = io.ReadFull(r, b[:2]); err != nil {
-		return nil, read, err
+		if l, err = io.ReadFull(r, b[:2]); err != nil {
+			return nil, read, err
+		}
+		read += l
+		cmpMethod := CompressionMethod(readUint16(b, 0))
+		l, err = cmpMethod.Decode(
+			psd.Data,
+			r,
+			0,
+			psd.Config.Rect,
+			psd.Config.Depth,
+			psd.Config.Channels,
+		)
+		if err != nil {
+			return nil, read, err
+		}
+		read += l
 	}
-	read += l
-	cmpMethod := CompressionMethod(readUint16(b, 0))
-	l, err = cmpMethod.Decode(
-		psd.Data,
-		r,
-		0,
-		psd.Config.Rect,
-		psd.Config.Depth,
-		psd.Config.Channels,
-	)
-	if err != nil {
-		return nil, read, err
-	}
-	read += l
 	return psd, read, nil
 }
 
@@ -231,7 +243,7 @@ func init() {
 		"psd",
 		"8BPS\x00\x01",
 		func(r io.Reader) (image.Image, error) {
-			psd, _, err := Decode(r)
+			psd, _, err := Decode(r, &DecodeOptions{SkipLayerImage: true})
 			return psd, err
 		},
 		func(r io.Reader) (image.Config, error) {

@@ -167,7 +167,7 @@ func (c *Channel) At(x, y int) color.Color {
 	return c.Picker.At(x, y)
 }
 
-func readLayerAndMaskInfo(r io.Reader, psd *PSD) (read int, err error) {
+func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, err error) {
 	if Debug != nil {
 		Debug.Println("start - layer and mask information section")
 	}
@@ -190,7 +190,7 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD) (read int, err error) {
 
 	var layer []Layer
 	if read < layerAndMaskInfoLen+4 {
-		if layer, l, err = readLayerInfo(r, psd.Config.ColorMode, psd.Config.Depth); err != nil {
+		if layer, l, err = readLayerInfo(r, psd.Config.ColorMode, psd.Config.Depth, o.SkipLayerImage); err != nil {
 			return read, err
 		}
 		read += l
@@ -218,7 +218,7 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD) (read int, err error) {
 
 	if read < layerAndMaskInfoLen+4 {
 		var layer2 []Layer
-		if psd.AdditinalLayerInfo, layer2, l, err = readAdditionalLayerInfo(r, layerAndMaskInfoLen+4-read, psd.Config.ColorMode, psd.Config.Depth); err != nil {
+		if psd.AdditinalLayerInfo, layer2, l, err = readAdditionalLayerInfo(r, layerAndMaskInfoLen+4-read, psd.Config.ColorMode, psd.Config.Depth, o.SkipLayerImage); err != nil {
 			return read, err
 		}
 		read += l
@@ -290,7 +290,7 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 	return typ, blendMode, subType, nil
 }
 
-func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, read int, err error) {
+func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, skipLayerImage bool) (layer []Layer, read int, err error) {
 	if Debug != nil {
 		Debug.Println("start - layer info section")
 	}
@@ -374,7 +374,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 		layer.Clipping = b[9] != 0
 		layer.Flags = b[10]
 		// b[11] - Filler(zero)
-		if l, err = readLayerExtraData(r, layer, colorMode, depth); err != nil {
+		if l, err = readLayerExtraData(r, layer, colorMode, depth, skipLayerImage); err != nil {
 			return nil, read, err
 		}
 		read += l
@@ -440,63 +440,87 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 			Debug.Printf("end - layer #%d structure", i)
 		}
 	}
-	for i, layer := range layerSlice {
-		for _, j := range chLen[i] {
-			ch := layer.Channel[j[0]]
-			var readCh int
-			if l, err = io.ReadFull(r, b[:2]); err != nil {
+	if !skipLayerImage {
+		for i, layer := range layerSlice {
+			for _, j := range chLen[i] {
+				ch := layer.Channel[j[0]]
+				var readCh int
+				if l, err = io.ReadFull(r, b[:2]); err != nil {
+					return nil, read, err
+				}
+				readCh += l
+				read += l
+
+				cmpMethod := CompressionMethod(readUint16(b, 0))
+				if Debug != nil {
+					Debug.Printf("  layer #%d %q channel #%d image data", i, layer.Name, j[0])
+					Debug.Println("    length:", j[1], "compression method:", cmpMethod)
+					reportReaderPosition("    file offset: 0x%08x", r)
+				}
+
+				var rect image.Rectangle
+				switch j[0] {
+				case -3:
+					rect = layer.Mask.RealRect
+				case -2:
+					rect = layer.Mask.Rect
+				default:
+					rect = layer.Rect
+				}
+				ch.Data = make([]byte, (rect.Dx()*depth+7)>>3*rect.Dy())
+				ch.Picker.SetSource(rect, ch.Data)
+
+				if l, err = cmpMethod.Decode(ch.Data, r, int64(j[1]-2), rect, depth, 1); err != nil {
+					return nil, read, err
+				}
+				readCh += l
+				read += l
+
+				if readCh != j[1] {
+					return nil, read, errors.New("psd: layer: " + itoa(i) + " channel: " + itoa(j[0]) + " read size mismatched. expected " + itoa(j[1]) + " actual " + itoa(readCh))
+				}
+
+				layer.Channel[j[0]] = ch
+			}
+
+			chs := make([][]byte, colorMode.Channels(), 8)
+			for j := range chs {
+				chs[j] = layer.Channel[j].Data
+			}
+			if ch, ok := layer.Channel[-1]; ok {
+				chs = append(chs, ch.Data)
+			}
+			layer.Picker = findPicker(depth, colorMode, colorMode.Channels() < len(chs))
+			layer.Picker.SetSource(layer.Rect, chs...)
+			layerSlice[i] = layer
+		}
+		if l, err = adjustAlign4(r, read+4-layerInfoLen); err != nil {
+			return nil, read, err
+		}
+		read += l
+	} else {
+		type discarder interface {
+			Discard(n int) (discarded int, err error)
+		}
+		skip := layerInfoLen + 4 - read
+		switch rr := r.(type) {
+		case discarder:
+			if l, err = rr.Discard(skip); err != nil {
 				return nil, read, err
 			}
-			readCh += l
 			read += l
-
-			cmpMethod := CompressionMethod(readUint16(b, 0))
-			if Debug != nil {
-				Debug.Printf("  layer #%d %q channel #%d image data", i, layer.Name, j[0])
-				Debug.Println("    length:", j[1], "compression method:", cmpMethod)
-				reportReaderPosition("    file offset: 0x%08x", r)
-			}
-
-			var rect image.Rectangle
-			switch j[0] {
-			case -3:
-				rect = layer.Mask.RealRect
-			case -2:
-				rect = layer.Mask.Rect
-			default:
-				rect = layer.Rect
-			}
-			ch.Data = make([]byte, (rect.Dx()*depth+7)>>3*rect.Dy())
-			ch.Picker.SetSource(rect, ch.Data)
-
-			if l, err = cmpMethod.Decode(ch.Data, r, int64(j[1]-2), rect, depth, 1); err != nil {
+		case io.Seeker:
+			if _, err = rr.Seek(int64(skip), 1); err != nil {
 				return nil, read, err
 			}
-			readCh += l
-			read += l
-
-			if readCh != j[1] {
-				return nil, read, errors.New("psd: layer: " + itoa(i) + " channel: " + itoa(j[0]) + " read size mismatched. expected " + itoa(j[1]) + " actual " + itoa(readCh))
+			read += skip
+		default:
+			if l, err = io.ReadFull(r, make([]byte, skip)); err != nil {
+				return nil, read, err
 			}
-
-			layer.Channel[j[0]] = ch
+			read += l
 		}
-
-		chs := make([][]byte, colorMode.Channels(), 8)
-		for j := range chs {
-			chs[j] = layer.Channel[j].Data
-		}
-		if ch, ok := layer.Channel[-1]; ok {
-			chs = append(chs, ch.Data)
-		}
-		layer.Picker = findPicker(depth, colorMode, colorMode.Channels() < len(chs))
-		layer.Picker.SetSource(layer.Rect, chs...)
-		layerSlice[i] = layer
 	}
-	if l, err = adjustAlign4(r, read+4-layerInfoLen); err != nil {
-		return nil, read, err
-	}
-	read += l
 
 	if layerInfoLen+4 != read {
 		return nil, read, errors.New("psd: layer info read size mismatched. expected " + itoa(layerInfoLen+4) + " actual " + itoa(read))
@@ -507,7 +531,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int) (layer []Layer, 
 	return layerSlice, read, nil
 }
 
-func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth int) (read int, err error) {
+func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth int, skipLayerImage bool) (read int, err error) {
 	// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_22582
 	// Layer mask / adjustment layer data
 	if Debug != nil {
@@ -671,7 +695,7 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 
 	if read < extraDataLen+4 {
 		var layers []Layer
-		if layer.AdditionalLayerInfo, layers, l, err = readAdditionalLayerInfo(r, extraDataLen+4-read, colorMode, depth); err != nil {
+		if layer.AdditionalLayerInfo, layers, l, err = readAdditionalLayerInfo(r, extraDataLen+4-read, colorMode, depth, skipLayerImage); err != nil {
 			return read, err
 		}
 		read += l
@@ -691,7 +715,7 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 	return read, nil
 }
 
-func readAdditionalLayerInfo(r io.Reader, infoLen int, colorMode ColorMode, depth int) (infos map[AdditionalInfoKey][]byte, layers []Layer, read int, err error) {
+func readAdditionalLayerInfo(r io.Reader, infoLen int, colorMode ColorMode, depth int, skipLayerImage bool) (infos map[AdditionalInfoKey][]byte, layers []Layer, read int, err error) {
 	if Debug != nil {
 		Debug.Println("start - additional layer info section")
 		Debug.Println("  infoLen:", infoLen)
@@ -730,7 +754,7 @@ func readAdditionalLayerInfo(r io.Reader, infoLen int, colorMode ColorMode, dept
 				Debug.Println("  key:", key)
 			}
 			var layrs []Layer
-			if layrs, l, err = readLayerInfo(r, colorMode, depth); err != nil {
+			if layrs, l, err = readLayerInfo(r, colorMode, depth, skipLayerImage); err != nil {
 				return nil, nil, read, err
 			}
 			read += l
