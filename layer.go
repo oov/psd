@@ -9,7 +9,9 @@ import (
 
 // Layer represents layer.
 type Layer struct {
-	Name string
+	Name     string
+	MBCSName string
+
 	Rect image.Rectangle
 	// Channel key is the channel ID.
 	// 	0 = red, 1 = green, etc.
@@ -382,6 +384,8 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, skipLayerImage b
 		if data, ok := layer.AdditionalLayerInfo[AdditionalInfoKeyUnicodeLayerName]; ok && data != nil {
 			layer.Name = readUnicodeString(data)
 			delete(layer.AdditionalLayerInfo, AdditionalInfoKeyUnicodeLayerName)
+		} else {
+			layer.Name = layer.MBCSName
 		}
 
 		// this is called "Blend Clipped Layers as Group" in Photoshop's Layer Style dialog.
@@ -684,7 +688,7 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 	}
 
 	// Layer name: Pascal string, padded to a multiple of 4 bytes.
-	if layer.Name, l, err = readPascalString(r); err != nil {
+	if layer.MBCSName, l, err = readPascalString(r); err != nil {
 		return read, err
 	}
 	read += l
