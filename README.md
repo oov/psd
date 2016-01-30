@@ -98,7 +98,7 @@ func main() {
 	}
 	defer file.Close()
 
-	img, _, err := psd.Decode(file)
+	img, _, err := psd.Decode(file, &psd.DecodeOptions{SkipMergedImage: true})
 	if err != nil {
 		panic(err)
 	}
