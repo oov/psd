@@ -264,7 +264,7 @@ type pickerNRGB8 struct {
 func (p *pickerNRGB8) SetSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.R, p.G, p.B = rect, src[0], src[1], src[2]
 }
-func (p *pickerNRGB8) ColorModel() color.Model { return color.RGBAModel }
+func (p *pickerNRGB8) ColorModel() color.Model { return color.NRGBAModel }
 func (p *pickerNRGB8) Bounds() image.Rectangle { return p.Rect }
 func (p *pickerNRGB8) At(x, y int) color.Color {
 	pos := (y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X
