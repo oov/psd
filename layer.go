@@ -9,8 +9,9 @@ import (
 
 // Layer represents layer.
 type Layer struct {
-	Name     string
-	MBCSName string
+	Name        string
+	UnicodeName string
+	MBCSName    string
 
 	Rect image.Rectangle
 	// Channel key is the channel ID.
@@ -382,7 +383,8 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, skipLayerImage b
 		read += l
 
 		if data, ok := layer.AdditionalLayerInfo[AdditionalInfoKeyUnicodeLayerName]; ok && data != nil {
-			layer.Name = readUnicodeString(data)
+			layer.UnicodeName = readUnicodeString(data)
+			layer.Name = layer.UnicodeName
 			delete(layer.AdditionalLayerInfo, AdditionalInfoKeyUnicodeLayerName)
 		} else {
 			layer.Name = layer.MBCSName
