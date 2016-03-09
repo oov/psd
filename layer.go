@@ -233,7 +233,9 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 		}
 	}
 
-	psd.Layer = buildTree(layer)
+	if psd.Layer, err = buildTree(layer); err != nil {
+		return read, err
+	}
 
 	if read != layerAndMaskInfoLen+4 {
 		return read, errors.New("psd: layer and mask info read size mismatched. expected " + itoa(layerAndMaskInfoLen+4) + " actual " + itoa(read))
@@ -244,7 +246,7 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 	return read, nil
 }
 
-func buildTree(layer []Layer) []Layer {
+func buildTree(layer []Layer) ([]Layer, error) {
 	// idx type
 	// 0: 3
 	// 1:  3
@@ -256,10 +258,13 @@ func buildTree(layer []Layer) []Layer {
 	// 7: 1
 	stack := make([][]Layer, 0, 8)
 	n := []Layer{}
-	for _, l := range layer {
+	for i, l := range layer {
 		switch l.SectionDividerSetting.Type {
 		case 1, 2:
 			l.Layer = n
+			if len(stack) == 0 {
+				return nil, errors.New("psd: layer tree structure is broken(#" + itoa(i) + ")")
+			}
 			n = stack[len(stack)-1]
 			stack = stack[:len(stack)-1]
 			n = append(n, l)
@@ -270,27 +275,43 @@ func buildTree(layer []Layer) []Layer {
 			n = append(n, l)
 		}
 	}
-	return n
+	return n, nil
 }
 
 func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType int, err error) {
 	b, ok := l.AdditionalLayerInfo[AdditionalInfoKeySectionDividerSetting]
-	if !ok {
-		return 0, BlendModeNormal, 0, nil
+	if ok {
+		typ = int(readUint32(b, 0))
+		if len(b) < 12 {
+			return typ, BlendModeNormal, 0, nil
+		}
+		if string(b[4:8]) != "8BIM" {
+			return 0, "", 0, errors.New("psd: unexpected signature in section divider setting")
+		}
+		blendMode = BlendMode(b[8:12])
+		if len(b) < 16 {
+			return typ, blendMode, 0, nil
+		}
+		subType = int(readUint32(b, 12))
+		return typ, blendMode, subType, nil
 	}
-	typ = int(readUint32(b, 0))
-	if len(b) < 12 {
-		return typ, BlendModeNormal, 0, nil
+	b, ok = l.AdditionalLayerInfo[AdditionalInfoKeySectionDividerSetting2]
+	if ok {
+		typ = int(readUint32(b, 0))
+		if len(b) < 12 {
+			return typ, BlendModeNormal, 0, nil
+		}
+		if string(b[4:8]) != "8BIM" {
+			return 0, "", 0, errors.New("psd: unexpected signature in section divider setting 2")
+		}
+		blendMode = BlendMode(b[8:12])
+		if len(b) < 16 {
+			return typ, blendMode, 0, nil
+		}
+		subType = int(readUint32(b, 12))
+		return typ, blendMode, subType, nil
 	}
-	if string(b[4:8]) != "8BIM" {
-		return 0, "", 0, errors.New("psd: unexpected signature in section divider setting")
-	}
-	blendMode = BlendMode(b[8:12])
-	if len(b) < 16 {
-		return typ, blendMode, 0, nil
-	}
-	subType = int(readUint32(b, 12))
-	return typ, blendMode, subType, nil
+	return 0, BlendModeNormal, 0, nil
 }
 
 func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, skipLayerImage bool) (layer []Layer, read int, err error) {

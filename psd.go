@@ -26,12 +26,13 @@ type AdditionalInfoKey string
 //
 // http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_71546
 const (
-	AdditionalInfoKeyLayerInfo             = AdditionalInfoKey("Layr")
-	AdditionalInfoKeyLayerInfo16           = AdditionalInfoKey("Lr16")
-	AdditionalInfoKeyLayerInfo32           = AdditionalInfoKey("Lr32")
-	AdditionalInfoKeyUnicodeLayerName      = AdditionalInfoKey("luni")
-	AdditionalInfoKeyBlendClippingElements = AdditionalInfoKey("clbl")
-	AdditionalInfoKeySectionDividerSetting = AdditionalInfoKey("lsct")
+	AdditionalInfoKeyLayerInfo              = AdditionalInfoKey("Layr")
+	AdditionalInfoKeyLayerInfo16            = AdditionalInfoKey("Lr16")
+	AdditionalInfoKeyLayerInfo32            = AdditionalInfoKey("Lr32")
+	AdditionalInfoKeyUnicodeLayerName       = AdditionalInfoKey("luni")
+	AdditionalInfoKeyBlendClippingElements  = AdditionalInfoKey("clbl")
+	AdditionalInfoKeySectionDividerSetting  = AdditionalInfoKey("lsct")
+	AdditionalInfoKeySectionDividerSetting2 = AdditionalInfoKey("lsdk")
 )
 
 // Config represents Photoshop image file configuration.
