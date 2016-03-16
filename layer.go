@@ -193,7 +193,7 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 
 	var layer []Layer
 	if read < layerAndMaskInfoLen+4 {
-		if layer, l, err = readLayerInfo(r, psd.Config.ColorMode, psd.Config.Depth, o.SkipLayerImage); err != nil {
+		if layer, l, err = readLayerInfo(r, psd.Config.ColorMode, psd.Config.Depth, o); err != nil {
 			return read, err
 		}
 		read += l
@@ -221,7 +221,7 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 
 	if read < layerAndMaskInfoLen+4 {
 		var layer2 []Layer
-		if psd.AdditinalLayerInfo, layer2, l, err = readAdditionalLayerInfo(r, layerAndMaskInfoLen+4-read, psd.Config.ColorMode, psd.Config.Depth, o.SkipLayerImage); err != nil {
+		if psd.AdditinalLayerInfo, layer2, l, err = readAdditionalLayerInfo(r, layerAndMaskInfoLen+4-read, psd.Config.ColorMode, psd.Config.Depth, o); err != nil {
 			return read, err
 		}
 		read += l
@@ -314,7 +314,7 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 	return 0, BlendModeNormal, 0, nil
 }
 
-func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, skipLayerImage bool) (layer []Layer, read int, err error) {
+func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions) (layer []Layer, read int, err error) {
 	if Debug != nil {
 		Debug.Println("start - layer info section")
 	}
@@ -398,7 +398,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, skipLayerImage b
 		layer.Clipping = b[9] != 0
 		layer.Flags = b[10]
 		// b[11] - Filler(zero)
-		if l, err = readLayerExtraData(r, layer, colorMode, depth, skipLayerImage); err != nil {
+		if l, err = readLayerExtraData(r, layer, colorMode, depth, o); err != nil {
 			return nil, read, err
 		}
 		read += l
@@ -467,7 +467,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, skipLayerImage b
 			Debug.Printf("end - layer #%d structure", i)
 		}
 	}
-	if !skipLayerImage {
+	if !o.SkipLayerImage {
 		for i, layer := range layerSlice {
 			for _, j := range chLen[i] {
 				ch := layer.Channel[j[0]]
@@ -520,6 +520,9 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, skipLayerImage b
 			layer.Picker = findPicker(depth, colorMode, colorMode.Channels() < len(chs))
 			layer.Picker.SetSource(layer.Rect, chs...)
 			layerSlice[i] = layer
+			if o.LayerImageLoaded != nil {
+				o.LayerImageLoaded(&layerSlice[i], i, len(layerSlice))
+			}
 		}
 		if l, err = adjustAlign4(r, read+4-layerInfoLen); err != nil {
 			return nil, read, err
@@ -558,7 +561,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, skipLayerImage b
 	return layerSlice, read, nil
 }
 
-func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth int, skipLayerImage bool) (read int, err error) {
+func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth int, o *DecodeOptions) (read int, err error) {
 	// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_22582
 	// Layer mask / adjustment layer data
 	if Debug != nil {
@@ -722,7 +725,7 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 
 	if read < extraDataLen+4 {
 		var layers []Layer
-		if layer.AdditionalLayerInfo, layers, l, err = readAdditionalLayerInfo(r, extraDataLen+4-read, colorMode, depth, skipLayerImage); err != nil {
+		if layer.AdditionalLayerInfo, layers, l, err = readAdditionalLayerInfo(r, extraDataLen+4-read, colorMode, depth, o); err != nil {
 			return read, err
 		}
 		read += l
@@ -742,7 +745,7 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 	return read, nil
 }
 
-func readAdditionalLayerInfo(r io.Reader, infoLen int, colorMode ColorMode, depth int, skipLayerImage bool) (infos map[AdditionalInfoKey][]byte, layers []Layer, read int, err error) {
+func readAdditionalLayerInfo(r io.Reader, infoLen int, colorMode ColorMode, depth int, o *DecodeOptions) (infos map[AdditionalInfoKey][]byte, layers []Layer, read int, err error) {
 	if Debug != nil {
 		Debug.Println("start - additional layer info section")
 		Debug.Println("  infoLen:", infoLen)
@@ -781,7 +784,7 @@ func readAdditionalLayerInfo(r io.Reader, infoLen int, colorMode ColorMode, dept
 				Debug.Println("  key:", key)
 			}
 			var layrs []Layer
-			if layrs, l, err = readLayerInfo(r, colorMode, depth, skipLayerImage); err != nil {
+			if layrs, l, err = readLayerInfo(r, colorMode, depth, o); err != nil {
 				return nil, nil, read, err
 			}
 			read += l

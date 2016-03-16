@@ -177,8 +177,9 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 
 // DecodeOptions are the decoding options.
 type DecodeOptions struct {
-	SkipLayerImage  bool
-	SkipMergedImage bool
+	SkipLayerImage   bool
+	SkipMergedImage  bool
+	LayerImageLoaded func(layer *Layer, index int, total int)
 }
 
 // Decode reads a image from r and returns it.
