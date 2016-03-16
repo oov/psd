@@ -9,6 +9,8 @@ import (
 
 // Layer represents layer.
 type Layer struct {
+	SeqID int
+
 	Name        string
 	UnicodeName string
 	MBCSName    string
@@ -356,6 +358,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions
 			Debug.Printf("start - layer #%d structure", i)
 		}
 		layer := &layerSlice[i]
+		layer.SeqID = i
 
 		if l, err = io.ReadFull(r, b[:16]); err != nil {
 			return nil, read, err
@@ -438,7 +441,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions
 		}
 
 		if Debug != nil {
-			Debug.Printf("layer #%d", i)
+			Debug.Printf("layer #%d", layer.SeqID)
 			Debug.Println("  Name:", layer.Name)
 			Debug.Println("  Rect:", layer.Rect)
 			Debug.Println("  Channels:", len(layer.Channel))
