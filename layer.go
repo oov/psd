@@ -365,8 +365,8 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions
 		}
 		read += l
 		layer.Rect = image.Rect(
-			int(readUint32(b, 4)), int(readUint32(b, 0)),
-			int(readUint32(b, 12)), int(readUint32(b, 8)),
+			int(int32(readUint32(b, 4))), int(int32(readUint32(b, 0))),
+			int(int32(readUint32(b, 12))), int(int32(readUint32(b, 8))),
 		)
 
 		if l, err = io.ReadFull(r, b[:2]); err != nil {
@@ -599,8 +599,8 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 		read += l
 		readMask += l
 		layer.Mask.Rect = image.Rect(
-			int(readUint32(b, 4)), int(readUint32(b, 0)),
-			int(readUint32(b, 12)), int(readUint32(b, 8)),
+			int(int32(readUint32(b, 4))), int(int32(readUint32(b, 0))),
+			int(int32(readUint32(b, 12))), int(int32(readUint32(b, 8))),
 		)
 
 		if l, err = io.ReadFull(r, b[:2]); err != nil {
