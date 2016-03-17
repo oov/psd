@@ -201,7 +201,7 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 		read += l
 	}
 
-	if read < layerAndMaskInfoLen+4 {
+	if layerAndMaskInfoLen+4-read >= 4 {
 		// Global layer mask info
 		// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_17115
 		if l, err = io.ReadFull(r, b); err != nil {
@@ -221,7 +221,7 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 		}
 	}
 
-	if read < layerAndMaskInfoLen+4 {
+	if layerAndMaskInfoLen+4-read >= 8 {
 		var layer2 []Layer
 		if psd.AdditinalLayerInfo, layer2, l, err = readAdditionalLayerInfo(r, layerAndMaskInfoLen+4-read, psd.Config.ColorMode, psd.Config.Depth, o); err != nil {
 			return read, err
@@ -237,6 +237,13 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 
 	if psd.Layer, err = buildTree(layer); err != nil {
 		return read, err
+	}
+
+	if layerAndMaskInfoLen+4-read < 4 {
+		if l, err = adjustAlign4(r, read); err != nil {
+			return read, err
+		}
+		read += l
 	}
 
 	if read != layerAndMaskInfoLen+4 {
