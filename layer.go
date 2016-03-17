@@ -239,7 +239,7 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 		return read, err
 	}
 
-	if layerAndMaskInfoLen+4-read < 4 {
+	if layerAndMaskInfoLen+4-read != 0 && layerAndMaskInfoLen+4-read < 4 {
 		if l, err = adjustAlign4(r, read); err != nil {
 			return read, err
 		}
