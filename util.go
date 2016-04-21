@@ -88,6 +88,23 @@ func adjustAlign4(r io.Reader, l int) (read int, err error) {
 	return 0, nil
 }
 
+func discard(r io.Reader, skip int) (read int, err error) {
+	type discarder interface {
+		Discard(n int) (discarded int, err error)
+	}
+	switch rr := r.(type) {
+	case discarder:
+		return rr.Discard(skip)
+	case io.Seeker:
+		if _, err = rr.Seek(int64(skip), 1); err != nil {
+			return 0, err
+		}
+		return skip, nil
+	default:
+		return io.ReadFull(r, make([]byte, skip))
+	}
+}
+
 func readPascalString(r io.Reader) (str string, read int, err error) {
 	b := make([]byte, 1)
 	if _, err := io.ReadFull(r, b); err != nil {

@@ -239,8 +239,8 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 		return read, err
 	}
 
-	if layerAndMaskInfoLen+4-read != 0 && layerAndMaskInfoLen+4-read < 4 {
-		if l, err = adjustAlign4(r, read); err != nil {
+	if remain := layerAndMaskInfoLen + 4 - read; remain != 0 && remain < 4 {
+		if l, err = discard(r, remain); err != nil {
 			return read, err
 		}
 		read += l
@@ -539,27 +539,10 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions
 		}
 		read += l
 	} else {
-		type discarder interface {
-			Discard(n int) (discarded int, err error)
+		if l, err = discard(r, layerInfoLen+4-read); err != nil {
+			return nil, read, err
 		}
-		skip := layerInfoLen + 4 - read
-		switch rr := r.(type) {
-		case discarder:
-			if l, err = rr.Discard(skip); err != nil {
-				return nil, read, err
-			}
-			read += l
-		case io.Seeker:
-			if _, err = rr.Seek(int64(skip), 1); err != nil {
-				return nil, read, err
-			}
-			read += skip
-		default:
-			if l, err = io.ReadFull(r, make([]byte, skip)); err != nil {
-				return nil, read, err
-			}
-			read += l
-		}
+		read += l
 	}
 
 	if layerInfoLen+4 != read {
