@@ -56,66 +56,13 @@ func (d Normal) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Normal) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Normal) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -496,66 +443,13 @@ func (d Darken) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Darken) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Darken) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -996,66 +890,13 @@ func (d Multiply) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Multiply) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Multiply) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -1436,66 +1277,13 @@ func (d ColorBurn) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d ColorBurn) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d ColorBurn) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d ColorBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -1966,66 +1754,13 @@ func (d LinearBurn) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d LinearBurn) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d LinearBurn) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d LinearBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -2481,66 +2216,13 @@ func (d DarkerColor) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d DarkerColor) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d DarkerColor) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d DarkerColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -2941,66 +2623,13 @@ func (d Lighten) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Lighten) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Lighten) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -3441,66 +3070,13 @@ func (d Screen) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Screen) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Screen) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -3881,66 +3457,13 @@ func (d ColorDodge) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d ColorDodge) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d ColorDodge) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d ColorDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -4411,66 +3934,13 @@ func (d LinearDodge) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d LinearDodge) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d LinearDodge) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d LinearDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -4851,66 +4321,13 @@ func (d LighterColor) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d LighterColor) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d LighterColor) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d LighterColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -5311,66 +4728,13 @@ func (d Overlay) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Overlay) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Overlay) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -5811,66 +5175,13 @@ func (d SoftLight) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d SoftLight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d SoftLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d SoftLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -6386,66 +5697,13 @@ func (d HardLight) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d HardLight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d HardLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d HardLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -6901,66 +6159,13 @@ func (d LinearLight) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d LinearLight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d LinearLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d LinearLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -7401,66 +6606,13 @@ func (d VividLight) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d VividLight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d VividLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d VividLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -8051,66 +7203,13 @@ func (d PinLight) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d PinLight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d PinLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d PinLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -8701,66 +7800,13 @@ func (d HardMix) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d HardMix) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d HardMix) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d HardMix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -9486,66 +8532,13 @@ func (d Difference) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Difference) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Difference) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -9986,66 +8979,13 @@ func (d Exclusion) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Exclusion) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Exclusion) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -10426,66 +9366,13 @@ func (d Subtract) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Subtract) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Subtract) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -10926,66 +9813,13 @@ func (d Divide) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Divide) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Divide) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -11456,66 +10290,13 @@ func (d Hue) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Hue) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Hue) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -11881,66 +10662,13 @@ func (d Saturation) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Saturation) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Saturation) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -12306,66 +11034,13 @@ func (d Color) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Color) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Color) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -12726,66 +11401,13 @@ func (d Luminosity) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d Luminosity) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d Luminosity) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d Luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {

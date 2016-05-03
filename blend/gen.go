@@ -423,66 +423,13 @@ func (d {{.Name}}) BlendMode() psd.BlendMode {
 
 // Draw implements image.Drawer interface.
 func (d {{.Name}}) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	d.DrawMask(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
 func (d {{.Name}}) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
-	clip(dst, &r, src, &sp, mask, &mp)
-	if r.Empty() {
-		return
-	}
-
-	switch dst0 := dst.(type) {
-	case *image.RGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	case *image.NRGBA:
-		if mask == nil {
-			switch src0 := src.(type) {
-			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
-				return
-			}
-		} else {
-			switch mask0 := mask.(type) {
-			case *image.Uniform:
-				switch src0 := src.(type) {
-				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
-					return
-				}
-			}
-		}
-	}
-	d.drawFallback(dst, r, src, sp, mask, mp)
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
 func (d {{.Name}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
@@ -879,6 +826,45 @@ func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 }
 `
 
+var testSource = `// DO NOT EDIT.
+// Generate with: go generate
+
+package blend
+
+import "testing"
+
+{{range .}}func TestDrawFallback{{.Name}}(t *testing.T)       { testDrawFallback({{.Name}}{}, t) }
+{{end}}
+
+{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}(t *testing.T)       { testDrawNRGBAToNRGBA({{.Name}}{}, t) }
+{{end}}
+
+{{range .}}func TestDrawRGBAToNRGBA{{.Name}}(t *testing.T)       { testDrawRGBAToNRGBA({{.Name}}{}, t) }
+{{end}}
+
+{{range .}}func TestDrawNRGBAToRGBA{{.Name}}(t *testing.T)       { testDrawNRGBAToRGBA({{.Name}}{}, t) }
+{{end}}
+
+{{range .}}func TestDrawRGBAToRGBA{{.Name}}(t *testing.T)       { testDrawRGBAToRGBA({{.Name}}{}, t) }
+{{end}}
+
+{{range .}}func BenchmarkDrawFallback{{.Name}}(b *testing.B)       { benchmarkDrawFallback({{.Name}}{}, b) }
+{{end}}
+
+{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}(b *testing.B)       { benchmarkDrawNRGBAToNRGBA({{.Name}}{}, b) }
+{{end}}
+
+{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}(b *testing.B)       { benchmarkDrawRGBAToNRGBA({{.Name}}{}, b) }
+{{end}}
+
+{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}(b *testing.B)       { benchmarkDrawNRGBAToRGBA({{.Name}}{}, b) }
+{{end}}
+
+{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}(b *testing.B)       { benchmarkDrawRGBAToRGBA({{.Name}}{}, b) }
+{{end}}
+
+`
+
 func main() {
 	t := template.Must(template.New("").Parse(source))
 	t.New("blendBase").Parse(blendBase)
@@ -899,4 +885,23 @@ func main() {
 	if _, err = f.Write(buf); err != nil {
 		log.Fatal(err)
 	}
+
+	tt := template.Must(template.New("").Parse(testSource))
+	b.Reset()
+	if err := tt.Execute(b, blendModes); err != nil {
+		log.Fatal(err)
+	}
+	buf, err = format.Source(b.Bytes())
+	if err != nil {
+		log.Fatal(err)
+	}
+	f2, err := os.Create("blends_test.go")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f2.Close()
+	if _, err = f2.Write(buf); err != nil {
+		log.Fatal(err)
+	}
+
 }

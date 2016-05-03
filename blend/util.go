@@ -16,6 +16,72 @@ type Drawer interface {
 	DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point)
 }
 
+type drawer interface {
+	Drawer
+	drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform)
+	drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform)
+	drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform)
+	drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform)
+	drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point)
+}
+
+func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
+	clip(dst, &r, src, &sp, mask, &mp)
+	if r.Empty() {
+		return
+	}
+
+	switch dst0 := dst.(type) {
+	case *image.RGBA:
+		if mask == nil {
+			switch src0 := src.(type) {
+			case *image.RGBA:
+				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
+				return
+			case *image.NRGBA:
+				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
+				return
+			}
+		} else {
+			switch mask0 := mask.(type) {
+			case *image.Uniform:
+				switch src0 := src.(type) {
+				case *image.RGBA:
+					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
+					return
+				case *image.NRGBA:
+					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
+					return
+				}
+			}
+		}
+	case *image.NRGBA:
+		if mask == nil {
+			switch src0 := src.(type) {
+			case *image.RGBA:
+				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
+				return
+			case *image.NRGBA:
+				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
+				return
+			}
+		} else {
+			switch mask0 := mask.(type) {
+			case *image.Uniform:
+				switch src0 := src.(type) {
+				case *image.RGBA:
+					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
+					return
+				case *image.NRGBA:
+					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
+					return
+				}
+			}
+		}
+	}
+	d.drawFallback(dst, r, src, sp, mask, mp)
+}
+
 func sqrt(a uint32, b float64) uint32 {
 	return uint32(math.Sqrt(float64(a)/b) * b)
 }
