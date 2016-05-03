@@ -433,6 +433,7 @@ func (d {{.Name}}) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, 
 }
 
 func (d {{.Name}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+{{define "blendRGBAToRGBA1"}}
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -483,277 +484,87 @@ func (d {{.Name}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+{{end}}
+{{define "blendRGBAToRGBA2_Src"}}
+{{if .}}
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+{{end}}
+{{end}}
+{{define "blendRGBAToRGBA2_Dest"}}
+{{if .}}
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
 			}
-
+{{end}}
+{{end}}
+{{define "blendRGBAToRGBA3"}}
 			var r, g, b uint32
 			{{if .CodePerChannel}}
-			   {{.CodePerChannel.To8.Channel "r"}}
-			   {{.CodePerChannel.To8.Channel "g"}}
-			   {{.CodePerChannel.To8.Channel "b"}}
+				{{.CodePerChannel.To8.Channel "r"}}
+				{{.CodePerChannel.To8.Channel "g"}}
+				{{.CodePerChannel.To8.Channel "b"}}
 			{{else if .Code}}
-			   {{.Code.To8}}
+				{{.Code.To8}}
 			{{else if .CodePerChannel16}}
-			   {{.CodePerChannel16.To8.Channel "r"}}
-			   {{.CodePerChannel16.To8.Channel "g"}}
-			   {{.CodePerChannel16.To8.Channel "b"}}
+				{{.CodePerChannel16.To8.Channel "r"}}
+				{{.CodePerChannel16.To8.Channel "g"}}
+				{{.CodePerChannel16.To8.Channel "b"}}
 			{{else if .Code16}}
-			   {{.Code16.To8}}
+				{{.Code16.To8}}
 			{{end}}
+{{end}}
+{{define "blendRGBAToRGBA4_Dest"}}
+{{if .}}
 			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+{{else}}
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+3] = uint8(a)
+{{end}}
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+{{end}}
+{{template "blendRGBAToRGBA1" .}}
+{{template "blendRGBAToRGBA2_Src" true}}
+{{template "blendRGBAToRGBA2_Dest" true}}
+{{template "blendRGBAToRGBA3" .}}
+{{template "blendRGBAToRGBA4_Dest" true}}
 }
 
 func (d {{.Name}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
-	ma := uint32(0xff)
-	if mask != nil {
-		_, _, _, ma = mask.C.RGBA()
-		if ma == 0 {
-			return
-		}
-		ma >>= 8
-	}
-
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
-	}
-
-	for ; dy > 0; dy-- {
-		dpix := dst.Pix[d0:]
-		spix := src.Pix[s0:]
-		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
-			sa := uint32(spix[i+3])
-
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
-			da := uint32(dpix[i+3])
-
-			tmp := (sa * ma * 32897 >> 23) * 32897
-			a1 := (tmp * da) >> 23
-			a2 := (tmp * (255 - da)) >> 23
-			a3 := ((8388735 - tmp) * da) >> 23
-			a := a1 + a2 + a3
-			if a == 0 {
-				continue
-			}
-			if da > 0 {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
-			}
-
-			var r, g, b uint32
-			{{if .CodePerChannel}}
-			   {{.CodePerChannel.To8.Channel "r"}}
-			   {{.CodePerChannel.To8.Channel "g"}}
-			   {{.CodePerChannel.To8.Channel "b"}}
-			{{else if .Code}}
-			   {{.Code.To8}}
-			{{else if .CodePerChannel16}}
-			   {{.CodePerChannel16.To8.Channel "r"}}
-			   {{.CodePerChannel16.To8.Channel "g"}}
-			   {{.CodePerChannel16.To8.Channel "b"}}
-			{{else if .Code16}}
-			   {{.Code16.To8}}
-			{{end}}
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
-			dpix[i+3] = uint8(a)
-		}
-		d0 += ddelta
-		s0 += sdelta
-	}
+{{template "blendRGBAToRGBA1" .}}
+{{template "blendRGBAToRGBA2_Src" false}}
+{{template "blendRGBAToRGBA2_Dest" true}}
+{{template "blendRGBAToRGBA3" .}}
+{{template "blendRGBAToRGBA4_Dest" true}}
 }
 
 func (d {{.Name}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
-	ma := uint32(0xff)
-	if mask != nil {
-		_, _, _, ma = mask.C.RGBA()
-		if ma == 0 {
-			return
-		}
-		ma >>= 8
-	}
-
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
-	}
-
-	for ; dy > 0; dy-- {
-		dpix := dst.Pix[d0:]
-		spix := src.Pix[s0:]
-		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
-			sa := uint32(spix[i+3])
-
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
-			da := uint32(dpix[i+3])
-
-			tmp := (sa * ma * 32897 >> 23) * 32897
-			a1 := (tmp * da) >> 23
-			a2 := (tmp * (255 - da)) >> 23
-			a3 := ((8388735 - tmp) * da) >> 23
-			a := a1 + a2 + a3
-			if a == 0 {
-				continue
-			}
-			if sa > 0 {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
-			}
-
-			var r, g, b uint32
-			{{if .CodePerChannel}}
-			   {{.CodePerChannel.To8.Channel "r"}}
-			   {{.CodePerChannel.To8.Channel "g"}}
-			   {{.CodePerChannel.To8.Channel "b"}}
-			{{else if .Code}}
-			   {{.Code.To8}}
-			{{else if .CodePerChannel16}}
-			   {{.CodePerChannel16.To8.Channel "r"}}
-			   {{.CodePerChannel16.To8.Channel "g"}}
-			   {{.CodePerChannel16.To8.Channel "b"}}
-			{{else if .Code16}}
-			   {{.Code16.To8}}
-			{{end}}
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
-			dpix[i+3] = uint8(a)
-		}
-		d0 += ddelta
-		s0 += sdelta
-	}
+{{template "blendRGBAToRGBA1" .}}
+{{template "blendRGBAToRGBA2_Src" true}}
+{{template "blendRGBAToRGBA2_Dest" false}}
+{{template "blendRGBAToRGBA3" .}}
+{{template "blendRGBAToRGBA4_Dest" false}}
 }
 
 func (d {{.Name}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
-	ma := uint32(0xff)
-	if mask != nil {
-		_, _, _, ma = mask.C.RGBA()
-		if ma == 0 {
-			return
-		}
-		ma >>= 8
-	}
-
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
-	}
-
-	for ; dy > 0; dy-- {
-		dpix := dst.Pix[d0:]
-		spix := src.Pix[s0:]
-		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
-			sa := uint32(spix[i+3])
-
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
-			da := uint32(dpix[i+3])
-
-			tmp := (sa * ma * 32897 >> 23) * 32897
-			a1 := (tmp * da) >> 23
-			a2 := (tmp * (255 - da)) >> 23
-			a3 := ((8388735 - tmp) * da) >> 23
-			a := a1 + a2 + a3
-			if a == 0 {
-				continue
-			}
-
-			var r, g, b uint32
-			{{if .CodePerChannel}}
-			   {{.CodePerChannel.To8.Channel "r"}}
-			   {{.CodePerChannel.To8.Channel "g"}}
-			   {{.CodePerChannel.To8.Channel "b"}}
-			{{else if .Code}}
-			   {{.Code.To8}}
-			{{else if .CodePerChannel16}}
-			   {{.CodePerChannel16.To8.Channel "r"}}
-			   {{.CodePerChannel16.To8.Channel "g"}}
-			   {{.CodePerChannel16.To8.Channel "b"}}
-			{{else if .Code16}}
-			   {{.Code16.To8}}
-			{{end}}
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
-			dpix[i+3] = uint8(a)
-		}
-		d0 += ddelta
-		s0 += sdelta
-	}
+{{template "blendRGBAToRGBA1" .}}
+{{template "blendRGBAToRGBA2_Src" false}}
+{{template "blendRGBAToRGBA2_Dest" false}}
+{{template "blendRGBAToRGBA3" .}}
+{{template "blendRGBAToRGBA4_Dest" false}}
 }
 
 func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -833,41 +644,41 @@ package blend
 
 import "testing"
 
-{{range .}}func TestDrawFallback{{.Name}}(t *testing.T)       { testDrawFallback({{.Name}}{}, t) }
+{{range .}}func TestDrawFallback{{.Name}}(t *testing.T) { testDrawFallback({{.Name}}{}, t) }
 {{end}}
 
-{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}(t *testing.T)       { testDrawNRGBAToNRGBA({{.Name}}{}, t) }
+{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToNRGBA({{.Name}}{}, t) }
 {{end}}
 
-{{range .}}func TestDrawRGBAToNRGBA{{.Name}}(t *testing.T)       { testDrawRGBAToNRGBA({{.Name}}{}, t) }
+{{range .}}func TestDrawRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawRGBAToNRGBA({{.Name}}{}, t) }
 {{end}}
 
-{{range .}}func TestDrawNRGBAToRGBA{{.Name}}(t *testing.T)       { testDrawNRGBAToRGBA({{.Name}}{}, t) }
+{{range .}}func TestDrawNRGBAToRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToRGBA({{.Name}}{}, t) }
 {{end}}
 
-{{range .}}func TestDrawRGBAToRGBA{{.Name}}(t *testing.T)       { testDrawRGBAToRGBA({{.Name}}{}, t) }
+{{range .}}func TestDrawRGBAToRGBA{{.Name}}(t *testing.T) { testDrawRGBAToRGBA({{.Name}}{}, t) }
 {{end}}
 
-{{range .}}func BenchmarkDrawFallback{{.Name}}(b *testing.B)       { benchmarkDrawFallback({{.Name}}{}, b) }
+{{range .}}func BenchmarkDrawFallback{{.Name}}(b *testing.B) { benchmarkDrawFallback({{.Name}}{}, b) }
 {{end}}
 
-{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}(b *testing.B)       { benchmarkDrawNRGBAToNRGBA({{.Name}}{}, b) }
+{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToNRGBA({{.Name}}{}, b) }
 {{end}}
 
-{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}(b *testing.B)       { benchmarkDrawRGBAToNRGBA({{.Name}}{}, b) }
+{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToNRGBA({{.Name}}{}, b) }
 {{end}}
 
-{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}(b *testing.B)       { benchmarkDrawNRGBAToRGBA({{.Name}}{}, b) }
+{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToRGBA({{.Name}}{}, b) }
 {{end}}
 
-{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}(b *testing.B)       { benchmarkDrawRGBAToRGBA({{.Name}}{}, b) }
+{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToRGBA({{.Name}}{}, b) }
 {{end}}
 
 `
 
 func main() {
 	t := template.Must(template.New("").Parse(source))
-	t.New("blendBase").Parse(blendBase)
+	template.Must(t.New("blendBase").Parse(blendBase))
 
 	b := bytes.NewBufferString("")
 	if err := t.Execute(b, blendModes); err != nil {

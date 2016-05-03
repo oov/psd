@@ -66,6 +66,7 @@ func (d Normal) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp 
 }
 
 func (d Normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -116,11 +117,13 @@ func (d Normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -139,13 +142,16 @@ func (d Normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -196,6 +202,7 @@ func (d Normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -214,13 +221,16 @@ func (d Normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -271,6 +281,7 @@ func (d Normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -289,13 +300,16 @@ func (d Normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Normal) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -359,10 +373,12 @@ func (d Normal) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -453,6 +469,7 @@ func (d Darken) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp 
 }
 
 func (d Darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -503,11 +520,13 @@ func (d Darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -538,13 +557,16 @@ func (d Darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -595,6 +617,7 @@ func (d Darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -625,13 +648,16 @@ func (d Darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -682,6 +708,7 @@ func (d Darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -712,13 +739,16 @@ func (d Darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Darken) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -794,10 +824,12 @@ func (d Darken) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -900,6 +932,7 @@ func (d Multiply) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, s
 }
 
 func (d Multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -950,11 +983,13 @@ func (d Multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -973,13 +1008,16 @@ func (d Multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -1030,6 +1068,7 @@ func (d Multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -1048,13 +1087,16 @@ func (d Multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -1105,6 +1147,7 @@ func (d Multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -1123,13 +1166,16 @@ func (d Multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Multiply) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -1193,10 +1239,12 @@ func (d Multiply) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -1287,6 +1335,7 @@ func (d ColorBurn) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, 
 }
 
 func (d ColorBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -1337,11 +1386,13 @@ func (d ColorBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -1378,13 +1429,16 @@ func (d ColorBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d ColorBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -1435,6 +1489,7 @@ func (d ColorBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -1471,13 +1526,16 @@ func (d ColorBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d ColorBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -1528,6 +1586,7 @@ func (d ColorBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -1564,13 +1623,16 @@ func (d ColorBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d ColorBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -1652,10 +1714,12 @@ func (d ColorBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d ColorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -1764,6 +1828,7 @@ func (d LinearBurn) DrawMask(dst draw.Image, r image.Rectangle, src image.Image,
 }
 
 func (d LinearBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -1814,11 +1879,13 @@ func (d LinearBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -1852,13 +1919,16 @@ func (d LinearBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -1909,6 +1979,7 @@ func (d LinearBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -1942,13 +2013,16 @@ func (d LinearBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -1999,6 +2073,7 @@ func (d LinearBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -2032,13 +2107,16 @@ func (d LinearBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -2117,10 +2195,12 @@ func (d LinearBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -2226,6 +2306,7 @@ func (d DarkerColor) DrawMask(dst draw.Image, r image.Rectangle, src image.Image
 }
 
 func (d DarkerColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -2276,11 +2357,13 @@ func (d DarkerColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -2303,13 +2386,16 @@ func (d DarkerColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d DarkerColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -2360,6 +2446,7 @@ func (d DarkerColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -2382,13 +2469,16 @@ func (d DarkerColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d DarkerColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -2439,6 +2529,7 @@ func (d DarkerColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -2461,13 +2552,16 @@ func (d DarkerColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d DarkerColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -2535,10 +2629,12 @@ func (d DarkerColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d DarkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -2633,6 +2729,7 @@ func (d Lighten) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp
 }
 
 func (d Lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -2683,11 +2780,13 @@ func (d Lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -2718,13 +2817,16 @@ func (d Lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -2775,6 +2877,7 @@ func (d Lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -2805,13 +2908,16 @@ func (d Lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -2862,6 +2968,7 @@ func (d Lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -2892,13 +2999,16 @@ func (d Lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Lighten) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -2974,10 +3084,12 @@ func (d Lighten) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -3080,6 +3192,7 @@ func (d Screen) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp 
 }
 
 func (d Screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -3130,11 +3243,13 @@ func (d Screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -3153,13 +3268,16 @@ func (d Screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -3210,6 +3328,7 @@ func (d Screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -3228,13 +3347,16 @@ func (d Screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -3285,6 +3407,7 @@ func (d Screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -3303,13 +3426,16 @@ func (d Screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Screen) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -3373,10 +3499,12 @@ func (d Screen) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -3467,6 +3595,7 @@ func (d ColorDodge) DrawMask(dst draw.Image, r image.Rectangle, src image.Image,
 }
 
 func (d ColorDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -3517,11 +3646,13 @@ func (d ColorDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -3558,13 +3689,16 @@ func (d ColorDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d ColorDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -3615,6 +3749,7 @@ func (d ColorDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -3651,13 +3786,16 @@ func (d ColorDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d ColorDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -3708,6 +3846,7 @@ func (d ColorDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -3744,13 +3883,16 @@ func (d ColorDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d ColorDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -3832,10 +3974,12 @@ func (d ColorDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d ColorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -3944,6 +4088,7 @@ func (d LinearDodge) DrawMask(dst draw.Image, r image.Rectangle, src image.Image
 }
 
 func (d LinearDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -3994,11 +4139,13 @@ func (d LinearDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -4017,13 +4164,16 @@ func (d LinearDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -4074,6 +4224,7 @@ func (d LinearDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -4092,13 +4243,16 @@ func (d LinearDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -4149,6 +4303,7 @@ func (d LinearDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -4167,13 +4322,16 @@ func (d LinearDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -4237,10 +4395,12 @@ func (d LinearDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -4331,6 +4491,7 @@ func (d LighterColor) DrawMask(dst draw.Image, r image.Rectangle, src image.Imag
 }
 
 func (d LighterColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -4381,11 +4542,13 @@ func (d LighterColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -4408,13 +4571,16 @@ func (d LighterColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LighterColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -4465,6 +4631,7 @@ func (d LighterColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle,
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -4487,13 +4654,16 @@ func (d LighterColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle,
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LighterColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -4544,6 +4714,7 @@ func (d LighterColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -4566,13 +4737,16 @@ func (d LighterColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LighterColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -4640,10 +4814,12 @@ func (d LighterColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangl
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -4738,6 +4914,7 @@ func (d Overlay) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp
 }
 
 func (d Overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -4788,11 +4965,13 @@ func (d Overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -4823,13 +5002,16 @@ func (d Overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -4880,6 +5062,7 @@ func (d Overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -4910,13 +5093,16 @@ func (d Overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -4967,6 +5153,7 @@ func (d Overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -4997,13 +5184,16 @@ func (d Overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Overlay) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -5079,10 +5269,12 @@ func (d Overlay) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -5185,6 +5377,7 @@ func (d SoftLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, 
 }
 
 func (d SoftLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -5235,11 +5428,13 @@ func (d SoftLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -5285,13 +5480,16 @@ func (d SoftLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d SoftLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -5342,6 +5540,7 @@ func (d SoftLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -5387,13 +5586,16 @@ func (d SoftLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d SoftLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -5444,6 +5646,7 @@ func (d SoftLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -5489,13 +5692,16 @@ func (d SoftLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d SoftLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -5586,10 +5792,12 @@ func (d SoftLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d SoftLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -5707,6 +5915,7 @@ func (d HardLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, 
 }
 
 func (d HardLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -5757,11 +5966,13 @@ func (d HardLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -5795,13 +6006,16 @@ func (d HardLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d HardLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -5852,6 +6066,7 @@ func (d HardLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -5885,13 +6100,16 @@ func (d HardLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d HardLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -5942,6 +6160,7 @@ func (d HardLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -5975,13 +6194,16 @@ func (d HardLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d HardLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -6060,10 +6282,12 @@ func (d HardLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d HardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -6169,6 +6393,7 @@ func (d LinearLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image
 }
 
 func (d LinearLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -6219,11 +6444,13 @@ func (d LinearLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -6254,13 +6481,16 @@ func (d LinearLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -6311,6 +6541,7 @@ func (d LinearLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -6341,13 +6572,16 @@ func (d LinearLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -6398,6 +6632,7 @@ func (d LinearLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -6428,13 +6663,16 @@ func (d LinearLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -6510,10 +6748,12 @@ func (d LinearLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d LinearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -6616,6 +6856,7 @@ func (d VividLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image,
 }
 
 func (d VividLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -6666,11 +6907,13 @@ func (d VividLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -6731,13 +6974,16 @@ func (d VividLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d VividLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -6788,6 +7034,7 @@ func (d VividLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -6848,13 +7095,16 @@ func (d VividLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d VividLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -6905,6 +7155,7 @@ func (d VividLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -6965,13 +7216,16 @@ func (d VividLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d VividLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -7077,10 +7331,12 @@ func (d VividLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d VividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -7213,6 +7469,7 @@ func (d PinLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, s
 }
 
 func (d PinLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -7263,11 +7520,13 @@ func (d PinLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -7328,13 +7587,16 @@ func (d PinLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d PinLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -7385,6 +7647,7 @@ func (d PinLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -7445,13 +7708,16 @@ func (d PinLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d PinLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -7502,6 +7768,7 @@ func (d PinLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -7562,13 +7829,16 @@ func (d PinLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d PinLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -7674,10 +7944,12 @@ func (d PinLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d PinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -7810,6 +8082,7 @@ func (d HardMix) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp
 }
 
 func (d HardMix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -7860,11 +8133,13 @@ func (d HardMix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -7952,13 +8227,16 @@ func (d HardMix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d HardMix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -8009,6 +8287,7 @@ func (d HardMix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -8096,13 +8375,16 @@ func (d HardMix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d HardMix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -8153,6 +8435,7 @@ func (d HardMix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -8240,13 +8523,16 @@ func (d HardMix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d HardMix) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -8379,10 +8665,12 @@ func (d HardMix) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d HardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -8542,6 +8830,7 @@ func (d Difference) DrawMask(dst draw.Image, r image.Rectangle, src image.Image,
 }
 
 func (d Difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -8592,11 +8881,13 @@ func (d Difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -8627,13 +8918,16 @@ func (d Difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -8684,6 +8978,7 @@ func (d Difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -8714,13 +9009,16 @@ func (d Difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -8771,6 +9069,7 @@ func (d Difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -8801,13 +9100,16 @@ func (d Difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Difference) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -8883,10 +9185,12 @@ func (d Difference) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -8989,6 +9293,7 @@ func (d Exclusion) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, 
 }
 
 func (d Exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -9039,11 +9344,13 @@ func (d Exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -9062,13 +9369,16 @@ func (d Exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -9119,6 +9429,7 @@ func (d Exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -9137,13 +9448,16 @@ func (d Exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -9194,6 +9508,7 @@ func (d Exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -9212,13 +9527,16 @@ func (d Exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Exclusion) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -9282,10 +9600,12 @@ func (d Exclusion) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -9376,6 +9696,7 @@ func (d Subtract) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, s
 }
 
 func (d Subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -9426,11 +9747,13 @@ func (d Subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -9461,13 +9784,16 @@ func (d Subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -9518,6 +9844,7 @@ func (d Subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -9548,13 +9875,16 @@ func (d Subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -9605,6 +9935,7 @@ func (d Subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -9635,13 +9966,16 @@ func (d Subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Subtract) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -9717,10 +10051,12 @@ func (d Subtract) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -9823,6 +10159,7 @@ func (d Divide) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp 
 }
 
 func (d Divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -9873,11 +10210,13 @@ func (d Divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -9914,13 +10253,16 @@ func (d Divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -9971,6 +10313,7 @@ func (d Divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -10007,13 +10350,16 @@ func (d Divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -10064,6 +10410,7 @@ func (d Divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -10100,13 +10447,16 @@ func (d Divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Divide) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -10188,10 +10538,12 @@ func (d Divide) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -10300,6 +10652,7 @@ func (d Hue) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp ima
 }
 
 func (d Hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -10350,11 +10703,13 @@ func (d Hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -10370,13 +10725,16 @@ func (d Hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -10427,6 +10785,7 @@ func (d Hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -10442,13 +10801,16 @@ func (d Hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -10499,6 +10861,7 @@ func (d Hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -10514,13 +10877,16 @@ func (d Hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Hue) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -10581,10 +10947,12 @@ func (d Hue) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -10672,6 +11040,7 @@ func (d Saturation) DrawMask(dst draw.Image, r image.Rectangle, src image.Image,
 }
 
 func (d Saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -10722,11 +11091,13 @@ func (d Saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -10742,13 +11113,16 @@ func (d Saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -10799,6 +11173,7 @@ func (d Saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -10814,13 +11189,16 @@ func (d Saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -10871,6 +11249,7 @@ func (d Saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -10886,13 +11265,16 @@ func (d Saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Saturation) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -10953,10 +11335,12 @@ func (d Saturation) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -11044,6 +11428,7 @@ func (d Color) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp i
 }
 
 func (d Color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -11094,11 +11479,13 @@ func (d Color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -11113,13 +11500,16 @@ func (d Color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -11170,6 +11560,7 @@ func (d Color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -11184,13 +11575,16 @@ func (d Color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -11241,6 +11635,7 @@ func (d Color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -11255,13 +11650,16 @@ func (d Color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Color) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -11321,10 +11719,12 @@ func (d Color) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
@@ -11411,6 +11811,7 @@ func (d Luminosity) DrawMask(dst draw.Image, r image.Rectangle, src image.Image,
 }
 
 func (d Luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -11461,11 +11862,13 @@ func (d Luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
 				sb = sb * 0xff / sa
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -11480,13 +11883,16 @@ func (d Luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -11537,6 +11943,7 @@ func (d Luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			if a == 0 {
 				continue
 			}
+
 			if da > 0 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
@@ -11551,13 +11958,16 @@ func (d Luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -11608,6 +12018,7 @@ func (d Luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			if a == 0 {
 				continue
 			}
+
 			if sa > 0 {
 				sr = sr * 0xff / sa
 				sg = sg * 0xff / sa
@@ -11622,13 +12033,16 @@ func (d Luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Luminosity) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
+
 	ma := uint32(0xff)
 	if mask != nil {
 		_, _, _, ma = mask.C.RGBA()
@@ -11688,10 +12102,12 @@ func (d Luminosity) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+
 		}
 		d0 += ddelta
 		s0 += sdelta
 	}
+
 }
 
 func (d Luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
