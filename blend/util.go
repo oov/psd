@@ -169,11 +169,11 @@ func lum8s(r int32, g int32, b int32) int32 {
 }
 
 func lum16(r uint32, g uint32, b uint32) float64 {
-	return (float64(r)*19661 + float64(g)*38666 + float64(b)*7209) / 0xffff
+	return (float64(r)*19661 + float64(g)*38666 + float64(b)*7209) / 0x10000
 }
 
 func lum16f(r float64, g float64, b float64) float64 {
-	return (r*19661 + g*38666 + b*7209) / 0xffff
+	return (r*19661 + g*38666 + b*7209) / 0x10000
 }
 
 func setLum8(r uint32, g uint32, b uint32, lm int32) (uint32, uint32, uint32) {
