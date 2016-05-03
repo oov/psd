@@ -59,328 +59,328 @@ var blendModes = []struct {
 	{
 		Name: "Normal",
 		CodePerChannel: `
-            ret = src;
+			ret = src;
 		`,
 	},
 	// ----------------------------------------------------------------
 	{
 		Name: "Darken",
 		CodePerChannel: `
-            if (src < dest) {
-               ret = src;
-            } else {
-               ret = dest;
-            }
+			if (src < dest) {
+				ret = src;
+			} else {
+				ret = dest;
+			}
 		`,
 	},
 	{
 		Name: "Multiply",
 		CodePerChannel: `
-            ret = src * dest * 32897 >> 23;
+			ret = src * dest * 32897 >> 23;
 		`,
 		CodePerChannel16: `
-            ret = src * dest / maxValue;
+			ret = src * dest / maxValue;
 		`,
 	},
 	{
 		Name: "ColorBurn",
 		CodePerChannel: `
-            if (dest == maxValue) {
-               ret = maxValue;
-            } else if (src == 0) {
-               ret = 0;
-            } else {
-               ret = maxValue - clip((maxValue - dest) * maxValue / src);
-            }
+			if (dest == maxValue) {
+				ret = maxValue;
+			} else if (src == 0) {
+				ret = 0;
+			} else {
+				ret = maxValue - clip((maxValue - dest) * maxValue / src);
+			}
 		`,
 	},
 	{
 		Name: "LinearBurn",
 		CodePerChannel: `
-				tmp = dest + src;
-				if (tmp > maxValue) {
-					ret = tmp - maxValue;
-				} else {
-					ret = 0;
-				}
+			tmp = dest + src;
+			if (tmp > maxValue) {
+				ret = tmp - maxValue;
+			} else {
+				ret = 0;
+			}
 		`,
 	},
 	{
 		Name: "DarkerColor",
 		Code: `
-            if (lum(sr, sg, sb) < lum(dr, dg, db)) {
-               r = sr;
-               g = sg;
-               b = sb;
-            } else {
-               r = dr;
-               g = dg;
-               b = db;
-            }
+			if (lum(sr, sg, sb) < lum(dr, dg, db)) {
+				r = sr;
+				g = sg;
+				b = sb;
+			} else {
+				r = dr;
+				g = dg;
+				b = db;
+			}
 		`,
 	},
 	// ----------------------------------------------------------------
 	{
 		Name: "Lighten",
 		CodePerChannel: `
-            if (src > dest) {
-               ret = src;
-            } else {
-               ret = dest;
-            }
+			if (src > dest) {
+				ret = src;
+			} else {
+				ret = dest;
+			}
 		`,
 	},
 	{
 		Name: "Screen",
 		CodePerChannel: `
-            ret = src + dest - (src * dest * 32897 >> 23);
+			ret = src + dest - (src * dest * 32897 >> 23);
 		`,
 		CodePerChannel16: `
-            ret = src + dest - (src * dest / maxValue);
+			ret = src + dest - (src * dest / maxValue);
 		`,
 	},
 	{
 		Name: "ColorDodge",
 		CodePerChannel: `
-            if (dest == 0) {
-               ret = 0;
-            } else if (src == maxValue) {
-               ret = maxValue;
-            } else {
-               ret = clip(dest * maxValue / (maxValue - src));
-            }
+			if (dest == 0) {
+				ret = 0;
+			} else if (src == maxValue) {
+				ret = maxValue;
+			} else {
+				ret = clip(dest * maxValue / (maxValue - src));
+			}
 		`,
 	},
 	{
 		Name: "LinearDodge",
 		CodePerChannel: `
-            ret = clip(src + dest);
+			ret = clip(src + dest);
 		`,
 	},
 	{
 		Name: "LighterColor",
 		Code: `
-            if (lum(sr, sg, sb) > lum(dr, dg, db)) {
-               r = sr;
-               g = sg;
-               b = sb;
-            } else {
-               r = dr;
-               g = dg;
-               b = db;
-            }
+			if (lum(sr, sg, sb) > lum(dr, dg, db)) {
+				r = sr;
+				g = sg;
+				b = sb;
+			} else {
+				r = dr;
+				g = dg;
+				b = db;
+			}
 		`,
 	},
 	// ----------------------------------------------------------------
 	{
 		Name: "Overlay",
 		CodePerChannel: `
-            if (dest < halfValue) {
-               ret = src * dest * 32897 >> 22;
-            } else {
-               ret = maxValue - ((maxValue - ((dest - halfValue) << 1)) * (maxValue - src) * 32897 >> 23);
-            }
+			if (dest < halfValue) {
+				ret = src * dest * 32897 >> 22;
+			} else {
+				ret = maxValue - ((maxValue - ((dest - halfValue) << 1)) * (maxValue - src) * 32897 >> 23);
+			}
 		`,
 		CodePerChannel16: `
-            if (dest < halfValue) {
-               ret = src * dest / halfValue;
-            } else {
-               ret = maxValue - ((maxValue - ((dest - halfValue) << 1)) * (maxValue - src) / maxValue);
-            }
+			if (dest < halfValue) {
+				ret = src * dest / halfValue;
+			} else {
+				ret = maxValue - ((maxValue - ((dest - halfValue) << 1)) * (maxValue - src) / maxValue);
+			}
 		`,
 	},
 	{
 		Name: "SoftLight",
 		CodePerChannel: `
-            if (src < halfValue) {
-               ret = dest - (((maxValue - (src << 1)) * dest * 32897 >> 23) * (maxValue - dest) * 32897 >> 23);
-            } else {
-               if (dest < quarterValue) {
-                  tmp = uint32((((int32(dest)<<4 - maxValue*12) * 32897 >> 23) * int32(dest) + maxValue*4) * int32(dest) * 32897 >> 23);
-               } else {
-						tmp = sqrt(dest, maxValue);
-               }
-               ret = dest + (((src << 1) - maxValue) * (tmp - dest) * 32897 >> 23);
-            }
+			if (src < halfValue) {
+				ret = dest - (((maxValue - (src << 1)) * dest * 32897 >> 23) * (maxValue - dest) * 32897 >> 23);
+			} else {
+				if (dest < quarterValue) {
+					tmp = uint32((((int32(dest)<<4 - maxValue*12) * 32897 >> 23) * int32(dest) + maxValue*4) * int32(dest) * 32897 >> 23);
+				} else {
+					tmp = sqrt(dest, maxValue);
+				}
+				ret = dest + (((src << 1) - maxValue) * (tmp - dest) * 32897 >> 23);
+			}
 		`,
 		CodePerChannel16: `
-            if (src < halfValue) {
-               ret = dest - (((maxValue - (src << 1)) * dest / maxValue) * (maxValue - dest) / maxValue);
-            } else {
-               if (dest < quarterValue) {
-                  tmp = uint32((((int32(dest)<<4 - maxValue*12) / maxValue) * int32(dest) + maxValue*4) * int32(dest) / maxValue);
-               } else {
-                  tmp = sqrt(dest, maxValue);
-               }
-               ret = dest + (((src << 1) - maxValue) * (tmp - dest) / maxValue);
-            }
+			if (src < halfValue) {
+				ret = dest - (((maxValue - (src << 1)) * dest / maxValue) * (maxValue - dest) / maxValue);
+			} else {
+				if (dest < quarterValue) {
+					tmp = uint32((((int32(dest)<<4 - maxValue*12) / maxValue) * int32(dest) + maxValue*4) * int32(dest) / maxValue);
+				} else {
+					tmp = sqrt(dest, maxValue);
+				}
+				ret = dest + (((src << 1) - maxValue) * (tmp - dest) / maxValue);
+			}
 		`,
 	},
 	{
 		Name: "HardLight",
 		CodePerChannel: `
-            if (src < halfValue) {
-               ret = dest * src * 32897 >> 22;
-            } else {
-               tmp = (src << 1) - maxValue;
-               ret = dest + tmp - (dest * tmp * 32897 >> 23);
-            }
+			if (src < halfValue) {
+				ret = dest * src * 32897 >> 22;
+			} else {
+				tmp = (src << 1) - maxValue;
+				ret = dest + tmp - (dest * tmp * 32897 >> 23);
+			}
 		`,
 		CodePerChannel16: `
-            if (src < halfValue) {
-               ret = dest * src / halfValue;
-            } else {
-               tmp = (src << 1) - maxValue;
-               ret = dest + tmp - (dest * tmp / maxValue);
-            }
+			if (src < halfValue) {
+				ret = dest * src / halfValue;
+			} else {
+				tmp = (src << 1) - maxValue;
+				ret = dest + tmp - (dest * tmp / maxValue);
+			}
 		`,
 	},
 	{
 		Name: "LinearLight",
 		CodePerChannel: `
-            if (src < halfValue) {
-               ret = clip0(dest + (src << 1) - maxValue);
-            } else {
-               ret = clip(dest + ((src - halfValue) << 1));
-            }
+			if (src < halfValue) {
+				ret = clip0(dest + (src << 1) - maxValue);
+			} else {
+				ret = clip(dest + ((src - halfValue) << 1));
+			}
 		`,
 	},
 	{
 		Name: "VividLight",
 		CodePerChannel: `
-            if (src < halfValue) {
-               tmp = src << 1;
+			if (src < halfValue) {
+				tmp = src << 1;
 					if (tmp == 0) {
-	               ret = 0;
-	            } else {
-	               ret = maxValue - clip((maxValue - dest) * maxValue / tmp);
-	            }
-            } else {
-               tmp = (src << 1) - maxValue;
+					ret = 0;
+				} else {
+					ret = maxValue - clip((maxValue - dest) * maxValue / tmp);
+				}
+			} else {
+				tmp = (src << 1) - maxValue;
 					if (tmp == maxValue) {
-	               ret = maxValue;
-	            } else {
-	               ret = clip((dest * maxValue) / (maxValue - tmp));
-	            }
-            }
+					ret = maxValue;
+				} else {
+					ret = clip((dest * maxValue) / (maxValue - tmp));
+				}
+			}
 		`,
 	},
 	{
 		Name: "PinLight",
 		CodePerChannel: `
-            if (src < halfValue) {
-               tmp = src << 1;
-               if (tmp < dest) {
-                  ret = tmp;
-               } else {
-                  ret = dest;
-               }
-            } else {
-               tmp = (src - halfValue) << 1;
-               if (tmp > dest) {
-                  ret = tmp;
-               } else {
-                  ret = dest;
-               }
-            }
+			if (src < halfValue) {
+				tmp = src << 1;
+				if (tmp < dest) {
+				  ret = tmp;
+				} else {
+				  ret = dest;
+				}
+			} else {
+				tmp = (src - halfValue) << 1;
+				if (tmp > dest) {
+				  ret = tmp;
+				} else {
+				  ret = dest;
+				}
+			}
 		`,
 	},
 	{
 		Name: "HardMix",
 		CodePerChannel: `
-				if (src < halfValue) {
-					tmp = src << 1;
-					if (dest == maxValue) {
-						tmp = maxValue;
-					} else if (tmp == 0) {
-						tmp = 0;
-					} else {
-						tmp = maxValue - clip((maxValue - dest) * maxValue / tmp);
-					}
+			if (src < halfValue) {
+				tmp = src << 1;
+				if (dest == maxValue) {
+					tmp = maxValue;
+				} else if (tmp == 0) {
+					tmp = 0;
 				} else {
-					tmp = ((src - halfValue) << 1);
-					if (dest == 0) {
-						tmp = 0;
-					} else if (tmp == maxValue) {
-						tmp = maxValue;
-					} else {
-						tmp = clip(dest * maxValue / (maxValue - tmp));
-					}
+					tmp = maxValue - clip((maxValue - dest) * maxValue / tmp);
 				}
-            if (tmp <= halfValue) {
-               ret = 0;
-            } else {
-               ret = maxValue;
-            }
+			} else {
+				tmp = ((src - halfValue) << 1);
+				if (dest == 0) {
+					tmp = 0;
+				} else if (tmp == maxValue) {
+					tmp = maxValue;
+				} else {
+					tmp = clip(dest * maxValue / (maxValue - tmp));
+				}
+			}
+			if (tmp <= halfValue) {
+				ret = 0;
+			} else {
+				ret = maxValue;
+			}
 		`,
 	},
 	// ----------------------------------------------------------------
 	{
 		Name: "Difference",
 		CodePerChannel: `
-            if (dest < src) {
-               ret = src - dest;
-            } else {
-               ret = dest - src;
-            }
+			if (dest < src) {
+				ret = src - dest;
+			} else {
+				ret = dest - src;
+			}
 		`,
 	},
 	{
 		Name: "Exclusion",
 		CodePerChannel: `
-            ret = dest + src - (dest * src * 32897 >> 22);
+			ret = dest + src - (dest * src * 32897 >> 22);
 		`,
 		CodePerChannel16: `
-            ret = dest + src - (dest * src / halfValue);
+			ret = dest + src - (dest * src / halfValue);
 		`,
 	},
 	{
 		Name: "Subtract",
 		CodePerChannel: `
-				if (dest < src) {
-					ret = 0;
-				} else {
-					ret = dest - src;
-				}
+			if (dest < src) {
+				ret = 0;
+			} else {
+				ret = dest - src;
+			}
 		`,
 	},
 	{
 		Name: "Divide",
 		CodePerChannel: `
-            if (dest == 0) {
-               ret = 0;
-            } else if (src == 0) {
-               ret = maxValue;
-            } else {
-               ret = clip(dest * maxValue / src);
-            }
+			if (dest == 0) {
+				ret = 0;
+			} else if (src == 0) {
+				ret = maxValue;
+			} else {
+				ret = clip(dest * maxValue / src);
+			}
 		`,
 	},
 	// ----------------------------------------------------------------
 	{
 		Name: "Hue",
 		Code: `
-            r, g, b = setSat(sr, sg, sb, sat(dr, dg, db));
-            r, g, b = setLum(r, g, b, lum(dr, dg, db));
+			r, g, b = setSat(sr, sg, sb, sat(dr, dg, db));
+			r, g, b = setLum(r, g, b, lum(dr, dg, db));
 		`,
 	},
 	{
 		Name: "Saturation",
 		Code: `
-            r, g, b = setSat(dr, dg, db, sat(sr, sg, sb));
-            r, g, b = setLum(r, g, b, lum(dr, dg, db));
-	   `,
+			r, g, b = setSat(dr, dg, db, sat(sr, sg, sb));
+			r, g, b = setLum(r, g, b, lum(dr, dg, db));
+		`,
 	},
 	{
 		Name: "Color",
 		Code: `
-            r, g, b = setLum(sr, sg, sb, lum(dr, dg, db));
-	   `,
+			r, g, b = setLum(sr, sg, sb, lum(dr, dg, db));
+		`,
 	},
 	{
 		Name: "Luminosity",
 		Code: `
-            r, g, b = setLum(dr, dg, db, lum(sr, sg, sb));
+			r, g, b = setLum(dr, dg, db, lum(sr, sg, sb));
 		`,
 	},
 }
@@ -391,7 +391,7 @@ var source = `// DO NOT EDIT.
 package blend
 
 import (
-   "image"
+	"image"
 	"image/color"
 	"image/draw"
 
@@ -613,19 +613,19 @@ func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 				db = db * 0xffff / da
 			}
 
-         var r, g, b uint32
+		 var r, g, b uint32
 {{if .CodePerChannel16}}
-   {{.CodePerChannel16.To16.Channel "r"}}
-   {{.CodePerChannel16.To16.Channel "g"}}
-   {{.CodePerChannel16.To16.Channel "b"}}
+	{{.CodePerChannel16.To16.Channel "r"}}
+	{{.CodePerChannel16.To16.Channel "g"}}
+	{{.CodePerChannel16.To16.Channel "b"}}
 {{else if .Code16}}
-   {{.Code16.To16}}
+	{{.Code16.To16}}
 {{else if .CodePerChannel}}
-   {{.CodePerChannel.To16.Channel "r"}}
-   {{.CodePerChannel.To16.Channel "g"}}
-   {{.CodePerChannel.To16.Channel "b"}}
+	{{.CodePerChannel.To16.Channel "r"}}
+	{{.CodePerChannel.To16.Channel "g"}}
+	{{.CodePerChannel.To16.Channel "b"}}
 {{else if .Code}}
-   {{.Code.To16}}
+	{{.Code.To16}}
 {{end}}
 			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
 			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
@@ -714,5 +714,4 @@ func main() {
 	if _, err = f2.Write(buf); err != nil {
 		log.Fatal(err)
 	}
-
 }
