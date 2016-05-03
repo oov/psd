@@ -764,7 +764,7 @@ func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 		y0, y1, dy = y1-1, y0-1, -1
 	}
 
-	var out color.NRGBA64
+	var out color.RGBA64
 	sy := sp.Y + y0 - r.Min.Y
 	my := mp.Y + y0 - r.Min.Y
 	for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -783,9 +783,9 @@ func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 			dr, dg, db, da := dst.At(x, y).RGBA()
 
 			tmp := sa * ma / 0xffff
-			a1 := (tmp * da) / 0xffff
-			a2 := (tmp * (0xffff - da)) / 0xffff
-			a3 := ((0xffff - tmp) * da) / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
 			a := a1 + a2 + a3
 			if a == 0 {
 				continue
@@ -816,9 +816,9 @@ func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 {{else if .Code}}
    {{.Code.To16}}
 {{end}}
-			out.R = uint16((r*a1 + sr*a2 + dr*a3) / a)
-			out.G = uint16((g*a1 + sg*a2 + dg*a3) / a)
-			out.B = uint16((b*a1 + sb*a2 + db*a3) / a)
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 			out.A = uint16(a)
 			dst.Set(x, y, &out)
 		}
