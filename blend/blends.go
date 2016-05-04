@@ -99,15 +99,15 @@ func (d Normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -138,10 +138,10 @@ func (d Normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 
 			b = sb
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -184,15 +184,15 @@ func (d Normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -217,10 +217,10 @@ func (d Normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 			b = sb
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -263,15 +263,15 @@ func (d Normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -296,10 +296,10 @@ func (d Normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 			b = sb
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -342,15 +342,15 @@ func (d Normal) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -369,10 +369,10 @@ func (d Normal) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 			b = sb
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -502,15 +502,15 @@ func (d Darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -553,10 +553,10 @@ func (d Darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -599,15 +599,15 @@ func (d Darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -644,10 +644,10 @@ func (d Darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -690,15 +690,15 @@ func (d Darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -735,10 +735,10 @@ func (d Darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -781,15 +781,15 @@ func (d Darken) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -820,10 +820,10 @@ func (d Darken) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -965,15 +965,15 @@ func (d Multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -1004,10 +1004,10 @@ func (d Multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 			b = sb * db * 32897 >> 23
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -1050,15 +1050,15 @@ func (d Multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -1083,10 +1083,10 @@ func (d Multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 
 			b = sb * db * 32897 >> 23
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -1129,15 +1129,15 @@ func (d Multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -1162,10 +1162,10 @@ func (d Multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 			b = sb * db * 32897 >> 23
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -1208,15 +1208,15 @@ func (d Multiply) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -1235,10 +1235,10 @@ func (d Multiply) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 			b = sb * db * 32897 >> 23
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -1368,15 +1368,15 @@ func (d ColorBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -1425,10 +1425,10 @@ func (d ColorBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 				b = 0xff - clip8((0xff-db)*0xff/sb)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -1471,15 +1471,15 @@ func (d ColorBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -1522,10 +1522,10 @@ func (d ColorBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 				b = 0xff - clip8((0xff-db)*0xff/sb)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -1568,15 +1568,15 @@ func (d ColorBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -1619,10 +1619,10 @@ func (d ColorBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 				b = 0xff - clip8((0xff-db)*0xff/sb)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -1665,15 +1665,15 @@ func (d ColorBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -1710,10 +1710,10 @@ func (d ColorBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 				b = 0xff - clip8((0xff-db)*0xff/sb)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -1861,15 +1861,15 @@ func (d LinearBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -1915,10 +1915,10 @@ func (d LinearBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 				b = 0
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -1961,15 +1961,15 @@ func (d LinearBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -2009,10 +2009,10 @@ func (d LinearBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 				b = 0
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -2055,15 +2055,15 @@ func (d LinearBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -2103,10 +2103,10 @@ func (d LinearBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 				b = 0
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -2149,15 +2149,15 @@ func (d LinearBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -2191,10 +2191,10 @@ func (d LinearBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 				b = 0
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -2339,15 +2339,15 @@ func (d DarkerColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -2382,10 +2382,10 @@ func (d DarkerColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -2428,15 +2428,15 @@ func (d DarkerColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -2465,10 +2465,10 @@ func (d DarkerColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -2511,15 +2511,15 @@ func (d DarkerColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -2548,10 +2548,10 @@ func (d DarkerColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -2594,15 +2594,15 @@ func (d DarkerColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -2625,10 +2625,10 @@ func (d DarkerColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -2762,15 +2762,15 @@ func (d Lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -2813,10 +2813,10 @@ func (d Lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -2859,15 +2859,15 @@ func (d Lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -2904,10 +2904,10 @@ func (d Lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -2950,15 +2950,15 @@ func (d Lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -2995,10 +2995,10 @@ func (d Lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -3041,15 +3041,15 @@ func (d Lighten) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -3080,10 +3080,10 @@ func (d Lighten) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -3225,15 +3225,15 @@ func (d Screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -3264,10 +3264,10 @@ func (d Screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 
 			b = sb + db - (sb * db * 32897 >> 23)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -3310,15 +3310,15 @@ func (d Screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -3343,10 +3343,10 @@ func (d Screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 			b = sb + db - (sb * db * 32897 >> 23)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -3389,15 +3389,15 @@ func (d Screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -3422,10 +3422,10 @@ func (d Screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 			b = sb + db - (sb * db * 32897 >> 23)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -3468,15 +3468,15 @@ func (d Screen) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -3495,10 +3495,10 @@ func (d Screen) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 			b = sb + db - (sb * db * 32897 >> 23)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -3628,15 +3628,15 @@ func (d ColorDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -3685,10 +3685,10 @@ func (d ColorDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 				b = clip8(db * 0xff / (0xff - sb))
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -3731,15 +3731,15 @@ func (d ColorDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -3782,10 +3782,10 @@ func (d ColorDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 				b = clip8(db * 0xff / (0xff - sb))
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -3828,15 +3828,15 @@ func (d ColorDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -3879,10 +3879,10 @@ func (d ColorDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 				b = clip8(db * 0xff / (0xff - sb))
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -3925,15 +3925,15 @@ func (d ColorDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -3970,10 +3970,10 @@ func (d ColorDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 				b = clip8(db * 0xff / (0xff - sb))
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -4121,15 +4121,15 @@ func (d LinearDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -4160,10 +4160,10 @@ func (d LinearDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 
 			b = clip8(sb + db)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -4206,15 +4206,15 @@ func (d LinearDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -4239,10 +4239,10 @@ func (d LinearDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 
 			b = clip8(sb + db)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -4285,15 +4285,15 @@ func (d LinearDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -4318,10 +4318,10 @@ func (d LinearDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 			b = clip8(sb + db)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -4364,15 +4364,15 @@ func (d LinearDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -4391,10 +4391,10 @@ func (d LinearDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 
 			b = clip8(sb + db)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -4524,15 +4524,15 @@ func (d LighterColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -4567,10 +4567,10 @@ func (d LighterColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -4613,15 +4613,15 @@ func (d LighterColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle,
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -4650,10 +4650,10 @@ func (d LighterColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle,
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -4696,15 +4696,15 @@ func (d LighterColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -4733,10 +4733,10 @@ func (d LighterColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -4779,15 +4779,15 @@ func (d LighterColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangl
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -4810,10 +4810,10 @@ func (d LighterColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangl
 				b = db
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -4947,15 +4947,15 @@ func (d Overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -4998,10 +4998,10 @@ func (d Overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 				b = 0xff - ((0xff - ((db - 0x80) << 1)) * (0xff - sb) * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -5044,15 +5044,15 @@ func (d Overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -5089,10 +5089,10 @@ func (d Overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 				b = 0xff - ((0xff - ((db - 0x80) << 1)) * (0xff - sb) * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -5135,15 +5135,15 @@ func (d Overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -5180,10 +5180,10 @@ func (d Overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 				b = 0xff - ((0xff - ((db - 0x80) << 1)) * (0xff - sb) * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -5226,15 +5226,15 @@ func (d Overlay) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -5265,10 +5265,10 @@ func (d Overlay) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 				b = 0xff - ((0xff - ((db - 0x80) << 1)) * (0xff - sb) * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -5410,15 +5410,15 @@ func (d SoftLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -5476,10 +5476,10 @@ func (d SoftLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 				b = db + (((sb << 1) - 0xff) * (tmp - db) * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -5522,15 +5522,15 @@ func (d SoftLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -5582,10 +5582,10 @@ func (d SoftLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 				b = db + (((sb << 1) - 0xff) * (tmp - db) * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -5628,15 +5628,15 @@ func (d SoftLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -5688,10 +5688,10 @@ func (d SoftLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 				b = db + (((sb << 1) - 0xff) * (tmp - db) * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -5734,15 +5734,15 @@ func (d SoftLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -5788,10 +5788,10 @@ func (d SoftLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 				b = db + (((sb << 1) - 0xff) * (tmp - db) * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -5948,15 +5948,15 @@ func (d HardLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -6002,10 +6002,10 @@ func (d HardLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 				b = db + tmp - (db * tmp * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -6048,15 +6048,15 @@ func (d HardLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -6096,10 +6096,10 @@ func (d HardLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 				b = db + tmp - (db * tmp * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -6142,15 +6142,15 @@ func (d HardLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -6190,10 +6190,10 @@ func (d HardLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 				b = db + tmp - (db * tmp * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -6236,15 +6236,15 @@ func (d HardLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -6278,10 +6278,10 @@ func (d HardLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 				b = db + tmp - (db * tmp * 32897 >> 23)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -6426,15 +6426,15 @@ func (d LinearLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -6477,10 +6477,10 @@ func (d LinearLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 				b = clip8(db + ((sb - 0x80) << 1))
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -6523,15 +6523,15 @@ func (d LinearLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -6568,10 +6568,10 @@ func (d LinearLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 				b = clip8(db + ((sb - 0x80) << 1))
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -6614,15 +6614,15 @@ func (d LinearLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -6659,10 +6659,10 @@ func (d LinearLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 				b = clip8(db + ((sb - 0x80) << 1))
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -6705,15 +6705,15 @@ func (d LinearLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -6744,10 +6744,10 @@ func (d LinearLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 				b = clip8(db + ((sb - 0x80) << 1))
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -6889,15 +6889,15 @@ func (d VividLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -6970,10 +6970,10 @@ func (d VividLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 				}
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -7016,15 +7016,15 @@ func (d VividLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -7091,10 +7091,10 @@ func (d VividLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 				}
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -7137,15 +7137,15 @@ func (d VividLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -7212,10 +7212,10 @@ func (d VividLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 				}
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -7258,15 +7258,15 @@ func (d VividLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -7327,10 +7327,10 @@ func (d VividLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 				}
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -7502,15 +7502,15 @@ func (d PinLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -7583,10 +7583,10 @@ func (d PinLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 				}
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -7629,15 +7629,15 @@ func (d PinLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -7704,10 +7704,10 @@ func (d PinLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 				}
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -7750,15 +7750,15 @@ func (d PinLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -7825,10 +7825,10 @@ func (d PinLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 				}
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -7871,15 +7871,15 @@ func (d PinLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -7940,10 +7940,10 @@ func (d PinLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 				}
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -8115,15 +8115,15 @@ func (d HardMix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -8223,10 +8223,10 @@ func (d HardMix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 				b = 0xff
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -8269,15 +8269,15 @@ func (d HardMix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -8371,10 +8371,10 @@ func (d HardMix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 				b = 0xff
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -8417,15 +8417,15 @@ func (d HardMix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -8519,10 +8519,10 @@ func (d HardMix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 				b = 0xff
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -8565,15 +8565,15 @@ func (d HardMix) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -8661,10 +8661,10 @@ func (d HardMix) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 				b = 0xff
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -8863,15 +8863,15 @@ func (d Difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -8914,10 +8914,10 @@ func (d Difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 				b = db - sb
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -8960,15 +8960,15 @@ func (d Difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -9005,10 +9005,10 @@ func (d Difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 				b = db - sb
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -9051,15 +9051,15 @@ func (d Difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -9096,10 +9096,10 @@ func (d Difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 				b = db - sb
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -9142,15 +9142,15 @@ func (d Difference) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -9181,10 +9181,10 @@ func (d Difference) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 				b = db - sb
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -9326,15 +9326,15 @@ func (d Exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -9365,10 +9365,10 @@ func (d Exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 
 			b = db + sb - (db * sb * 32897 >> 22)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -9411,15 +9411,15 @@ func (d Exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -9444,10 +9444,10 @@ func (d Exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 
 			b = db + sb - (db * sb * 32897 >> 22)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -9490,15 +9490,15 @@ func (d Exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -9523,10 +9523,10 @@ func (d Exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 			b = db + sb - (db * sb * 32897 >> 22)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -9569,15 +9569,15 @@ func (d Exclusion) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -9596,10 +9596,10 @@ func (d Exclusion) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 			b = db + sb - (db * sb * 32897 >> 22)
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -9729,15 +9729,15 @@ func (d Subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -9780,10 +9780,10 @@ func (d Subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 				b = db - sb
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -9826,15 +9826,15 @@ func (d Subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -9871,10 +9871,10 @@ func (d Subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 				b = db - sb
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -9917,15 +9917,15 @@ func (d Subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -9962,10 +9962,10 @@ func (d Subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 				b = db - sb
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -10008,15 +10008,15 @@ func (d Subtract) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -10047,10 +10047,10 @@ func (d Subtract) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 				b = db - sb
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -10192,15 +10192,15 @@ func (d Divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -10249,10 +10249,10 @@ func (d Divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 				b = clip8(db * 0xff / sb)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -10295,15 +10295,15 @@ func (d Divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -10346,10 +10346,10 @@ func (d Divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 				b = clip8(db * 0xff / sb)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -10392,15 +10392,15 @@ func (d Divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -10443,10 +10443,10 @@ func (d Divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 				b = clip8(db * 0xff / sb)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -10489,15 +10489,15 @@ func (d Divide) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -10534,10 +10534,10 @@ func (d Divide) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 				b = clip8(db * 0xff / sb)
 			}
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -10685,15 +10685,15 @@ func (d Hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -10721,10 +10721,10 @@ func (d Hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 			r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -10767,15 +10767,15 @@ func (d Hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -10797,10 +10797,10 @@ func (d Hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 			r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -10843,15 +10843,15 @@ func (d Hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -10873,10 +10873,10 @@ func (d Hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 			r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -10919,15 +10919,15 @@ func (d Hue) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -10943,10 +10943,10 @@ func (d Hue) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 			r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -11073,15 +11073,15 @@ func (d Saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -11109,10 +11109,10 @@ func (d Saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 			r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -11155,15 +11155,15 @@ func (d Saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -11185,10 +11185,10 @@ func (d Saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 			r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -11231,15 +11231,15 @@ func (d Saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -11261,10 +11261,10 @@ func (d Saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 			r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -11307,15 +11307,15 @@ func (d Saturation) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -11331,10 +11331,10 @@ func (d Saturation) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 			r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -11461,15 +11461,15 @@ func (d Color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -11496,10 +11496,10 @@ func (d Color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -11542,15 +11542,15 @@ func (d Color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -11571,10 +11571,10 @@ func (d Color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -11617,15 +11617,15 @@ func (d Color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -11646,10 +11646,10 @@ func (d Color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -11692,15 +11692,15 @@ func (d Color) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -11715,10 +11715,10 @@ func (d Color) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -11844,15 +11844,15 @@ func (d Luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -11879,10 +11879,10 @@ func (d Luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -11925,15 +11925,15 @@ func (d Luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -11954,10 +11954,10 @@ func (d Luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		d0 += ddelta
@@ -12000,15 +12000,15 @@ func (d Luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -12029,10 +12029,10 @@ func (d Luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta
@@ -12075,15 +12075,15 @@ func (d Luminosity) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -12098,10 +12098,10 @@ func (d Luminosity) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		d0 += ddelta

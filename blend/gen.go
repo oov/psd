@@ -466,15 +466,15 @@ func (d {{.Name}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		dpix := dst.Pix[d0:]
 		spix := src.Pix[s0:]
 		for i := i0; i != i1; i += idelta {
-			sr := uint32(spix[i])
-			sg := uint32(spix[i+1])
-			sb := uint32(spix[i+2])
 			sa := uint32(spix[i+3])
+			sb := uint32(spix[i+2])
+			sg := uint32(spix[i+1])
+			sr := uint32(spix[i])
 
-			dr := uint32(dpix[i])
-			dg := uint32(dpix[i+1])
-			db := uint32(dpix[i+2])
 			da := uint32(dpix[i+3])
+			db := uint32(dpix[i+2])
+			dg := uint32(dpix[i+1])
+			dr := uint32(dpix[i])
 
 			tmp := (sa * ma * 32897 >> 23) * 32897
 			a1 := (tmp * da) >> 23
@@ -521,15 +521,15 @@ func (d {{.Name}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 {{end}}
 {{define "blendRGBAToRGBA4_Dest"}}
 {{if .}}
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+3] = uint8(a)
 			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
-			dpix[i+3] = uint8(a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 {{else}}
-			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[i+3] = uint8(a)
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 {{end}}
 		}
 		d0 += ddelta
