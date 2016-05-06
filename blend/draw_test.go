@@ -129,7 +129,7 @@ func testDrawFallback(d drawer, t *testing.T) {
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0))
+	d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0), false)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
@@ -157,7 +157,7 @@ func testDrawNRGBAToNRGBA(d drawer, t *testing.T) {
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
+	d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
@@ -185,7 +185,7 @@ func testDrawRGBAToNRGBA(d drawer, t *testing.T) {
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
+	d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
@@ -213,7 +213,7 @@ func testDrawNRGBAToRGBA(d drawer, t *testing.T) {
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
+	d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
@@ -241,7 +241,7 @@ func testDrawRGBAToRGBA(d drawer, t *testing.T) {
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
+	d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
@@ -260,7 +260,11 @@ func testDrawRGBAToRGBA(d drawer, t *testing.T) {
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
+
 	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
+	if errorRate > 0.262 {
+		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	}
 }
 
 func benchmarkDrawFallback(d drawer, b *testing.B) {
@@ -270,7 +274,7 @@ func benchmarkDrawFallback(d drawer, b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0))
+		d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0), false)
 	}
 }
 
@@ -281,7 +285,7 @@ func benchmarkDrawNRGBAToNRGBA(d drawer, b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
+		d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
 	}
 }
 
@@ -292,7 +296,7 @@ func benchmarkDrawRGBAToNRGBA(d drawer, b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
+		d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
 	}
 }
 
@@ -303,7 +307,7 @@ func benchmarkDrawNRGBAToRGBA(d drawer, b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
+		d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
 	}
 }
 
@@ -314,6 +318,6 @@ func benchmarkDrawRGBAToRGBA(d drawer, b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
+		d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
 	}
 }

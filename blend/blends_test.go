@@ -16,6 +16,7 @@ func TestDrawFallbackScreen(t *testing.T)       { testDrawFallback(Screen{}, t) 
 func TestDrawFallbackColorDodge(t *testing.T)   { testDrawFallback(ColorDodge{}, t) }
 func TestDrawFallbackLinearDodge(t *testing.T)  { testDrawFallback(LinearDodge{}, t) }
 func TestDrawFallbackLighterColor(t *testing.T) { testDrawFallback(LighterColor{}, t) }
+func TestDrawFallbackAdd(t *testing.T)          { testDrawFallback(Add{}, t) }
 func TestDrawFallbackOverlay(t *testing.T)      { testDrawFallback(Overlay{}, t) }
 func TestDrawFallbackSoftLight(t *testing.T)    { testDrawFallback(SoftLight{}, t) }
 func TestDrawFallbackHardLight(t *testing.T)    { testDrawFallback(HardLight{}, t) }
@@ -43,6 +44,7 @@ func TestDrawNRGBAToNRGBAScreen(t *testing.T)       { testDrawNRGBAToNRGBA(Scree
 func TestDrawNRGBAToNRGBAColorDodge(t *testing.T)   { testDrawNRGBAToNRGBA(ColorDodge{}, t) }
 func TestDrawNRGBAToNRGBALinearDodge(t *testing.T)  { testDrawNRGBAToNRGBA(LinearDodge{}, t) }
 func TestDrawNRGBAToNRGBALighterColor(t *testing.T) { testDrawNRGBAToNRGBA(LighterColor{}, t) }
+func TestDrawNRGBAToNRGBAAdd(t *testing.T)          { testDrawNRGBAToNRGBA(Add{}, t) }
 func TestDrawNRGBAToNRGBAOverlay(t *testing.T)      { testDrawNRGBAToNRGBA(Overlay{}, t) }
 func TestDrawNRGBAToNRGBASoftLight(t *testing.T)    { testDrawNRGBAToNRGBA(SoftLight{}, t) }
 func TestDrawNRGBAToNRGBAHardLight(t *testing.T)    { testDrawNRGBAToNRGBA(HardLight{}, t) }
@@ -70,6 +72,7 @@ func TestDrawRGBAToNRGBAScreen(t *testing.T)       { testDrawRGBAToNRGBA(Screen{
 func TestDrawRGBAToNRGBAColorDodge(t *testing.T)   { testDrawRGBAToNRGBA(ColorDodge{}, t) }
 func TestDrawRGBAToNRGBALinearDodge(t *testing.T)  { testDrawRGBAToNRGBA(LinearDodge{}, t) }
 func TestDrawRGBAToNRGBALighterColor(t *testing.T) { testDrawRGBAToNRGBA(LighterColor{}, t) }
+func TestDrawRGBAToNRGBAAdd(t *testing.T)          { testDrawRGBAToNRGBA(Add{}, t) }
 func TestDrawRGBAToNRGBAOverlay(t *testing.T)      { testDrawRGBAToNRGBA(Overlay{}, t) }
 func TestDrawRGBAToNRGBASoftLight(t *testing.T)    { testDrawRGBAToNRGBA(SoftLight{}, t) }
 func TestDrawRGBAToNRGBAHardLight(t *testing.T)    { testDrawRGBAToNRGBA(HardLight{}, t) }
@@ -97,6 +100,7 @@ func TestDrawNRGBAToRGBAScreen(t *testing.T)       { testDrawNRGBAToRGBA(Screen{
 func TestDrawNRGBAToRGBAColorDodge(t *testing.T)   { testDrawNRGBAToRGBA(ColorDodge{}, t) }
 func TestDrawNRGBAToRGBALinearDodge(t *testing.T)  { testDrawNRGBAToRGBA(LinearDodge{}, t) }
 func TestDrawNRGBAToRGBALighterColor(t *testing.T) { testDrawNRGBAToRGBA(LighterColor{}, t) }
+func TestDrawNRGBAToRGBAAdd(t *testing.T)          { testDrawNRGBAToRGBA(Add{}, t) }
 func TestDrawNRGBAToRGBAOverlay(t *testing.T)      { testDrawNRGBAToRGBA(Overlay{}, t) }
 func TestDrawNRGBAToRGBASoftLight(t *testing.T)    { testDrawNRGBAToRGBA(SoftLight{}, t) }
 func TestDrawNRGBAToRGBAHardLight(t *testing.T)    { testDrawNRGBAToRGBA(HardLight{}, t) }
@@ -124,6 +128,7 @@ func TestDrawRGBAToRGBAScreen(t *testing.T)       { testDrawRGBAToRGBA(Screen{},
 func TestDrawRGBAToRGBAColorDodge(t *testing.T)   { testDrawRGBAToRGBA(ColorDodge{}, t) }
 func TestDrawRGBAToRGBALinearDodge(t *testing.T)  { testDrawRGBAToRGBA(LinearDodge{}, t) }
 func TestDrawRGBAToRGBALighterColor(t *testing.T) { testDrawRGBAToRGBA(LighterColor{}, t) }
+func TestDrawRGBAToRGBAAdd(t *testing.T)          { testDrawRGBAToRGBA(Add{}, t) }
 func TestDrawRGBAToRGBAOverlay(t *testing.T)      { testDrawRGBAToRGBA(Overlay{}, t) }
 func TestDrawRGBAToRGBASoftLight(t *testing.T)    { testDrawRGBAToRGBA(SoftLight{}, t) }
 func TestDrawRGBAToRGBAHardLight(t *testing.T)    { testDrawRGBAToRGBA(HardLight{}, t) }
@@ -151,6 +156,7 @@ func BenchmarkDrawFallbackScreen(b *testing.B)       { benchmarkDrawFallback(Scr
 func BenchmarkDrawFallbackColorDodge(b *testing.B)   { benchmarkDrawFallback(ColorDodge{}, b) }
 func BenchmarkDrawFallbackLinearDodge(b *testing.B)  { benchmarkDrawFallback(LinearDodge{}, b) }
 func BenchmarkDrawFallbackLighterColor(b *testing.B) { benchmarkDrawFallback(LighterColor{}, b) }
+func BenchmarkDrawFallbackAdd(b *testing.B)          { benchmarkDrawFallback(Add{}, b) }
 func BenchmarkDrawFallbackOverlay(b *testing.B)      { benchmarkDrawFallback(Overlay{}, b) }
 func BenchmarkDrawFallbackSoftLight(b *testing.B)    { benchmarkDrawFallback(SoftLight{}, b) }
 func BenchmarkDrawFallbackHardLight(b *testing.B)    { benchmarkDrawFallback(HardLight{}, b) }
@@ -178,6 +184,7 @@ func BenchmarkDrawNRGBAToNRGBAScreen(b *testing.B)       { benchmarkDrawNRGBAToN
 func BenchmarkDrawNRGBAToNRGBAColorDodge(b *testing.B)   { benchmarkDrawNRGBAToNRGBA(ColorDodge{}, b) }
 func BenchmarkDrawNRGBAToNRGBALinearDodge(b *testing.B)  { benchmarkDrawNRGBAToNRGBA(LinearDodge{}, b) }
 func BenchmarkDrawNRGBAToNRGBALighterColor(b *testing.B) { benchmarkDrawNRGBAToNRGBA(LighterColor{}, b) }
+func BenchmarkDrawNRGBAToNRGBAAdd(b *testing.B)          { benchmarkDrawNRGBAToNRGBA(Add{}, b) }
 func BenchmarkDrawNRGBAToNRGBAOverlay(b *testing.B)      { benchmarkDrawNRGBAToNRGBA(Overlay{}, b) }
 func BenchmarkDrawNRGBAToNRGBASoftLight(b *testing.B)    { benchmarkDrawNRGBAToNRGBA(SoftLight{}, b) }
 func BenchmarkDrawNRGBAToNRGBAHardLight(b *testing.B)    { benchmarkDrawNRGBAToNRGBA(HardLight{}, b) }
@@ -205,6 +212,7 @@ func BenchmarkDrawRGBAToNRGBAScreen(b *testing.B)       { benchmarkDrawRGBAToNRG
 func BenchmarkDrawRGBAToNRGBAColorDodge(b *testing.B)   { benchmarkDrawRGBAToNRGBA(ColorDodge{}, b) }
 func BenchmarkDrawRGBAToNRGBALinearDodge(b *testing.B)  { benchmarkDrawRGBAToNRGBA(LinearDodge{}, b) }
 func BenchmarkDrawRGBAToNRGBALighterColor(b *testing.B) { benchmarkDrawRGBAToNRGBA(LighterColor{}, b) }
+func BenchmarkDrawRGBAToNRGBAAdd(b *testing.B)          { benchmarkDrawRGBAToNRGBA(Add{}, b) }
 func BenchmarkDrawRGBAToNRGBAOverlay(b *testing.B)      { benchmarkDrawRGBAToNRGBA(Overlay{}, b) }
 func BenchmarkDrawRGBAToNRGBASoftLight(b *testing.B)    { benchmarkDrawRGBAToNRGBA(SoftLight{}, b) }
 func BenchmarkDrawRGBAToNRGBAHardLight(b *testing.B)    { benchmarkDrawRGBAToNRGBA(HardLight{}, b) }
@@ -232,6 +240,7 @@ func BenchmarkDrawNRGBAToRGBAScreen(b *testing.B)       { benchmarkDrawNRGBAToRG
 func BenchmarkDrawNRGBAToRGBAColorDodge(b *testing.B)   { benchmarkDrawNRGBAToRGBA(ColorDodge{}, b) }
 func BenchmarkDrawNRGBAToRGBALinearDodge(b *testing.B)  { benchmarkDrawNRGBAToRGBA(LinearDodge{}, b) }
 func BenchmarkDrawNRGBAToRGBALighterColor(b *testing.B) { benchmarkDrawNRGBAToRGBA(LighterColor{}, b) }
+func BenchmarkDrawNRGBAToRGBAAdd(b *testing.B)          { benchmarkDrawNRGBAToRGBA(Add{}, b) }
 func BenchmarkDrawNRGBAToRGBAOverlay(b *testing.B)      { benchmarkDrawNRGBAToRGBA(Overlay{}, b) }
 func BenchmarkDrawNRGBAToRGBASoftLight(b *testing.B)    { benchmarkDrawNRGBAToRGBA(SoftLight{}, b) }
 func BenchmarkDrawNRGBAToRGBAHardLight(b *testing.B)    { benchmarkDrawNRGBAToRGBA(HardLight{}, b) }
@@ -259,6 +268,7 @@ func BenchmarkDrawRGBAToRGBAScreen(b *testing.B)       { benchmarkDrawRGBAToRGBA
 func BenchmarkDrawRGBAToRGBAColorDodge(b *testing.B)   { benchmarkDrawRGBAToRGBA(ColorDodge{}, b) }
 func BenchmarkDrawRGBAToRGBALinearDodge(b *testing.B)  { benchmarkDrawRGBAToRGBA(LinearDodge{}, b) }
 func BenchmarkDrawRGBAToRGBALighterColor(b *testing.B) { benchmarkDrawRGBAToRGBA(LighterColor{}, b) }
+func BenchmarkDrawRGBAToRGBAAdd(b *testing.B)          { benchmarkDrawRGBAToRGBA(Add{}, b) }
 func BenchmarkDrawRGBAToRGBAOverlay(b *testing.B)      { benchmarkDrawRGBAToRGBA(Overlay{}, b) }
 func BenchmarkDrawRGBAToRGBASoftLight(b *testing.B)    { benchmarkDrawRGBAToRGBA(SoftLight{}, b) }
 func BenchmarkDrawRGBAToRGBAHardLight(b *testing.B)    { benchmarkDrawRGBAToRGBA(HardLight{}, b) }
