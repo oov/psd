@@ -51,26 +51,28 @@ LOOPY:
       PUNPCKLBW X15, X0
       PUNPCKLBW X15, X1
       PMULLW X1, X0
-      PMULHUW X14, X0
-      PSRLW $7, X0 // 0000 sa*da/255 sa*(255-da)/255 (255-sa)*da/255
-
-      MOVOA X0, X1
-      MOVOA X0, X2
-      PSRLDQ $2, X2
-      PADDW X2, X1
-      PSRLDQ $2, X2
-      PADDW X2, X1 // a
 
       MOVL (SI)(R15*1), X2 // sa sr sg sb
       MOVL (DI)(R15*1), X3 // da dr dg db
       MOVOA X2, X4 // 00  r  g  b
 
+      PMULHUW X14, X0
+
       PUNPCKLBW  X2, X3 // sa da sr dr sg dg sb db
       PUNPCKLBW X15, X4 // 00 00 00  r 00  g 00  b
       PUNPCKLWL  X4, X3 // 00 00 sa da 00  r sr dr 00  g sg dg 00  b sb db
-
       MOVOA X3, X2
       PSRLDQ $8, X2
+
+      PSRLW $7, X0 // 0000 sa*da/255 sa*(255-da)/255 (255-sa)*da/255
+
+      MOVOA X0, X1
+      MOVOA X0, X5
+      PSRLDQ $2, X5
+      PADDW X5, X1
+      PSRLDQ $2, X5
+      PADDW X5, X1 // a
+
       PUNPCKLBW X15, X2 // 00 00 00 00 00 sa 00 da 00 00 00  r 00 sr 00 dr
       PUNPCKLBW X15, X3 // 00 00 00  g 00 sg 00 dg 00 00 00  b 00 sb 00 db
       PUNPCKLQDQ X0, X0
@@ -95,6 +97,8 @@ LOOPY:
       MOVQ AX, X4
       PAND X5, X1
       MOVL X1, DX
+      CMPL DX, $2
+      JB DIVEND
       LEAQ ·divTable(SB), AX
       MOVL (AX)(DX*4), X0
 
@@ -112,6 +116,7 @@ LOOPY:
       PADDQ X4, X3
       PSRLDQ $4, X3
 
+      DIVEND:
       MOVOA X3, X4
       PSRLDQ $8, X3
 
@@ -199,6 +204,8 @@ LOOPY:
       MOVQ AX, X4
       PAND X5, X1
       MOVL X1, DX
+      CMPL DX, $2
+      JB DIVEND
       LEAQ ·divTable(SB), AX
       MOVL (AX)(DX*4), X0
 
@@ -216,6 +223,7 @@ LOOPY:
       PADDQ X4, X3
       PSRLDQ $4, X3
 
+      DIVEND:
       MOVOA X2, X4
       PSRLDQ $8, X2
 
