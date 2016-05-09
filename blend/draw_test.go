@@ -123,125 +123,13 @@ func loadRGBAToRGBAImages() (*image.RGBA, *image.RGBA, error) {
 	return img, img2, nil
 }
 
-func testDrawFallback(d drawer, t *testing.T) {
+func testDrawFallback(d drawer, t *testing.T, protectAlpha bool) {
 	name := "DrawFallback"
 	img, img2, err := loadNRGBAToNRGBAImages()
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0), false)
-
-	os.MkdirAll("output/"+name, os.ModePerm)
-	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
-		t.Fatalf("Cannot create png: %v", err)
-	}
-
-	created, ref, err := loadImages(
-		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%v.png", d),
-	)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-
-	errorRate, err := verify(created, ref)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-}
-
-func testDrawNRGBAToNRGBA(d drawer, t *testing.T) {
-	name := "DrawNRGBAToNRGBA"
-	img, img2, err := loadNRGBAToNRGBAImages()
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-	d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
-
-	os.MkdirAll("output/"+name, os.ModePerm)
-	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
-		t.Fatalf("Cannot create png: %v", err)
-	}
-
-	created, ref, err := loadImages(
-		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%v.png", d),
-	)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-
-	errorRate, err := verify(created, ref)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-}
-
-func testDrawRGBAToNRGBA(d drawer, t *testing.T) {
-	name := "DrawRGBAToNRGBA"
-	img, img2, err := loadRGBAToNRGBAImages()
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-	d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
-
-	os.MkdirAll("output/"+name, os.ModePerm)
-	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
-		t.Fatalf("Cannot create png: %v", err)
-	}
-
-	created, ref, err := loadImages(
-		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%v.png", d),
-	)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-
-	errorRate, err := verify(created, ref)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-}
-
-func testDrawNRGBAToRGBA(d drawer, t *testing.T) {
-	name := "DrawNRGBAToRGBA"
-	img, img2, err := loadNRGBAToRGBAImages()
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-	d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
-
-	os.MkdirAll("output/"+name, os.ModePerm)
-	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
-		t.Fatalf("Cannot create png: %v", err)
-	}
-
-	created, ref, err := loadImages(
-		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%v.png", d),
-	)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-
-	errorRate, err := verify(created, ref)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-}
-
-func testDrawRGBAToRGBA(d drawer, t *testing.T) {
-	name := "DrawRGBAToRGBA"
-	img, img2, err := loadRGBAToRGBAImages()
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-	d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
+	d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0), protectAlpha)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
@@ -267,57 +155,185 @@ func testDrawRGBAToRGBA(d drawer, t *testing.T) {
 	}
 }
 
-func benchmarkDrawFallback(d drawer, b *testing.B) {
+func testDrawNRGBAToNRGBA(d drawer, t *testing.T, protectAlpha bool) {
+	name := "DrawNRGBAToNRGBA"
+	img, img2, err := loadNRGBAToNRGBAImages()
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+
+	os.MkdirAll("output/"+name, os.ModePerm)
+	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
+		t.Fatalf("Cannot create png: %v", err)
+	}
+
+	created, ref, err := loadImages(
+		fmt.Sprintf("output/%s/%v.png", name, d),
+		fmt.Sprintf("reference/%v.png", d),
+	)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	errorRate, err := verify(created, ref)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
+	if errorRate > 0.262 {
+		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	}
+}
+
+func testDrawRGBAToNRGBA(d drawer, t *testing.T, protectAlpha bool) {
+	name := "DrawRGBAToNRGBA"
+	img, img2, err := loadRGBAToNRGBAImages()
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+
+	os.MkdirAll("output/"+name, os.ModePerm)
+	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
+		t.Fatalf("Cannot create png: %v", err)
+	}
+
+	created, ref, err := loadImages(
+		fmt.Sprintf("output/%s/%v.png", name, d),
+		fmt.Sprintf("reference/%v.png", d),
+	)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	errorRate, err := verify(created, ref)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
+	if errorRate > 0.262 {
+		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	}
+}
+
+func testDrawNRGBAToRGBA(d drawer, t *testing.T, protectAlpha bool) {
+	name := "DrawNRGBAToRGBA"
+	img, img2, err := loadNRGBAToRGBAImages()
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+
+	os.MkdirAll("output/"+name, os.ModePerm)
+	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
+		t.Fatalf("Cannot create png: %v", err)
+	}
+
+	created, ref, err := loadImages(
+		fmt.Sprintf("output/%s/%v.png", name, d),
+		fmt.Sprintf("reference/%v.png", d),
+	)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	errorRate, err := verify(created, ref)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
+	if errorRate > 0.262 {
+		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	}
+}
+
+func testDrawRGBAToRGBA(d drawer, t *testing.T, protectAlpha bool) {
+	name := "DrawRGBAToRGBA"
+	img, img2, err := loadRGBAToRGBAImages()
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+
+	os.MkdirAll("output/"+name, os.ModePerm)
+	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
+		t.Fatalf("Cannot create png: %v", err)
+	}
+
+	created, ref, err := loadImages(
+		fmt.Sprintf("output/%s/%v.png", name, d),
+		fmt.Sprintf("reference/%v.png", d),
+	)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	errorRate, err := verify(created, ref)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
+	if errorRate > 0.262 {
+		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	}
+}
+
+func benchmarkDrawFallback(d drawer, b *testing.B, protectAlpha bool) {
 	img, img2, err := loadNRGBAToNRGBAImages()
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0), false)
+		d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0), protectAlpha)
 	}
 }
 
-func benchmarkDrawNRGBAToNRGBA(d drawer, b *testing.B) {
+func benchmarkDrawNRGBAToNRGBA(d drawer, b *testing.B, protectAlpha bool) {
 	img, img2, err := loadNRGBAToNRGBAImages()
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
+		d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
 	}
 }
 
-func benchmarkDrawRGBAToNRGBA(d drawer, b *testing.B) {
+func benchmarkDrawRGBAToNRGBA(d drawer, b *testing.B, protectAlpha bool) {
 	img, img2, err := loadRGBAToNRGBAImages()
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
+		d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
 	}
 }
 
-func benchmarkDrawNRGBAToRGBA(d drawer, b *testing.B) {
+func benchmarkDrawNRGBAToRGBA(d drawer, b *testing.B, protectAlpha bool) {
 	img, img2, err := loadNRGBAToRGBAImages()
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
+		d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
 	}
 }
 
-func benchmarkDrawRGBAToRGBA(d drawer, b *testing.B) {
+func benchmarkDrawRGBAToRGBA(d drawer, b *testing.B, protectAlpha bool) {
 	img, img2, err := loadRGBAToRGBAImages()
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, false)
+		d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
 	}
 }

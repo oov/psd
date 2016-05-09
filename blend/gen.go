@@ -488,7 +488,7 @@ func (d {{.Name}}) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, 
 }
 
 func (d {{.Name}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{define "draw"}}
+{{define "draw1"}}
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
@@ -516,30 +516,37 @@ func (d {{.Name}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		sdelta = -src.Stride
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
+{{end}}
+{{define "draw2"}}
 	if protectAlpha {
-		d.drawMain{{.}}ProtectAlpha(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+		{{.}}ProtectAlpha(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 	} else {
-		d.drawMain{{.}}(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+		{{.}}(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 	}
 {{end}}
-{{template "draw" "NRGBAToNRGBA"}}
+{{template "draw1" "NRGBAToNRGBA"}}
+{{template "draw2" printf "draw%sNRGBAToNRGBA" .Name}}
 }
 
 func (d {{.Name}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw" "RGBAToNRGBA"}}
+{{template "draw1" "RGBAToNRGBA"}}
+{{template "draw2" printf "draw%sRGBAToNRGBA" .Name}}
 }
 
 func (d {{.Name}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw" "NRGBAToRGBA"}}
+{{template "draw1" "NRGBAToRGBA"}}
+{{template "draw2" printf "draw%sNRGBAToRGBA" .Name}}
 }
 
 func (d {{.Name}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw" "RGBAToNRGBA"}}
+{{template "draw1" "RGBAToRGBA"}}
+{{template "draw2" printf "draw%sRGBAToRGBA" .Name}}
 }
 
-func (d {{.Name}}) drawMainNRGBAToNRGBA(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 {{define "drawMain1_SrcIsNotNRGBA"}}
 	dPos, sPos := 0, 0
+	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[dPos:]
 		spix := src[sPos:]
@@ -548,26 +555,28 @@ func (d {{.Name}}) drawMainNRGBAToNRGBA(dest []byte, src []byte, alpha uint32, y
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
+			if sa == 0 {
+				continue
+			}
 
 			da := uint32(dpix[i+3])
 			db := uint32(dpix[i+2])
 			dg := uint32(dpix[i+1])
 			dr := uint32(dpix[i])
 
-			tmp := (sa * alpha * 32897 >> 23) * 32897
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
+				continue
+			}
+
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
-			if a == 0 {
-				continue
-			}
 {{if .}}
-			if sa > 0 {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
-			}
+			sr = sr * 0xff / sa
+			sg = sg * 0xff / sa
+			sb = sb * 0xff / sa
 {{end}}
 {{end}}
 {{define "drawMain2_DestIsNotNRGBA"}}
@@ -618,29 +627,30 @@ func (d {{.Name}}) drawMainNRGBAToNRGBA(dest []byte, src []byte, alpha uint32, y
 {{template "drawMain4_DestIsNotNRGBA" false}}
 }
 
-func (d {{.Name}}) drawMainRGBAToNRGBA(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMain1_SrcIsNotNRGBA" true}}
 	{{template "drawMain2_DestIsNotNRGBA" false}}
 	{{template "drawMain3" .}}
 	{{template "drawMain4_DestIsNotNRGBA" false}}
 }
 
-func (d {{.Name}}) drawMainNRGBAToRGBA(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMain1_SrcIsNotNRGBA" false}}
 	{{template "drawMain2_DestIsNotNRGBA" true}}
 	{{template "drawMain3" .}}
 	{{template "drawMain4_DestIsNotNRGBA" true}}
 }
 
-func (d {{.Name}}) drawMainRGBAToRGBA(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMain1_SrcIsNotNRGBA" true}}
 	{{template "drawMain2_DestIsNotNRGBA" true}}
 	{{template "drawMain3" .}}
 	{{template "drawMain4_DestIsNotNRGBA" true}}
 }
 
-func (d {{.Name}}) drawMainNRGBAToNRGBAProtectAlpha(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 {{define "drawMainProtectAlpha1_SrcIsNotNRGBA"}}
+	alpha *= 32897
 	dPos, sPos := 0, 0
 	for ; y > 0; y-- {
 		dpix := dest[dPos:]
@@ -660,7 +670,7 @@ func (d {{.Name}}) drawMainNRGBAToNRGBAProtectAlpha(dest []byte, src []byte, alp
 				continue
 			}
 
-			a1 := sa * alpha * 32897 >> 23
+			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 {{if .}}
 			sr = sr * 0xff / sa
@@ -715,21 +725,21 @@ func (d {{.Name}}) drawMainNRGBAToNRGBAProtectAlpha(dest []byte, src []byte, alp
 {{template "drawMainProtectAlpha4_DestIsNotNRGBA" false}}
 }
 
-func (d {{.Name}}) drawMainRGBAToNRGBAProtectAlpha(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMainProtectAlpha1_SrcIsNotNRGBA" true}}
 	{{template "drawMainProtectAlpha2_DestIsNotNRGBA" false}}
 	{{template "drawMainProtectAlpha3" .}}
 	{{template "drawMainProtectAlpha4_DestIsNotNRGBA" false}}
 }
 
-func (d {{.Name}}) drawMainNRGBAToRGBAProtectAlpha(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMainProtectAlpha1_SrcIsNotNRGBA" false}}
 	{{template "drawMainProtectAlpha2_DestIsNotNRGBA" true}}
 	{{template "drawMainProtectAlpha3" .}}
 	{{template "drawMainProtectAlpha4_DestIsNotNRGBA" true}}
 }
 
-func (d {{.Name}}) drawMainRGBAToRGBAProtectAlpha(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMainProtectAlpha1_SrcIsNotNRGBA" true}}
 	{{template "drawMainProtectAlpha2_DestIsNotNRGBA" true}}
 	{{template "drawMainProtectAlpha3" .}}
@@ -1104,36 +1114,65 @@ package blend
 
 import "testing"
 
-{{range .}}func TestDrawFallback{{.Name}}(t *testing.T) { testDrawFallback({{.Name}}{}, t) }
+{{range .}}func TestDrawFallback{{.Name}}(t *testing.T) { testDrawFallback({{.Name}}{}, t, false) }
 {{end}}
 
-{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToNRGBA({{.Name}}{}, t) }
+{{range .}}func TestDrawFallback{{.Name}}ProtectAlpha(t *testing.T) { testDrawFallback({{.Name}}{}, t, true) }
 {{end}}
 
-{{range .}}func TestDrawRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawRGBAToNRGBA({{.Name}}{}, t) }
+{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToNRGBA({{.Name}}{}, t, false) }
 {{end}}
 
-{{range .}}func TestDrawNRGBAToRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToRGBA({{.Name}}{}, t) }
+{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawNRGBAToNRGBA({{.Name}}{}, t, true) }
 {{end}}
 
-{{range .}}func TestDrawRGBAToRGBA{{.Name}}(t *testing.T) { testDrawRGBAToRGBA({{.Name}}{}, t) }
+{{range .}}func TestDrawRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawRGBAToNRGBA({{.Name}}{}, t, false) }
 {{end}}
 
-{{range .}}func BenchmarkDrawFallback{{.Name}}(b *testing.B) { benchmarkDrawFallback({{.Name}}{}, b) }
+{{range .}}func TestDrawRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawRGBAToNRGBA({{.Name}}{}, t, true) }
 {{end}}
 
-{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToNRGBA({{.Name}}{}, b) }
+{{range .}}func TestDrawNRGBAToRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToRGBA({{.Name}}{}, t, false) }
 {{end}}
 
-{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToNRGBA({{.Name}}{}, b) }
+{{range .}}func TestDrawNRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawNRGBAToRGBA({{.Name}}{}, t, true) }
 {{end}}
 
-{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToRGBA({{.Name}}{}, b) }
+{{range .}}func TestDrawRGBAToRGBA{{.Name}}(t *testing.T) { testDrawRGBAToRGBA({{.Name}}{}, t, false) }
 {{end}}
 
-{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToRGBA({{.Name}}{}, b) }
+{{range .}}func TestDrawRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawRGBAToRGBA({{.Name}}{}, t, true) }
 {{end}}
 
+{{range .}}func BenchmarkDrawFallback{{.Name}}(b *testing.B) { benchmarkDrawFallback({{.Name}}{}, b, false) }
+{{end}}
+
+{{range .}}func BenchmarkDrawFallback{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawFallback({{.Name}}{}, b, true) }
+{{end}}
+
+{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToNRGBA({{.Name}}{}, b, false) }
+{{end}}
+
+{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawNRGBAToNRGBA({{.Name}}{}, b, true) }
+{{end}}
+
+{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToNRGBA({{.Name}}{}, b, false) }
+{{end}}
+
+{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawRGBAToNRGBA({{.Name}}{}, b, true) }
+{{end}}
+
+{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToRGBA({{.Name}}{}, b, false) }
+{{end}}
+
+{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawNRGBAToRGBA({{.Name}}{}, b, true) }
+{{end}}
+
+{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToRGBA({{.Name}}{}, b, false) }
+{{end}}
+
+{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawRGBAToRGBA({{.Name}}{}, b, true) }
+{{end}}
 `
 
 func main() {
@@ -1163,7 +1202,7 @@ func main() {
 
 	tt := template.Must(template.New("").Parse(testSource))
 	b.Reset()
-	if err := tt.Execute(b, blendModes); err != nil {
+	if err = tt.Execute(b, blendModes); err != nil {
 		log.Fatal(err)
 	}
 	buf, err = format.Source(b.Bytes())
