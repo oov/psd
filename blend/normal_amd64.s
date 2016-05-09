@@ -24,7 +24,7 @@ LOOPY:
    MOVQ DI, R14
 
    LOOPX:
-      MOVL 0(R13), AX
+      MOVL (R13)(R15*1), AX
       SHRL $24, AX
       CMPB AX, $0
       JZ NEXTX
@@ -35,22 +35,20 @@ LOOPY:
       CMPB AX, $0
       JZ NEXTX
 
-      MOVL $0xff, DX
-      MOVQ DX, X4
-      MOVL $0xff00, DX
-      MOVQ DX, X5
-
       MOVL AX, X0
-      MOVL 0(R14), X1
+      MOVL (R14)(R15*1), X1
       PSRLDQ $3, X1
+      MOVQ $0xff, AX
+      MOVQ AX, X2
 
       PUNPCKLBW X0, X0
       PUNPCKLWL X0, X0 // sa sa sa sa
-      PXOR X4, X0 // sa sa sa 255-sa
+      PXOR X2, X0 // sa sa sa 255-sa
 
       PUNPCKLBW X1, X1
       PUNPCKLWL X1, X1 // da da da da
-      PXOR X5, X1 // 00 da 255-da da
+      PSLLDQ $1, X2
+      PXOR X2, X1 // 00 da 255-da da
 
       PUNPCKLBW X15, X0
       PUNPCKLBW X15, X1
@@ -59,14 +57,14 @@ LOOPY:
       PSRLW $7, X0 // 0000 sa*da/255 sa*(255-da)/255 (255-sa)*da/255
 
       MOVOA X0, X1
-      MOVOA X0, X5
-      PSRLDQ $2, X5
-      PADDW X5, X1
-      PSRLDQ $2, X5
-      PADDW X5, X1 // a
+      MOVOA X0, X2
+      PSRLDQ $2, X2
+      PADDW X2, X1
+      PSRLDQ $2, X2
+      PADDW X2, X1 // a
 
-      MOVL 0(R13), X2 // sa sr sg sb
-      MOVL 0(R14), X3 // da dr dg db
+      MOVL (R13)(R15*1), X2 // sa sr sg sb
+      MOVL (R14)(R15*1), X3 // da dr dg db
       MOVOA X2, X4 // 00  r  g  b
 
       PUNPCKLBW  X2, X3 // sa da sr dr sg dg sb db
@@ -99,10 +97,8 @@ LOOPY:
       MOVQ AX, X4
       PAND X5, X1
       MOVL X1, DX
-      SHLL $2, DX
       LEAQ ·divTable<>(SB), AX
-      ADDL DX, AX
-      MOVL (AX), X0
+      MOVL (AX)(DX*4), X0
 
       PUNPCKLQDQ X0, X0
       PUNPCKLQDQ X4, X4
@@ -124,11 +120,9 @@ LOOPY:
       PUNPCKLBW  X3, X4 // g b
       PUNPCKLBW  X1, X2 // a r
       PUNPCKLWL  X2, X4 // a r g b
-      MOVL X4, 0(R14)
+      MOVL X4, (R14)(R15*1)
 
       NEXTX:
-      ADDQ R12, R13
-      ADDQ R12, R14
       ADDQ R12, R15
       CMPL R15, xMax+72(FP)
       JNE LOOPX
@@ -160,7 +154,7 @@ LOOPY:
    MOVQ DI, R14
 
    LOOPX:
-      MOVL 0(R13), AX
+      MOVL (R13)(R15*1), AX
       SHRL $24, AX
       CMPB AX, $0
       JZ NEXTX
@@ -171,7 +165,7 @@ LOOPY:
       CMPB AX, $0
       JZ NEXTX
 
-      MOVL 0(R14), DX
+      MOVL (R14)(R15*1), DX
       SHRL $24, DX
       CMPB DX, $0
       JZ NEXTX
@@ -186,8 +180,8 @@ LOOPY:
       PXOR X4, X0 // sa 255-sa
       PUNPCKLBW X15, X0 // 00 sa 00 255-sa
 
-      MOVL 0(R14), X2 // da dr dg db
-      MOVL 0(R13), X3 //  a  r  g  b
+      MOVL (R14)(R15*1), X2 // da dr dg db
+      MOVL (R13)(R15*1), X3 //  a  r  g  b
 
       PUNPCKLBW  X3, X2 //  a da  r dr  g dg  b db
       PUNPCKLBW X15, X2 // 00  a 00 da 00  r 00 dr 00  g 00 dg 00  b 00 db
@@ -209,10 +203,8 @@ LOOPY:
       MOVQ AX, X4
       PAND X5, X1
       MOVL X1, DX
-      SHLL $2, DX
       LEAQ ·divTable<>(SB), AX
-      ADDL DX, AX
-      MOVL (AX), X0
+      MOVL (AX)(DX*4), X0
 
       PUNPCKLQDQ X0, X0
       PUNPCKLQDQ X4, X4
@@ -234,11 +226,9 @@ LOOPY:
       PUNPCKLBW  X2, X4 // g b
       PUNPCKLBW  X1, X3 // a r
       PUNPCKLWL  X3, X4 // a r g b
-      MOVL X4, 0(R14)
+      MOVL X4, (R14)(R15*1)
 
       NEXTX:
-      ADDQ R12, R13
-      ADDQ R12, R14
       ADDQ R12, R15
       CMPL R15, xMax+72(FP)
       JNE LOOPX
