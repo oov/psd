@@ -804,10 +804,18 @@ func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 {{else if .Code}}
 	{{.Code.To16}}
 {{end}}
+{{if .OverMax}}
+				out.R = uint16(clip16(dr*a3 / 0xffff + uint32(uint64(r)*uint64(a1) / 0xffff)))
+				out.G = uint16(clip16(dg*a3 / 0xffff + uint32(uint64(g)*uint64(a1) / 0xffff)))
+				out.B = uint16(clip16(db*a3 / 0xffff + uint32(uint64(b)*uint64(a1) / 0xffff)))
+				out.A = uint16(da)
+{{else}}
 				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+{{end}}
+
 				dst.Set(x, y, &out)
 			}
 		}

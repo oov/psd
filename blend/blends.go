@@ -697,6 +697,7 @@ func (d Normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -1522,6 +1523,7 @@ func (d Darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -2251,6 +2253,7 @@ func (d Multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -3130,6 +3133,7 @@ func (d ColorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -4000,6 +4004,7 @@ func (d LinearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -4768,6 +4773,7 @@ func (d DarkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -5597,6 +5603,7 @@ func (d Lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -6326,6 +6333,7 @@ func (d Screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -7205,6 +7213,7 @@ func (d ColorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -7940,6 +7949,7 @@ func (d LinearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -8693,6 +8703,7 @@ func (d LighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -9405,10 +9416,11 @@ func (d Add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 
 				b = sb + db
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16(clip16(dr*a3/0xffff + uint32(uint64(r)*uint64(a1)/0xffff)))
+				out.G = uint16(clip16(dg*a3/0xffff + uint32(uint64(g)*uint64(a1)/0xffff)))
+				out.B = uint16(clip16(db*a3/0xffff + uint32(uint64(b)*uint64(a1)/0xffff)))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -10234,6 +10246,7 @@ func (d Overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -11206,6 +11219,7 @@ func (d SoftLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -12085,6 +12099,7 @@ func (d HardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -12925,6 +12940,7 @@ func (d LinearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -14032,6 +14048,7 @@ func (d VividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -15169,6 +15186,7 @@ func (d PinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -16549,6 +16567,7 @@ func (d HardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -17443,6 +17462,7 @@ func (d Difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -18172,6 +18192,7 @@ func (d Exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -18997,6 +19018,7 @@ func (d Subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -19888,6 +19910,7 @@ func (d Divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -20596,6 +20619,7 @@ func (d Hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -21283,6 +21307,7 @@ func (d Saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -21961,6 +21986,7 @@ func (d Color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}
@@ -22638,6 +22664,7 @@ func (d Luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
 				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
 				out.A = uint16(da)
+
 				dst.Set(x, y, &out)
 			}
 		}

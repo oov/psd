@@ -37,6 +37,8 @@ LOOPY:
 
       MOVL $0xff, DX
       MOVQ DX, X4
+      MOVL $0xff00, DX
+      MOVQ DX, X5
 
       MOVL AX, X0
       MOVL 0(R14), X1
@@ -44,12 +46,11 @@ LOOPY:
 
       PUNPCKLBW X0, X0
       PUNPCKLWL X0, X0 // sa sa sa sa
-      PXOR X4, X0      // sa sa sa 255-sa
+      PXOR X4, X0 // sa sa sa 255-sa
 
       PUNPCKLBW X1, X1
       PUNPCKLWL X1, X1 // da da da da
-      PSRLDQ $1, X4
-      PXOR X4, X1      // 00 da 255-da da
+      PXOR X5, X1 // 00 da 255-da da
 
       PUNPCKLBW X15, X0
       PUNPCKLBW X15, X1
