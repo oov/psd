@@ -14,7 +14,10 @@ import (
 type name string
 
 func (n name) Lower() name {
-	return name(strings.ToLower(string(n)))
+	if len(n) == 0 {
+		return ""
+	}
+	return name(strings.ToLower(string(n[:1])) + string(n[1:]))
 }
 
 type code string
