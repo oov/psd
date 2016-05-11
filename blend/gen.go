@@ -11,6 +11,12 @@ import (
 	"text/template"
 )
 
+type name string
+
+func (n name) Lower() name {
+	return name(strings.ToLower(string(n)))
+}
+
 type code string
 
 func (c code) Channel(ch string) code {
@@ -44,7 +50,7 @@ func (c code) To8() code {
 }
 
 type mode struct {
-	Name             string
+	Name             name
 	OverMax          bool
 	Code             code
 	CodePerChannel   code
@@ -445,49 +451,39 @@ package blend
 
 import (
 	"image"
-	"image/color"
+	stdcolor "image/color"
 	"image/draw"
-
-	"github.com/oov/psd"
 )
 
-var Mode = map[psd.BlendMode]Drawer{
-	psd.BlendModePassThrough: Normal{},
-	{{range .blendModes}}{{if ne .Name "Add"}}psd.BlendMode{{.Name}}: {{.Name}}{},
-{{end}}{{end}}
-}
+var (
+{{range .blendModes}}	{{.Name}} Drawer = {{.Name.Lower}}{}
+{{end}}
+)
 
 {{range .blendModes}}{{template "blendBase" .}}{{end}}
 `
 
 var blendBase = `
-// {{.Name}} implements the {{.Name}} blend mode.
-type {{.Name}} struct {}
+// {{.Name.Lower}} implements the {{.Name.Lower}} blend mode.
+type {{.Name.Lower}} struct {}
 
 // String implemenets fmt.Stringer interface.
-func (d {{.Name}}) String() string {
+func (d {{.Name.Lower}}) String() string {
 	return {{printf "%q" .Name}}
 }
 
-{{if ne .Name "Add"}}
-// BlendMode returns psd.BlendMode.
-func (d {{.Name}}) BlendMode() psd.BlendMode {
-	return psd.BlendMode{{.Name}}
-}
-{{end}}
-
 // Draw implements image.Drawer interface.
-func (d {{.Name}}) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d {{.Name.Lower}}) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d {{.Name}}) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d {{.Name.Lower}}) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d {{.Name}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 {{define "draw1"}}
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -528,17 +524,17 @@ func (d {{.Name}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 {{template "draw2" printf "draw%sNRGBAToNRGBA" .Name}}
 }
 
-func (d {{.Name}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 {{template "draw1" "RGBAToNRGBA"}}
 {{template "draw2" printf "draw%sRGBAToNRGBA" .Name}}
 }
 
-func (d {{.Name}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 {{template "draw1" "NRGBAToRGBA"}}
 {{template "draw2" printf "draw%sNRGBAToRGBA" .Name}}
 }
 
-func (d {{.Name}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 {{template "draw1" "RGBAToRGBA"}}
 {{template "draw2" printf "draw%sRGBAToRGBA" .Name}}
 }
@@ -812,7 +808,7 @@ var draw{{.Name}}RGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 	{{end}}
 }
 
-func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -821,7 +817,7 @@ func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -886,7 +882,7 @@ func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -1119,7 +1115,7 @@ func (d {{.Name}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 		y0, y1, dy = y1-1, y0-1, -1
 	}
 
-	var out color.RGBA64
+	var out stdcolor.RGBA64
 	sy := sp.Y + y0 - r.Min.Y
 	my := mp.Y + y0 - r.Min.Y
 	for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -1188,64 +1184,64 @@ package blend
 
 import "testing"
 
-{{range .}}func TestDrawFallback{{.Name}}(t *testing.T) { testDrawFallback({{.Name}}{}, t, false) }
+{{range .}}func TestDrawFallback{{.Name}}(t *testing.T) { testDrawFallback({{.Name.Lower}}{}, t, false) }
 {{end}}
 
-{{range .}}func TestDrawFallback{{.Name}}ProtectAlpha(t *testing.T) { testDrawFallback({{.Name}}{}, t, true) }
+{{range .}}func TestDrawFallback{{.Name}}ProtectAlpha(t *testing.T) { testDrawFallback({{.Name.Lower}}{}, t, true) }
 {{end}}
 
-{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToNRGBA({{.Name}}{}, t, false) }
+{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToNRGBA({{.Name.Lower}}{}, t, false) }
 {{end}}
 
-{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawNRGBAToNRGBA({{.Name}}{}, t, true) }
+{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawNRGBAToNRGBA({{.Name.Lower}}{}, t, true) }
 {{end}}
 
-{{range .}}func TestDrawRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawRGBAToNRGBA({{.Name}}{}, t, false) }
+{{range .}}func TestDrawRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawRGBAToNRGBA({{.Name.Lower}}{}, t, false) }
 {{end}}
 
-{{range .}}func TestDrawRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawRGBAToNRGBA({{.Name}}{}, t, true) }
+{{range .}}func TestDrawRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawRGBAToNRGBA({{.Name.Lower}}{}, t, true) }
 {{end}}
 
-{{range .}}func TestDrawNRGBAToRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToRGBA({{.Name}}{}, t, false) }
+{{range .}}func TestDrawNRGBAToRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToRGBA({{.Name.Lower}}{}, t, false) }
 {{end}}
 
-{{range .}}func TestDrawNRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawNRGBAToRGBA({{.Name}}{}, t, true) }
+{{range .}}func TestDrawNRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawNRGBAToRGBA({{.Name.Lower}}{}, t, true) }
 {{end}}
 
-{{range .}}func TestDrawRGBAToRGBA{{.Name}}(t *testing.T) { testDrawRGBAToRGBA({{.Name}}{}, t, false) }
+{{range .}}func TestDrawRGBAToRGBA{{.Name}}(t *testing.T) { testDrawRGBAToRGBA({{.Name.Lower}}{}, t, false) }
 {{end}}
 
-{{range .}}func TestDrawRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawRGBAToRGBA({{.Name}}{}, t, true) }
+{{range .}}func TestDrawRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawRGBAToRGBA({{.Name.Lower}}{}, t, true) }
 {{end}}
 
-{{range .}}func BenchmarkDrawFallback{{.Name}}(b *testing.B) { benchmarkDrawFallback({{.Name}}{}, b, false) }
+{{range .}}func BenchmarkDrawFallback{{.Name}}(b *testing.B) { benchmarkDrawFallback({{.Name.Lower}}{}, b, false) }
 {{end}}
 
-{{range .}}func BenchmarkDrawFallback{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawFallback({{.Name}}{}, b, true) }
+{{range .}}func BenchmarkDrawFallback{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawFallback({{.Name.Lower}}{}, b, true) }
 {{end}}
 
-{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToNRGBA({{.Name}}{}, b, false) }
+{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToNRGBA({{.Name.Lower}}{}, b, false) }
 {{end}}
 
-{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawNRGBAToNRGBA({{.Name}}{}, b, true) }
+{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawNRGBAToNRGBA({{.Name.Lower}}{}, b, true) }
 {{end}}
 
-{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToNRGBA({{.Name}}{}, b, false) }
+{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToNRGBA({{.Name.Lower}}{}, b, false) }
 {{end}}
 
-{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawRGBAToNRGBA({{.Name}}{}, b, true) }
+{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawRGBAToNRGBA({{.Name.Lower}}{}, b, true) }
 {{end}}
 
-{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToRGBA({{.Name}}{}, b, false) }
+{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToRGBA({{.Name.Lower}}{}, b, false) }
 {{end}}
 
-{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawNRGBAToRGBA({{.Name}}{}, b, true) }
+{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawNRGBAToRGBA({{.Name.Lower}}{}, b, true) }
 {{end}}
 
-{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToRGBA({{.Name}}{}, b, false) }
+{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToRGBA({{.Name.Lower}}{}, b, false) }
 {{end}}
 
-{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawRGBAToRGBA({{.Name}}{}, b, true) }
+{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawRGBAToRGBA({{.Name.Lower}}{}, b, true) }
 {{end}}
 `
 

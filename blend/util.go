@@ -6,13 +6,10 @@ import (
 	"image"
 	"image/draw"
 	"math"
-
-	"github.com/oov/psd"
 )
 
 type Drawer interface {
 	draw.Drawer
-	BlendMode() psd.BlendMode
 	DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool)
 }
 

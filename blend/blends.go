@@ -5,67 +5,60 @@ package blend
 
 import (
 	"image"
-	"image/color"
+	stdcolor "image/color"
 	"image/draw"
-
-	"github.com/oov/psd"
 )
 
-var Mode = map[psd.BlendMode]Drawer{
-	psd.BlendModePassThrough:  Normal{},
-	psd.BlendModeNormal:       Normal{},
-	psd.BlendModeDarken:       Darken{},
-	psd.BlendModeMultiply:     Multiply{},
-	psd.BlendModeColorBurn:    ColorBurn{},
-	psd.BlendModeLinearBurn:   LinearBurn{},
-	psd.BlendModeDarkerColor:  DarkerColor{},
-	psd.BlendModeLighten:      Lighten{},
-	psd.BlendModeScreen:       Screen{},
-	psd.BlendModeColorDodge:   ColorDodge{},
-	psd.BlendModeLinearDodge:  LinearDodge{},
-	psd.BlendModeLighterColor: LighterColor{},
-	psd.BlendModeOverlay:      Overlay{},
-	psd.BlendModeSoftLight:    SoftLight{},
-	psd.BlendModeHardLight:    HardLight{},
-	psd.BlendModeLinearLight:  LinearLight{},
-	psd.BlendModeVividLight:   VividLight{},
-	psd.BlendModePinLight:     PinLight{},
-	psd.BlendModeHardMix:      HardMix{},
-	psd.BlendModeDifference:   Difference{},
-	psd.BlendModeExclusion:    Exclusion{},
-	psd.BlendModeSubtract:     Subtract{},
-	psd.BlendModeDivide:       Divide{},
-	psd.BlendModeHue:          Hue{},
-	psd.BlendModeSaturation:   Saturation{},
-	psd.BlendModeColor:        Color{},
-	psd.BlendModeLuminosity:   Luminosity{},
-}
+var (
+	Normal       Drawer = normal{}
+	Darken       Drawer = darken{}
+	Multiply     Drawer = multiply{}
+	ColorBurn    Drawer = colorburn{}
+	LinearBurn   Drawer = linearburn{}
+	DarkerColor  Drawer = darkercolor{}
+	Lighten      Drawer = lighten{}
+	Screen       Drawer = screen{}
+	ColorDodge   Drawer = colordodge{}
+	LinearDodge  Drawer = lineardodge{}
+	LighterColor Drawer = lightercolor{}
+	Add          Drawer = add{}
+	Overlay      Drawer = overlay{}
+	SoftLight    Drawer = softlight{}
+	HardLight    Drawer = hardlight{}
+	LinearLight  Drawer = linearlight{}
+	VividLight   Drawer = vividlight{}
+	PinLight     Drawer = pinlight{}
+	HardMix      Drawer = hardmix{}
+	Difference   Drawer = difference{}
+	Exclusion    Drawer = exclusion{}
+	Subtract     Drawer = subtract{}
+	Divide       Drawer = divide{}
+	Hue          Drawer = hue{}
+	Saturation   Drawer = saturation{}
+	Color        Drawer = color{}
+	Luminosity   Drawer = luminosity{}
+)
 
-// Normal implements the Normal blend mode.
-type Normal struct{}
+// normal implements the normal blend mode.
+type normal struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Normal) String() string {
+func (d normal) String() string {
 	return "Normal"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Normal) BlendMode() psd.BlendMode {
-	return psd.BlendModeNormal
-}
-
 // Draw implements image.Drawer interface.
-func (d Normal) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d normal) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Normal) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d normal) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Normal) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d normal) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -103,7 +96,7 @@ func (d Normal) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d Normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -141,7 +134,7 @@ func (d Normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d Normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -179,7 +172,7 @@ func (d Normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 }
 
-func (d Normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -641,7 +634,7 @@ var drawNormalRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint3
 
 }
 
-func (d Normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -650,7 +643,7 @@ func (d Normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -702,7 +695,7 @@ func (d Normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -759,31 +752,26 @@ func (d Normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	}
 }
 
-// Darken implements the Darken blend mode.
-type Darken struct{}
+// darken implements the darken blend mode.
+type darken struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Darken) String() string {
+func (d darken) String() string {
 	return "Darken"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Darken) BlendMode() psd.BlendMode {
-	return psd.BlendModeDarken
-}
-
 // Draw implements image.Drawer interface.
-func (d Darken) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d darken) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Darken) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d darken) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Darken) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d darken) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -821,7 +809,7 @@ func (d Darken) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d Darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -859,7 +847,7 @@ func (d Darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d Darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -897,7 +885,7 @@ func (d Darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 }
 
-func (d Darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1455,7 +1443,7 @@ var drawDarkenRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint3
 
 }
 
-func (d Darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -1464,7 +1452,7 @@ func (d Darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -1528,7 +1516,7 @@ func (d Darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -1597,31 +1585,26 @@ func (d Darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	}
 }
 
-// Multiply implements the Multiply blend mode.
-type Multiply struct{}
+// multiply implements the multiply blend mode.
+type multiply struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Multiply) String() string {
+func (d multiply) String() string {
 	return "Multiply"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Multiply) BlendMode() psd.BlendMode {
-	return psd.BlendModeMultiply
-}
-
 // Draw implements image.Drawer interface.
-func (d Multiply) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d multiply) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Multiply) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d multiply) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Multiply) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d multiply) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1659,7 +1642,7 @@ func (d Multiply) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d Multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1697,7 +1680,7 @@ func (d Multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d Multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1735,7 +1718,7 @@ func (d Multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 
 }
 
-func (d Multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2197,7 +2180,7 @@ var drawMultiplyRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 
 }
 
-func (d Multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -2206,7 +2189,7 @@ func (d Multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -2258,7 +2241,7 @@ func (d Multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -2315,31 +2298,26 @@ func (d Multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 	}
 }
 
-// ColorBurn implements the ColorBurn blend mode.
-type ColorBurn struct{}
+// colorburn implements the colorburn blend mode.
+type colorburn struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d ColorBurn) String() string {
+func (d colorburn) String() string {
 	return "ColorBurn"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d ColorBurn) BlendMode() psd.BlendMode {
-	return psd.BlendModeColorBurn
-}
-
 // Draw implements image.Drawer interface.
-func (d ColorBurn) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d colorburn) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d ColorBurn) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d colorburn) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d ColorBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d colorburn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2377,7 +2355,7 @@ func (d ColorBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 }
 
-func (d ColorBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d colorburn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2415,7 +2393,7 @@ func (d ColorBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d ColorBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d colorburn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2453,7 +2431,7 @@ func (d ColorBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 
 }
 
-func (d ColorBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d colorburn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3059,7 +3037,7 @@ var drawColorBurnRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 
 }
 
-func (d ColorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d colorburn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -3068,7 +3046,7 @@ func (d ColorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -3138,7 +3116,7 @@ func (d ColorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -3213,31 +3191,26 @@ func (d ColorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	}
 }
 
-// LinearBurn implements the LinearBurn blend mode.
-type LinearBurn struct{}
+// linearburn implements the linearburn blend mode.
+type linearburn struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d LinearBurn) String() string {
+func (d linearburn) String() string {
 	return "LinearBurn"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d LinearBurn) BlendMode() psd.BlendMode {
-	return psd.BlendModeLinearBurn
-}
-
 // Draw implements image.Drawer interface.
-func (d LinearBurn) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d linearburn) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d LinearBurn) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d linearburn) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d LinearBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d linearburn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3275,7 +3248,7 @@ func (d LinearBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 }
 
-func (d LinearBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d linearburn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3313,7 +3286,7 @@ func (d LinearBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 }
 
-func (d LinearBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d linearburn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3351,7 +3324,7 @@ func (d LinearBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 
 }
 
-func (d LinearBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d linearburn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3933,7 +3906,7 @@ var drawLinearBurnRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 
 }
 
-func (d LinearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d linearburn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -3942,7 +3915,7 @@ func (d LinearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -4009,7 +3982,7 @@ func (d LinearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -4081,31 +4054,26 @@ func (d LinearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 }
 
-// DarkerColor implements the DarkerColor blend mode.
-type DarkerColor struct{}
+// darkercolor implements the darkercolor blend mode.
+type darkercolor struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d DarkerColor) String() string {
+func (d darkercolor) String() string {
 	return "DarkerColor"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d DarkerColor) BlendMode() psd.BlendMode {
-	return psd.BlendModeDarkerColor
-}
-
 // Draw implements image.Drawer interface.
-func (d DarkerColor) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d darkercolor) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d DarkerColor) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d darkercolor) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d DarkerColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d darkercolor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4143,7 +4111,7 @@ func (d DarkerColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 
 }
 
-func (d DarkerColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d darkercolor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4181,7 +4149,7 @@ func (d DarkerColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 }
 
-func (d DarkerColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d darkercolor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4219,7 +4187,7 @@ func (d DarkerColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 
 }
 
-func (d DarkerColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d darkercolor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4713,7 +4681,7 @@ var drawDarkerColorRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 
 }
 
-func (d DarkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d darkercolor) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -4722,7 +4690,7 @@ func (d DarkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -4778,7 +4746,7 @@ func (d DarkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -4839,31 +4807,26 @@ func (d DarkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 	}
 }
 
-// Lighten implements the Lighten blend mode.
-type Lighten struct{}
+// lighten implements the lighten blend mode.
+type lighten struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Lighten) String() string {
+func (d lighten) String() string {
 	return "Lighten"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Lighten) BlendMode() psd.BlendMode {
-	return psd.BlendModeLighten
-}
-
 // Draw implements image.Drawer interface.
-func (d Lighten) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d lighten) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Lighten) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d lighten) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Lighten) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lighten) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4901,7 +4864,7 @@ func (d Lighten) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d Lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4939,7 +4902,7 @@ func (d Lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d Lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4977,7 +4940,7 @@ func (d Lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 }
 
-func (d Lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5535,7 +5498,7 @@ var drawLightenRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 
 }
 
-func (d Lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -5544,7 +5507,7 @@ func (d Lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -5608,7 +5571,7 @@ func (d Lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -5677,31 +5640,26 @@ func (d Lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 	}
 }
 
-// Screen implements the Screen blend mode.
-type Screen struct{}
+// screen implements the screen blend mode.
+type screen struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Screen) String() string {
+func (d screen) String() string {
 	return "Screen"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Screen) BlendMode() psd.BlendMode {
-	return psd.BlendModeScreen
-}
-
 // Draw implements image.Drawer interface.
-func (d Screen) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d screen) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Screen) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d screen) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Screen) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d screen) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5739,7 +5697,7 @@ func (d Screen) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d Screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5777,7 +5735,7 @@ func (d Screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d Screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5815,7 +5773,7 @@ func (d Screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 }
 
-func (d Screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6277,7 +6235,7 @@ var drawScreenRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint3
 
 }
 
-func (d Screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -6286,7 +6244,7 @@ func (d Screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -6338,7 +6296,7 @@ func (d Screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -6395,31 +6353,26 @@ func (d Screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	}
 }
 
-// ColorDodge implements the ColorDodge blend mode.
-type ColorDodge struct{}
+// colordodge implements the colordodge blend mode.
+type colordodge struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d ColorDodge) String() string {
+func (d colordodge) String() string {
 	return "ColorDodge"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d ColorDodge) BlendMode() psd.BlendMode {
-	return psd.BlendModeColorDodge
-}
-
 // Draw implements image.Drawer interface.
-func (d ColorDodge) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d colordodge) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d ColorDodge) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d colordodge) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d ColorDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d colordodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6457,7 +6410,7 @@ func (d ColorDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 }
 
-func (d ColorDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d colordodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6495,7 +6448,7 @@ func (d ColorDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 }
 
-func (d ColorDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d colordodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6533,7 +6486,7 @@ func (d ColorDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 
 }
 
-func (d ColorDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d colordodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -7139,7 +7092,7 @@ var drawColorDodgeRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 
 }
 
-func (d ColorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d colordodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -7148,7 +7101,7 @@ func (d ColorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -7218,7 +7171,7 @@ func (d ColorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -7293,31 +7246,26 @@ func (d ColorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 }
 
-// LinearDodge implements the LinearDodge blend mode.
-type LinearDodge struct{}
+// lineardodge implements the lineardodge blend mode.
+type lineardodge struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d LinearDodge) String() string {
+func (d lineardodge) String() string {
 	return "LinearDodge"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d LinearDodge) BlendMode() psd.BlendMode {
-	return psd.BlendModeLinearDodge
-}
-
 // Draw implements image.Drawer interface.
-func (d LinearDodge) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d lineardodge) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d LinearDodge) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d lineardodge) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d LinearDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lineardodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -7355,7 +7303,7 @@ func (d LinearDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 
 }
 
-func (d LinearDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lineardodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -7393,7 +7341,7 @@ func (d LinearDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 }
 
-func (d LinearDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lineardodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -7431,7 +7379,7 @@ func (d LinearDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 
 }
 
-func (d LinearDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lineardodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -7893,7 +7841,7 @@ var drawLinearDodgeRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 
 }
 
-func (d LinearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d lineardodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -7902,7 +7850,7 @@ func (d LinearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -7954,7 +7902,7 @@ func (d LinearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -8011,31 +7959,26 @@ func (d LinearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 	}
 }
 
-// LighterColor implements the LighterColor blend mode.
-type LighterColor struct{}
+// lightercolor implements the lightercolor blend mode.
+type lightercolor struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d LighterColor) String() string {
+func (d lightercolor) String() string {
 	return "LighterColor"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d LighterColor) BlendMode() psd.BlendMode {
-	return psd.BlendModeLighterColor
-}
-
 // Draw implements image.Drawer interface.
-func (d LighterColor) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d lightercolor) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d LighterColor) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d lightercolor) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d LighterColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lightercolor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -8073,7 +8016,7 @@ func (d LighterColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangl
 
 }
 
-func (d LighterColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lightercolor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -8111,7 +8054,7 @@ func (d LighterColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 
 }
 
-func (d LighterColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lightercolor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -8149,7 +8092,7 @@ func (d LighterColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle,
 
 }
 
-func (d LighterColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d lightercolor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -8643,7 +8586,7 @@ var drawLighterColorRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 
 }
 
-func (d LighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d lightercolor) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -8652,7 +8595,7 @@ func (d LighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -8708,7 +8651,7 @@ func (d LighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -8769,26 +8712,26 @@ func (d LighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 	}
 }
 
-// Add implements the Add blend mode.
-type Add struct{}
+// add implements the add blend mode.
+type add struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Add) String() string {
+func (d add) String() string {
 	return "Add"
 }
 
 // Draw implements image.Drawer interface.
-func (d Add) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d add) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Add) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d add) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Add) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d add) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -8826,7 +8769,7 @@ func (d Add) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 
 }
 
-func (d Add) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d add) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -8864,7 +8807,7 @@ func (d Add) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 
 }
 
-func (d Add) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d add) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -8902,7 +8845,7 @@ func (d Add) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 
 }
 
-func (d Add) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d add) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -9364,7 +9307,7 @@ var drawAddRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, 
 
 }
 
-func (d Add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -9373,7 +9316,7 @@ func (d Add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -9425,7 +9368,7 @@ func (d Add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -9482,31 +9425,26 @@ func (d Add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 	}
 }
 
-// Overlay implements the Overlay blend mode.
-type Overlay struct{}
+// overlay implements the overlay blend mode.
+type overlay struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Overlay) String() string {
+func (d overlay) String() string {
 	return "Overlay"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Overlay) BlendMode() psd.BlendMode {
-	return psd.BlendModeOverlay
-}
-
 // Draw implements image.Drawer interface.
-func (d Overlay) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d overlay) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Overlay) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d overlay) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Overlay) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d overlay) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -9544,7 +9482,7 @@ func (d Overlay) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d Overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -9582,7 +9520,7 @@ func (d Overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d Overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -9620,7 +9558,7 @@ func (d Overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 }
 
-func (d Overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -10178,7 +10116,7 @@ var drawOverlayRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 
 }
 
-func (d Overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -10187,7 +10125,7 @@ func (d Overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -10251,7 +10189,7 @@ func (d Overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -10320,31 +10258,26 @@ func (d Overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 	}
 }
 
-// SoftLight implements the SoftLight blend mode.
-type SoftLight struct{}
+// softlight implements the softlight blend mode.
+type softlight struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d SoftLight) String() string {
+func (d softlight) String() string {
 	return "SoftLight"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d SoftLight) BlendMode() psd.BlendMode {
-	return psd.BlendModeSoftLight
-}
-
 // Draw implements image.Drawer interface.
-func (d SoftLight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d softlight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d SoftLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d softlight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d SoftLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d softlight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -10382,7 +10315,7 @@ func (d SoftLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 }
 
-func (d SoftLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d softlight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -10420,7 +10353,7 @@ func (d SoftLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d SoftLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d softlight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -10458,7 +10391,7 @@ func (d SoftLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 
 }
 
-func (d SoftLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d softlight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -11136,7 +11069,7 @@ var drawSoftLightRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 
 }
 
-func (d SoftLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d softlight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -11145,7 +11078,7 @@ func (d SoftLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -11224,7 +11157,7 @@ func (d SoftLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -11308,31 +11241,26 @@ func (d SoftLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	}
 }
 
-// HardLight implements the HardLight blend mode.
-type HardLight struct{}
+// hardlight implements the hardlight blend mode.
+type hardlight struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d HardLight) String() string {
+func (d hardlight) String() string {
 	return "HardLight"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d HardLight) BlendMode() psd.BlendMode {
-	return psd.BlendModeHardLight
-}
-
 // Draw implements image.Drawer interface.
-func (d HardLight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d hardlight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d HardLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d hardlight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d HardLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hardlight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -11370,7 +11298,7 @@ func (d HardLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 }
 
-func (d HardLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hardlight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -11408,7 +11336,7 @@ func (d HardLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d HardLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hardlight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -11446,7 +11374,7 @@ func (d HardLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 
 }
 
-func (d HardLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hardlight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -12028,7 +11956,7 @@ var drawHardLightRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 
 }
 
-func (d HardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d hardlight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -12037,7 +11965,7 @@ func (d HardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -12104,7 +12032,7 @@ func (d HardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -12176,31 +12104,26 @@ func (d HardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	}
 }
 
-// LinearLight implements the LinearLight blend mode.
-type LinearLight struct{}
+// linearlight implements the linearlight blend mode.
+type linearlight struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d LinearLight) String() string {
+func (d linearlight) String() string {
 	return "LinearLight"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d LinearLight) BlendMode() psd.BlendMode {
-	return psd.BlendModeLinearLight
-}
-
 // Draw implements image.Drawer interface.
-func (d LinearLight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d linearlight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d LinearLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d linearlight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d LinearLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d linearlight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -12238,7 +12161,7 @@ func (d LinearLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 
 }
 
-func (d LinearLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d linearlight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -12276,7 +12199,7 @@ func (d LinearLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 }
 
-func (d LinearLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d linearlight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -12314,7 +12237,7 @@ func (d LinearLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 
 }
 
-func (d LinearLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d linearlight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -12872,7 +12795,7 @@ var drawLinearLightRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 
 }
 
-func (d LinearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d linearlight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -12881,7 +12804,7 @@ func (d LinearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -12945,7 +12868,7 @@ func (d LinearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -13014,31 +12937,26 @@ func (d LinearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 	}
 }
 
-// VividLight implements the VividLight blend mode.
-type VividLight struct{}
+// vividlight implements the vividlight blend mode.
+type vividlight struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d VividLight) String() string {
+func (d vividlight) String() string {
 	return "VividLight"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d VividLight) BlendMode() psd.BlendMode {
-	return psd.BlendModeVividLight
-}
-
 // Draw implements image.Drawer interface.
-func (d VividLight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d vividlight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d VividLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d vividlight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d VividLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d vividlight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -13076,7 +12994,7 @@ func (d VividLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 }
 
-func (d VividLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d vividlight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -13114,7 +13032,7 @@ func (d VividLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 }
 
-func (d VividLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d vividlight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -13152,7 +13070,7 @@ func (d VividLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 
 }
 
-func (d VividLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d vividlight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -13950,7 +13868,7 @@ var drawVividLightRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 
 }
 
-func (d VividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d vividlight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -13959,7 +13877,7 @@ func (d VividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -14053,7 +13971,7 @@ func (d VividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -14152,31 +14070,26 @@ func (d VividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 }
 
-// PinLight implements the PinLight blend mode.
-type PinLight struct{}
+// pinlight implements the pinlight blend mode.
+type pinlight struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d PinLight) String() string {
+func (d pinlight) String() string {
 	return "PinLight"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d PinLight) BlendMode() psd.BlendMode {
-	return psd.BlendModePinLight
-}
-
 // Draw implements image.Drawer interface.
-func (d PinLight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d pinlight) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d PinLight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d pinlight) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d PinLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d pinlight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -14214,7 +14127,7 @@ func (d PinLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d PinLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d pinlight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -14252,7 +14165,7 @@ func (d PinLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d PinLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d pinlight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -14290,7 +14203,7 @@ func (d PinLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 
 }
 
-func (d PinLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d pinlight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -15088,7 +15001,7 @@ var drawPinLightRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 
 }
 
-func (d PinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d pinlight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -15097,7 +15010,7 @@ func (d PinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -15191,7 +15104,7 @@ func (d PinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -15290,31 +15203,26 @@ func (d PinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 	}
 }
 
-// HardMix implements the HardMix blend mode.
-type HardMix struct{}
+// hardmix implements the hardmix blend mode.
+type hardmix struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d HardMix) String() string {
+func (d hardmix) String() string {
 	return "HardMix"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d HardMix) BlendMode() psd.BlendMode {
-	return psd.BlendModeHardMix
-}
-
 // Draw implements image.Drawer interface.
-func (d HardMix) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d hardmix) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d HardMix) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d hardmix) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d HardMix) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hardmix) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -15352,7 +15260,7 @@ func (d HardMix) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d HardMix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hardmix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -15390,7 +15298,7 @@ func (d HardMix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d HardMix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hardmix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -15428,7 +15336,7 @@ func (d HardMix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 }
 
-func (d HardMix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hardmix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -16442,7 +16350,7 @@ var drawHardMixRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 
 }
 
-func (d HardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d hardmix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -16451,7 +16359,7 @@ func (d HardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -16572,7 +16480,7 @@ func (d HardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -16698,31 +16606,26 @@ func (d HardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 	}
 }
 
-// Difference implements the Difference blend mode.
-type Difference struct{}
+// difference implements the difference blend mode.
+type difference struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Difference) String() string {
+func (d difference) String() string {
 	return "Difference"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Difference) BlendMode() psd.BlendMode {
-	return psd.BlendModeDifference
-}
-
 // Draw implements image.Drawer interface.
-func (d Difference) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d difference) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Difference) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d difference) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Difference) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d difference) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -16760,7 +16663,7 @@ func (d Difference) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 }
 
-func (d Difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -16798,7 +16701,7 @@ func (d Difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 }
 
-func (d Difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -16836,7 +16739,7 @@ func (d Difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 
 }
 
-func (d Difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -17394,7 +17297,7 @@ var drawDifferenceRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 
 }
 
-func (d Difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -17403,7 +17306,7 @@ func (d Difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -17467,7 +17370,7 @@ func (d Difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -17536,31 +17439,26 @@ func (d Difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 }
 
-// Exclusion implements the Exclusion blend mode.
-type Exclusion struct{}
+// exclusion implements the exclusion blend mode.
+type exclusion struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Exclusion) String() string {
+func (d exclusion) String() string {
 	return "Exclusion"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Exclusion) BlendMode() psd.BlendMode {
-	return psd.BlendModeExclusion
-}
-
 // Draw implements image.Drawer interface.
-func (d Exclusion) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d exclusion) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Exclusion) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d exclusion) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Exclusion) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d exclusion) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -17598,7 +17496,7 @@ func (d Exclusion) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 }
 
-func (d Exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -17636,7 +17534,7 @@ func (d Exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d Exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -17674,7 +17572,7 @@ func (d Exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 
 }
 
-func (d Exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -18136,7 +18034,7 @@ var drawExclusionRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 
 }
 
-func (d Exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -18145,7 +18043,7 @@ func (d Exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -18197,7 +18095,7 @@ func (d Exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -18254,31 +18152,26 @@ func (d Exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	}
 }
 
-// Subtract implements the Subtract blend mode.
-type Subtract struct{}
+// subtract implements the subtract blend mode.
+type subtract struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Subtract) String() string {
+func (d subtract) String() string {
 	return "Subtract"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Subtract) BlendMode() psd.BlendMode {
-	return psd.BlendModeSubtract
-}
-
 // Draw implements image.Drawer interface.
-func (d Subtract) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d subtract) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Subtract) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d subtract) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Subtract) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d subtract) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -18316,7 +18209,7 @@ func (d Subtract) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d Subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -18354,7 +18247,7 @@ func (d Subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d Subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -18392,7 +18285,7 @@ func (d Subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 
 }
 
-func (d Subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -18950,7 +18843,7 @@ var drawSubtractRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 
 }
 
-func (d Subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -18959,7 +18852,7 @@ func (d Subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -19023,7 +18916,7 @@ func (d Subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -19092,31 +18985,26 @@ func (d Subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 	}
 }
 
-// Divide implements the Divide blend mode.
-type Divide struct{}
+// divide implements the divide blend mode.
+type divide struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Divide) String() string {
+func (d divide) String() string {
 	return "Divide"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Divide) BlendMode() psd.BlendMode {
-	return psd.BlendModeDivide
-}
-
 // Draw implements image.Drawer interface.
-func (d Divide) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d divide) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Divide) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d divide) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Divide) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d divide) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -19154,7 +19042,7 @@ func (d Divide) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d Divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -19192,7 +19080,7 @@ func (d Divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d Divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -19230,7 +19118,7 @@ func (d Divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 }
 
-func (d Divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -19836,7 +19724,7 @@ var drawDivideRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint3
 
 }
 
-func (d Divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -19845,7 +19733,7 @@ func (d Divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -19915,7 +19803,7 @@ func (d Divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -19990,31 +19878,26 @@ func (d Divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	}
 }
 
-// Hue implements the Hue blend mode.
-type Hue struct{}
+// hue implements the hue blend mode.
+type hue struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Hue) String() string {
+func (d hue) String() string {
 	return "Hue"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Hue) BlendMode() psd.BlendMode {
-	return psd.BlendModeHue
-}
-
 // Draw implements image.Drawer interface.
-func (d Hue) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d hue) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Hue) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d hue) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Hue) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hue) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -20052,7 +19935,7 @@ func (d Hue) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 
 }
 
-func (d Hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -20090,7 +19973,7 @@ func (d Hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 
 }
 
-func (d Hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -20128,7 +20011,7 @@ func (d Hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 
 }
 
-func (d Hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -20566,7 +20449,7 @@ var drawHueRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, 
 
 }
 
-func (d Hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -20575,7 +20458,7 @@ func (d Hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -20624,7 +20507,7 @@ func (d Hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -20678,31 +20561,26 @@ func (d Hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 	}
 }
 
-// Saturation implements the Saturation blend mode.
-type Saturation struct{}
+// saturation implements the saturation blend mode.
+type saturation struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Saturation) String() string {
+func (d saturation) String() string {
 	return "Saturation"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Saturation) BlendMode() psd.BlendMode {
-	return psd.BlendModeSaturation
-}
-
 // Draw implements image.Drawer interface.
-func (d Saturation) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d saturation) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Saturation) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d saturation) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Saturation) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d saturation) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -20740,7 +20618,7 @@ func (d Saturation) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 }
 
-func (d Saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -20778,7 +20656,7 @@ func (d Saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 }
 
-func (d Saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -20816,7 +20694,7 @@ func (d Saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 
 }
 
-func (d Saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -21254,7 +21132,7 @@ var drawSaturationRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 
 }
 
-func (d Saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -21263,7 +21141,7 @@ func (d Saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -21312,7 +21190,7 @@ func (d Saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -21366,31 +21244,26 @@ func (d Saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 }
 
-// Color implements the Color blend mode.
-type Color struct{}
+// color implements the color blend mode.
+type color struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Color) String() string {
+func (d color) String() string {
 	return "Color"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Color) BlendMode() psd.BlendMode {
-	return psd.BlendModeColor
-}
-
 // Draw implements image.Drawer interface.
-func (d Color) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d color) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Color) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d color) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Color) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d color) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -21428,7 +21301,7 @@ func (d Color) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d Color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -21466,7 +21339,7 @@ func (d Color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 
 }
 
-func (d Color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -21504,7 +21377,7 @@ func (d Color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 
 }
 
-func (d Color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -21934,7 +21807,7 @@ var drawColorRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32
 
 }
 
-func (d Color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -21943,7 +21816,7 @@ func (d Color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -21991,7 +21864,7 @@ func (d Color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -22044,31 +21917,26 @@ func (d Color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 	}
 }
 
-// Luminosity implements the Luminosity blend mode.
-type Luminosity struct{}
+// luminosity implements the luminosity blend mode.
+type luminosity struct{}
 
 // String implemenets fmt.Stringer interface.
-func (d Luminosity) String() string {
+func (d luminosity) String() string {
 	return "Luminosity"
 }
 
-// BlendMode returns psd.BlendMode.
-func (d Luminosity) BlendMode() psd.BlendMode {
-	return psd.BlendModeLuminosity
-}
-
 // Draw implements image.Drawer interface.
-func (d Luminosity) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
+func (d luminosity) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
 	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d Luminosity) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d luminosity) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
 }
 
-func (d Luminosity) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d luminosity) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -22106,7 +21974,7 @@ func (d Luminosity) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 
 }
 
-func (d Luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -22144,7 +22012,7 @@ func (d Luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 
 }
 
-func (d Luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -22182,7 +22050,7 @@ func (d Luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 
 }
 
-func (d Luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -22612,7 +22480,7 @@ var drawLuminosityRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 
 }
 
-func (d Luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -22621,7 +22489,7 @@ func (d Luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	}
 
 	if protectAlpha {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
@@ -22669,7 +22537,7 @@ func (d Luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 			}
 		}
 	} else {
-		var out color.RGBA64
+		var out stdcolor.RGBA64
 		sy := sp.Y + y0 - r.Min.Y
 		my := mp.Y + y0 - r.Min.Y
 		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
