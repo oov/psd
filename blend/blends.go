@@ -257,9 +257,9 @@ var drawNormalNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			b = sb
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -312,9 +312,9 @@ var drawNormalRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			b = sb
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -369,9 +369,9 @@ var drawNormalNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			b = sb
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -430,9 +430,9 @@ var drawNormalRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 			b = sb
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -476,9 +476,9 @@ var drawNormalNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			b = sb
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -526,9 +526,9 @@ var drawNormalRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			b = sb
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -576,9 +576,9 @@ var drawNormalNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			b = sb
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -630,9 +630,9 @@ var drawNormalRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint3
 			b = sb
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -693,9 +693,9 @@ func (d Normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				b = sb
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -748,9 +748,9 @@ func (d Normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				b = sb
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -987,9 +987,9 @@ var drawDarkenNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -1054,9 +1054,9 @@ var drawDarkenRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -1123,9 +1123,9 @@ var drawDarkenNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -1196,9 +1196,9 @@ var drawDarkenRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -1254,9 +1254,9 @@ var drawDarkenNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -1316,9 +1316,9 @@ var drawDarkenRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -1378,9 +1378,9 @@ var drawDarkenNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -1444,9 +1444,9 @@ var drawDarkenRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint3
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -1519,9 +1519,9 @@ func (d Darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 					b = db
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -1586,9 +1586,9 @@ func (d Darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 					b = db
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -1813,9 +1813,9 @@ var drawMultiplyNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			b = sb * db * 32897 >> 23
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -1868,9 +1868,9 @@ var drawMultiplyRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			b = sb * db * 32897 >> 23
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -1925,9 +1925,9 @@ var drawMultiplyNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			b = sb * db * 32897 >> 23
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -1986,9 +1986,9 @@ var drawMultiplyRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			b = sb * db * 32897 >> 23
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -2032,9 +2032,9 @@ var drawMultiplyNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			b = sb * db * 32897 >> 23
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -2082,9 +2082,9 @@ var drawMultiplyRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			b = sb * db * 32897 >> 23
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -2132,9 +2132,9 @@ var drawMultiplyNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			b = sb * db * 32897 >> 23
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -2186,9 +2186,9 @@ var drawMultiplyRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			b = sb * db * 32897 >> 23
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -2249,9 +2249,9 @@ func (d Multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 
 				b = sb * db / 0xffff
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -2304,9 +2304,9 @@ func (d Multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 
 				b = sb * db / 0xffff
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -2549,9 +2549,9 @@ var drawColorBurnNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -2622,9 +2622,9 @@ var drawColorBurnRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -2697,9 +2697,9 @@ var drawColorBurnNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -2776,9 +2776,9 @@ var drawColorBurnRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -2840,9 +2840,9 @@ var drawColorBurnNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -2908,9 +2908,9 @@ var drawColorBurnRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -2976,9 +2976,9 @@ var drawColorBurnNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -3048,9 +3048,9 @@ var drawColorBurnRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -3129,9 +3129,9 @@ func (d ColorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					b = 0xffff - clip16((0xffff-db)*0xffff/sb)
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -3202,9 +3202,9 @@ func (d ColorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					b = 0xffff - clip16((0xffff-db)*0xffff/sb)
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -3444,9 +3444,9 @@ var drawLinearBurnNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -3514,9 +3514,9 @@ var drawLinearBurnRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -3586,9 +3586,9 @@ var drawLinearBurnNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -3662,9 +3662,9 @@ var drawLinearBurnRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -3723,9 +3723,9 @@ var drawLinearBurnNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -3788,9 +3788,9 @@ var drawLinearBurnRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -3853,9 +3853,9 @@ var drawLinearBurnNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -3922,9 +3922,9 @@ var drawLinearBurnRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -4000,9 +4000,9 @@ func (d LinearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					b = 0
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -4070,9 +4070,9 @@ func (d LinearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					b = 0
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -4301,9 +4301,9 @@ var drawDarkerColorNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -4360,9 +4360,9 @@ var drawDarkerColorRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -4421,9 +4421,9 @@ var drawDarkerColorNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -4486,9 +4486,9 @@ var drawDarkerColorRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -4536,9 +4536,9 @@ var drawDarkerColorNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alph
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -4590,9 +4590,9 @@ var drawDarkerColorRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -4644,9 +4644,9 @@ var drawDarkerColorNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -4702,9 +4702,9 @@ var drawDarkerColorRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -4769,9 +4769,9 @@ func (d DarkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 					b = db
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -4828,9 +4828,9 @@ func (d DarkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 					b = db
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -5067,9 +5067,9 @@ var drawLightenNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -5134,9 +5134,9 @@ var drawLightenRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -5203,9 +5203,9 @@ var drawLightenNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -5276,9 +5276,9 @@ var drawLightenRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -5334,9 +5334,9 @@ var drawLightenNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -5396,9 +5396,9 @@ var drawLightenRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -5458,9 +5458,9 @@ var drawLightenNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -5524,9 +5524,9 @@ var drawLightenRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -5599,9 +5599,9 @@ func (d Lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					b = db
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -5666,9 +5666,9 @@ func (d Lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					b = db
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -5893,9 +5893,9 @@ var drawScreenNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -5948,9 +5948,9 @@ var drawScreenRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -6005,9 +6005,9 @@ var drawScreenNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -6066,9 +6066,9 @@ var drawScreenRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -6112,9 +6112,9 @@ var drawScreenNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -6162,9 +6162,9 @@ var drawScreenRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -6212,9 +6212,9 @@ var drawScreenNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -6266,9 +6266,9 @@ var drawScreenRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint3
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -6329,9 +6329,9 @@ func (d Screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				b = sb + db - (sb * db / 0xffff)
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -6384,9 +6384,9 @@ func (d Screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				b = sb + db - (sb * db / 0xffff)
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -6629,9 +6629,9 @@ var drawColorDodgeNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -6702,9 +6702,9 @@ var drawColorDodgeRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -6777,9 +6777,9 @@ var drawColorDodgeNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -6856,9 +6856,9 @@ var drawColorDodgeRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -6920,9 +6920,9 @@ var drawColorDodgeNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -6988,9 +6988,9 @@ var drawColorDodgeRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -7056,9 +7056,9 @@ var drawColorDodgeNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -7128,9 +7128,9 @@ var drawColorDodgeRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -7209,9 +7209,9 @@ func (d ColorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					b = clip16(db * 0xffff / (0xffff - sb))
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -7282,9 +7282,9 @@ func (d ColorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					b = clip16(db * 0xffff / (0xffff - sb))
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -7509,9 +7509,9 @@ var drawLinearDodgeNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y 
 			b = clip8(sb + db)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -7564,9 +7564,9 @@ var drawLinearDodgeRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			b = clip8(sb + db)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -7621,9 +7621,9 @@ var drawLinearDodgeNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			b = clip8(sb + db)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -7682,9 +7682,9 @@ var drawLinearDodgeRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			b = clip8(sb + db)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -7728,9 +7728,9 @@ var drawLinearDodgeNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alph
 			b = clip8(sb + db)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -7778,9 +7778,9 @@ var drawLinearDodgeRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			b = clip8(sb + db)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -7828,9 +7828,9 @@ var drawLinearDodgeNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			b = clip8(sb + db)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -7882,9 +7882,9 @@ var drawLinearDodgeRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			b = clip8(sb + db)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -7945,9 +7945,9 @@ func (d LinearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 
 				b = clip16(sb + db)
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -8000,9 +8000,9 @@ func (d LinearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 
 				b = clip16(sb + db)
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -8231,9 +8231,9 @@ var drawLighterColorNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -8290,9 +8290,9 @@ var drawLighterColorRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -8351,9 +8351,9 @@ var drawLighterColorNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -8416,9 +8416,9 @@ var drawLighterColorRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -8466,9 +8466,9 @@ var drawLighterColorNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alp
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -8520,9 +8520,9 @@ var drawLighterColorRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alph
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -8574,9 +8574,9 @@ var drawLighterColorNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alph
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -8632,9 +8632,9 @@ var drawLighterColorRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -8699,9 +8699,9 @@ func (d LighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 					b = db
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -8758,9 +8758,9 @@ func (d LighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 					b = db
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -9710,9 +9710,9 @@ var drawOverlayNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -9777,9 +9777,9 @@ var drawOverlayRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -9846,9 +9846,9 @@ var drawOverlayNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -9919,9 +9919,9 @@ var drawOverlayRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -9977,9 +9977,9 @@ var drawOverlayNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -10039,9 +10039,9 @@ var drawOverlayRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -10101,9 +10101,9 @@ var drawOverlayNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -10167,9 +10167,9 @@ var drawOverlayRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -10242,9 +10242,9 @@ func (d Overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					b = 0xffff - ((0xffff - ((db - 0x8000) << 1)) * (0xffff - sb) / 0xffff)
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -10309,9 +10309,9 @@ func (d Overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					b = 0xffff - ((0xffff - ((db - 0x8000) << 1)) * (0xffff - sb) / 0xffff)
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -10563,9 +10563,9 @@ var drawSoftLightNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -10645,9 +10645,9 @@ var drawSoftLightRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -10729,9 +10729,9 @@ var drawSoftLightNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -10817,9 +10817,9 @@ var drawSoftLightRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -10890,9 +10890,9 @@ var drawSoftLightNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -10967,9 +10967,9 @@ var drawSoftLightRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -11044,9 +11044,9 @@ var drawSoftLightNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -11125,9 +11125,9 @@ var drawSoftLightRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -11215,9 +11215,9 @@ func (d SoftLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					b = db + (((sb << 1) - 0xffff) * (tmp - db) / 0xffff)
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -11297,9 +11297,9 @@ func (d SoftLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					b = db + (((sb << 1) - 0xffff) * (tmp - db) / 0xffff)
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -11539,9 +11539,9 @@ var drawHardLightNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -11609,9 +11609,9 @@ var drawHardLightRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -11681,9 +11681,9 @@ var drawHardLightNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -11757,9 +11757,9 @@ var drawHardLightRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -11818,9 +11818,9 @@ var drawHardLightNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -11883,9 +11883,9 @@ var drawHardLightRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -11948,9 +11948,9 @@ var drawHardLightNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -12017,9 +12017,9 @@ var drawHardLightRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -12095,9 +12095,9 @@ func (d HardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					b = db + tmp - (db * tmp / 0xffff)
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -12165,9 +12165,9 @@ func (d HardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					b = db + tmp - (db * tmp / 0xffff)
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -12404,9 +12404,9 @@ var drawLinearLightNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -12471,9 +12471,9 @@ var drawLinearLightRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -12540,9 +12540,9 @@ var drawLinearLightNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -12613,9 +12613,9 @@ var drawLinearLightRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -12671,9 +12671,9 @@ var drawLinearLightNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alph
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -12733,9 +12733,9 @@ var drawLinearLightRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -12795,9 +12795,9 @@ var drawLinearLightNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -12861,9 +12861,9 @@ var drawLinearLightRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -12936,9 +12936,9 @@ func (d LinearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 					b = clip16(db + ((sb - 0x8000) << 1))
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -13003,9 +13003,9 @@ func (d LinearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 					b = clip16(db + ((sb - 0x8000) << 1))
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -13272,9 +13272,9 @@ var drawVividLightNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -13369,9 +13369,9 @@ var drawVividLightRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -13468,9 +13468,9 @@ var drawVividLightNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -13571,9 +13571,9 @@ var drawVividLightRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -13659,9 +13659,9 @@ var drawVividLightNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -13751,9 +13751,9 @@ var drawVividLightRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -13843,9 +13843,9 @@ var drawVividLightNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -13939,9 +13939,9 @@ var drawVividLightRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -14044,9 +14044,9 @@ func (d VividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					}
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -14141,9 +14141,9 @@ func (d VividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					}
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -14410,9 +14410,9 @@ var drawPinLightNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -14507,9 +14507,9 @@ var drawPinLightRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -14606,9 +14606,9 @@ var drawPinLightNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -14709,9 +14709,9 @@ var drawPinLightRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -14797,9 +14797,9 @@ var drawPinLightNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -14889,9 +14889,9 @@ var drawPinLightRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -14981,9 +14981,9 @@ var drawPinLightNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -15077,9 +15077,9 @@ var drawPinLightRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -15182,9 +15182,9 @@ func (d PinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 					}
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -15279,9 +15279,9 @@ func (d PinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 					}
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -15575,9 +15575,9 @@ var drawHardMixNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -15699,9 +15699,9 @@ var drawHardMixRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -15825,9 +15825,9 @@ var drawHardMixNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -15955,9 +15955,9 @@ var drawHardMixRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -16070,9 +16070,9 @@ var drawHardMixNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -16189,9 +16189,9 @@ var drawHardMixRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -16308,9 +16308,9 @@ var drawHardMixNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -16431,9 +16431,9 @@ var drawHardMixRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -16563,9 +16563,9 @@ func (d HardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					b = 0xffff
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -16687,9 +16687,9 @@ func (d HardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					b = 0xffff
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -16926,9 +16926,9 @@ var drawDifferenceNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -16993,9 +16993,9 @@ var drawDifferenceRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -17062,9 +17062,9 @@ var drawDifferenceNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -17135,9 +17135,9 @@ var drawDifferenceRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -17193,9 +17193,9 @@ var drawDifferenceNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -17255,9 +17255,9 @@ var drawDifferenceRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -17317,9 +17317,9 @@ var drawDifferenceNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -17383,9 +17383,9 @@ var drawDifferenceRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -17458,9 +17458,9 @@ func (d Difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					b = db - sb
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -17525,9 +17525,9 @@ func (d Difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					b = db - sb
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -17752,9 +17752,9 @@ var drawExclusionNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -17807,9 +17807,9 @@ var drawExclusionRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -17864,9 +17864,9 @@ var drawExclusionNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -17925,9 +17925,9 @@ var drawExclusionRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -17971,9 +17971,9 @@ var drawExclusionNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -18021,9 +18021,9 @@ var drawExclusionRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -18071,9 +18071,9 @@ var drawExclusionNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -18125,9 +18125,9 @@ var drawExclusionRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -18188,9 +18188,9 @@ func (d Exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				b = db + sb - (db * sb / 0x8000)
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -18243,9 +18243,9 @@ func (d Exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				b = db + sb - (db * sb / 0x8000)
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -18482,9 +18482,9 @@ var drawSubtractNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -18549,9 +18549,9 @@ var drawSubtractRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -18618,9 +18618,9 @@ var drawSubtractNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -18691,9 +18691,9 @@ var drawSubtractRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -18749,9 +18749,9 @@ var drawSubtractNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -18811,9 +18811,9 @@ var drawSubtractRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -18873,9 +18873,9 @@ var drawSubtractNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha ui
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -18939,9 +18939,9 @@ var drawSubtractRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -19014,9 +19014,9 @@ func (d Subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 					b = db - sb
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -19081,9 +19081,9 @@ func (d Subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 					b = db - sb
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -19326,9 +19326,9 @@ var drawDivideNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -19399,9 +19399,9 @@ var drawDivideRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -19474,9 +19474,9 @@ var drawDivideNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -19553,9 +19553,9 @@ var drawDivideRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 			}
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -19617,9 +19617,9 @@ var drawDivideNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uin
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -19685,9 +19685,9 @@ var drawDivideRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -19753,9 +19753,9 @@ var drawDivideNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -19825,9 +19825,9 @@ var drawDivideRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint3
 			}
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -19906,9 +19906,9 @@ func (d Divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 					b = clip16(db * 0xffff / sb)
 				}
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -19979,9 +19979,9 @@ func (d Divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 					b = clip16(db * 0xffff / sb)
 				}
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -20203,9 +20203,9 @@ var drawHueNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMi
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -20255,9 +20255,9 @@ var drawHueRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -20309,9 +20309,9 @@ var drawHueNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -20367,9 +20367,9 @@ var drawHueRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin 
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -20410,9 +20410,9 @@ var drawHueNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -20457,9 +20457,9 @@ var drawHueRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32,
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -20504,9 +20504,9 @@ var drawHueNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32,
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -20555,9 +20555,9 @@ var drawHueRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, 
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -20615,9 +20615,9 @@ func (d Hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 				r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
 				r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -20667,9 +20667,9 @@ func (d Hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 				r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
 				r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -20891,9 +20891,9 @@ var drawSaturationNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -20943,9 +20943,9 @@ var drawSaturationRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -20997,9 +20997,9 @@ var drawSaturationNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -21055,9 +21055,9 @@ var drawSaturationRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -21098,9 +21098,9 @@ var drawSaturationNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -21145,9 +21145,9 @@ var drawSaturationRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -21192,9 +21192,9 @@ var drawSaturationNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -21243,9 +21243,9 @@ var drawSaturationRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -21303,9 +21303,9 @@ func (d Saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 				r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
 				r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -21355,9 +21355,9 @@ func (d Saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 				r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
 				r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -21578,9 +21578,9 @@ var drawColorNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -21629,9 +21629,9 @@ var drawColorRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -21682,9 +21682,9 @@ var drawColorNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -21739,9 +21739,9 @@ var drawColorRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMi
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -21781,9 +21781,9 @@ var drawColorNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -21827,9 +21827,9 @@ var drawColorRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint3
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -21873,9 +21873,9 @@ var drawColorNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint3
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -21923,9 +21923,9 @@ var drawColorRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -21982,9 +21982,9 @@ func (d Color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 
 				r, g, b = setLum16(sr, sg, sb, lum16(dr, dg, db))
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -22033,9 +22033,9 @@ func (d Color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 
 				r, g, b = setLum16(sr, sg, sb, lum16(dr, dg, db))
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -22256,9 +22256,9 @@ var drawLuminosityNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y i
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -22307,9 +22307,9 @@ var drawLuminosityRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 
 		}
 		dPos += dDelta
@@ -22360,9 +22360,9 @@ var drawLuminosityNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y in
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -22417,9 +22417,9 @@ var drawLuminosityRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -22459,9 +22459,9 @@ var drawLuminosityNRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -22505,9 +22505,9 @@ var drawLuminosityRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[i+2] = uint8((b*a1 + db*a3) / da)
+			dpix[i+1] = uint8((g*a1 + dg*a3) / da)
+			dpix[i+0] = uint8((r*a1 + dr*a3) / da)
 
 		}
 		dPos += dDelta
@@ -22551,9 +22551,9 @@ var drawLuminosityNRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -22601,9 +22601,9 @@ var drawLuminosityRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[i+3] = uint8(da)
-			dpix[i+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[i+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[i+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[i+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[i+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[i+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dDelta
@@ -22660,9 +22660,9 @@ func (d Luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				r, g, b = setLum16(dr, dg, db, lum16(sr, sg, sb))
 
-				out.R = uint16(clip16((r*a1 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -22711,9 +22711,9 @@ func (d Luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				r, g, b = setLum16(dr, dg, db, lum16(sr, sg, sb))
 
-				out.R = uint16(clip16((r*a1 + sr*a2 + dr*a3) / 0xffff))
-				out.G = uint16(clip16((g*a1 + sg*a2 + dg*a3) / 0xffff))
-				out.B = uint16(clip16((b*a1 + sb*a2 + db*a3) / 0xffff))
+				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
