@@ -67,65 +67,77 @@ func verify(a image.Image, b image.Image) (float64, error) {
 	return float64(er) / float64(bounds.Dx()*bounds.Dy()), nil
 }
 
-func loadTestImages() (image.Image, image.Image, error) {
-	return loadImages("png/bg.png", "png/fg.png")
-}
-
-func loadNRGBAToNRGBAImages() (*image.NRGBA, *image.NRGBA, error) {
-	bg, fg, err := loadTestImages()
+func loadNRGBAToNRGBAImages(path1 string, path2 string) (*image.NRGBA, *image.NRGBA, error) {
+	src1, err := loadImage(path1)
+	if err != nil {
+		return nil, nil, err
+	}
+	src2, err := loadImage(path2)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	img := image.NewNRGBA(bg.Bounds())
-	draw.Draw(img, bg.Bounds(), bg, image.Pt(0, 0), draw.Over)
-	img2 := image.NewNRGBA(fg.Bounds())
-	draw.Draw(img2, fg.Bounds(), fg, image.Pt(0, 0), draw.Over)
+	img := image.NewNRGBA(src1.Bounds())
+	draw.Draw(img, src1.Bounds(), src1, image.Pt(0, 0), draw.Over)
+	img2 := image.NewNRGBA(src2.Bounds())
+	draw.Draw(img2, src2.Bounds(), src2, image.Pt(0, 0), draw.Over)
 	return img, img2, nil
 }
 
-func loadRGBAToNRGBAImages() (*image.NRGBA, *image.RGBA, error) {
-	bg, fg, err := loadTestImages()
+func loadRGBAToNRGBAImages(path1 string, path2 string) (*image.NRGBA, *image.RGBA, error) {
+	src1, err := loadImage(path1)
+	if err != nil {
+		return nil, nil, err
+	}
+	src2, err := loadImage(path2)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	img := image.NewNRGBA(bg.Bounds())
-	draw.Draw(img, bg.Bounds(), bg, image.Pt(0, 0), draw.Over)
-	img2 := image.NewRGBA(fg.Bounds())
-	draw.Draw(img2, fg.Bounds(), fg, image.Pt(0, 0), draw.Over)
+	img := image.NewNRGBA(src1.Bounds())
+	draw.Draw(img, src1.Bounds(), src1, image.Pt(0, 0), draw.Over)
+	img2 := image.NewRGBA(src2.Bounds())
+	draw.Draw(img2, src2.Bounds(), src2, image.Pt(0, 0), draw.Over)
 	return img, img2, nil
 }
 
-func loadNRGBAToRGBAImages() (*image.RGBA, *image.NRGBA, error) {
-	bg, fg, err := loadTestImages()
+func loadNRGBAToRGBAImages(path1 string, path2 string) (*image.RGBA, *image.NRGBA, error) {
+	src1, err := loadImage(path1)
+	if err != nil {
+		return nil, nil, err
+	}
+	src2, err := loadImage(path2)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	img := image.NewRGBA(bg.Bounds())
-	draw.Draw(img, bg.Bounds(), bg, image.Pt(0, 0), draw.Over)
-	img2 := image.NewNRGBA(fg.Bounds())
-	draw.Draw(img2, fg.Bounds(), fg, image.Pt(0, 0), draw.Over)
+	img := image.NewRGBA(src1.Bounds())
+	draw.Draw(img, src1.Bounds(), src1, image.Pt(0, 0), draw.Over)
+	img2 := image.NewNRGBA(src2.Bounds())
+	draw.Draw(img2, src2.Bounds(), src2, image.Pt(0, 0), draw.Over)
 	return img, img2, nil
 }
 
-func loadRGBAToRGBAImages() (*image.RGBA, *image.RGBA, error) {
-	bg, fg, err := loadTestImages()
+func loadRGBAToRGBAImages(path1 string, path2 string) (*image.RGBA, *image.RGBA, error) {
+	src1, err := loadImage(path1)
+	if err != nil {
+		return nil, nil, err
+	}
+	src2, err := loadImage(path2)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	img := image.NewRGBA(bg.Bounds())
-	draw.Draw(img, bg.Bounds(), bg, image.Pt(0, 0), draw.Over)
-	img2 := image.NewRGBA(fg.Bounds())
-	draw.Draw(img2, fg.Bounds(), fg, image.Pt(0, 0), draw.Over)
+	img := image.NewRGBA(src1.Bounds())
+	draw.Draw(img, src1.Bounds(), src1, image.Pt(0, 0), draw.Over)
+	img2 := image.NewRGBA(src2.Bounds())
+	draw.Draw(img2, src2.Bounds(), src2, image.Pt(0, 0), draw.Over)
 	return img, img2, nil
 }
 
-func testDrawFallback(d drawer, t *testing.T, protectAlpha bool) {
+func testDrawFallback(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawFallback"
-	img, img2, err := loadNRGBAToNRGBAImages()
+	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
@@ -155,9 +167,9 @@ func testDrawFallback(d drawer, t *testing.T, protectAlpha bool) {
 	}
 }
 
-func testDrawNRGBAToNRGBA(d drawer, t *testing.T, protectAlpha bool) {
+func testDrawNRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawNRGBAToNRGBA"
-	img, img2, err := loadNRGBAToNRGBAImages()
+	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
@@ -187,9 +199,9 @@ func testDrawNRGBAToNRGBA(d drawer, t *testing.T, protectAlpha bool) {
 	}
 }
 
-func testDrawRGBAToNRGBA(d drawer, t *testing.T, protectAlpha bool) {
+func testDrawRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawRGBAToNRGBA"
-	img, img2, err := loadRGBAToNRGBAImages()
+	img, img2, err := loadRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
@@ -219,9 +231,9 @@ func testDrawRGBAToNRGBA(d drawer, t *testing.T, protectAlpha bool) {
 	}
 }
 
-func testDrawNRGBAToRGBA(d drawer, t *testing.T, protectAlpha bool) {
+func testDrawNRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawNRGBAToRGBA"
-	img, img2, err := loadNRGBAToRGBAImages()
+	img, img2, err := loadNRGBAToRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
@@ -251,9 +263,9 @@ func testDrawNRGBAToRGBA(d drawer, t *testing.T, protectAlpha bool) {
 	}
 }
 
-func testDrawRGBAToRGBA(d drawer, t *testing.T, protectAlpha bool) {
+func testDrawRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawRGBAToRGBA"
-	img, img2, err := loadRGBAToRGBAImages()
+	img, img2, err := loadRGBAToRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
@@ -283,8 +295,8 @@ func testDrawRGBAToRGBA(d drawer, t *testing.T, protectAlpha bool) {
 	}
 }
 
-func benchmarkDrawFallback(d drawer, b *testing.B, protectAlpha bool) {
-	img, img2, err := loadNRGBAToNRGBAImages()
+func benchmarkDrawFallback(b *testing.B, path1 string, path2 string, d drawer, protectAlpha bool) {
+	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
@@ -294,8 +306,8 @@ func benchmarkDrawFallback(d drawer, b *testing.B, protectAlpha bool) {
 	}
 }
 
-func benchmarkDrawNRGBAToNRGBA(d drawer, b *testing.B, protectAlpha bool) {
-	img, img2, err := loadNRGBAToNRGBAImages()
+func benchmarkDrawNRGBAToNRGBA(b *testing.B, path1 string, path2 string, d drawer, protectAlpha bool) {
+	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
@@ -305,8 +317,8 @@ func benchmarkDrawNRGBAToNRGBA(d drawer, b *testing.B, protectAlpha bool) {
 	}
 }
 
-func benchmarkDrawRGBAToNRGBA(d drawer, b *testing.B, protectAlpha bool) {
-	img, img2, err := loadRGBAToNRGBAImages()
+func benchmarkDrawRGBAToNRGBA(b *testing.B, path1 string, path2 string, d drawer, protectAlpha bool) {
+	img, img2, err := loadRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
@@ -316,8 +328,8 @@ func benchmarkDrawRGBAToNRGBA(d drawer, b *testing.B, protectAlpha bool) {
 	}
 }
 
-func benchmarkDrawNRGBAToRGBA(d drawer, b *testing.B, protectAlpha bool) {
-	img, img2, err := loadNRGBAToRGBAImages()
+func benchmarkDrawNRGBAToRGBA(b *testing.B, path1 string, path2 string, d drawer, protectAlpha bool) {
+	img, img2, err := loadNRGBAToRGBAImages(path1, path2)
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
@@ -327,8 +339,8 @@ func benchmarkDrawNRGBAToRGBA(d drawer, b *testing.B, protectAlpha bool) {
 	}
 }
 
-func benchmarkDrawRGBAToRGBA(d drawer, b *testing.B, protectAlpha bool) {
-	img, img2, err := loadRGBAToRGBAImages()
+func benchmarkDrawRGBAToRGBA(b *testing.B, path1 string, path2 string, d drawer, protectAlpha bool) {
+	img, img2, err := loadRGBAToRGBAImages(path1, path2)
 	if err != nil {
 		b.Fatalf("%v", err)
 	}

@@ -921,64 +921,86 @@ package blend
 
 import "testing"
 
-{{range .}}func TestDrawFallback{{.Name}}(t *testing.T) { testDrawFallback({{.Name.Lower}}{}, t, false) }
-{{end}}
+{{range .}}
+	func TestDrawFallback{{.Name}}(t *testing.T) {
+		testDrawFallback(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
+	}
 
-{{range .}}func TestDrawFallback{{.Name}}ProtectAlpha(t *testing.T) { testDrawFallback({{.Name.Lower}}{}, t, true) }
-{{end}}
+	func TestDrawFallback{{.Name}}ProtectAlpha(t *testing.T) {
+		testDrawFallback(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+	}
 
-{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToNRGBA({{.Name.Lower}}{}, t, false) }
-{{end}}
+	func TestDrawNRGBAToNRGBA{{.Name}}(t *testing.T) {
+		testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
+	}
 
-{{range .}}func TestDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawNRGBAToNRGBA({{.Name.Lower}}{}, t, true) }
-{{end}}
+	func TestDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) {
+		testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+	}
 
-{{range .}}func TestDrawRGBAToNRGBA{{.Name}}(t *testing.T) { testDrawRGBAToNRGBA({{.Name.Lower}}{}, t, false) }
-{{end}}
+	func TestDrawRGBAToNRGBA{{.Name}}(t *testing.T) {
+		testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
+	}
 
-{{range .}}func TestDrawRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawRGBAToNRGBA({{.Name.Lower}}{}, t, true) }
-{{end}}
+	func TestDrawRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) {
+		testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+	}
 
-{{range .}}func TestDrawNRGBAToRGBA{{.Name}}(t *testing.T) { testDrawNRGBAToRGBA({{.Name.Lower}}{}, t, false) }
-{{end}}
+	func TestDrawNRGBAToRGBA{{.Name}}(t *testing.T) {
+		testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
+	}
 
-{{range .}}func TestDrawNRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawNRGBAToRGBA({{.Name.Lower}}{}, t, true) }
-{{end}}
+	func TestDrawNRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) {
+		testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+	}
 
-{{range .}}func TestDrawRGBAToRGBA{{.Name}}(t *testing.T) { testDrawRGBAToRGBA({{.Name.Lower}}{}, t, false) }
-{{end}}
+	func TestDrawRGBAToRGBA{{.Name}}(t *testing.T) {
+		testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
+	}
 
-{{range .}}func TestDrawRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) { testDrawRGBAToRGBA({{.Name.Lower}}{}, t, true) }
-{{end}}
+	func TestDrawRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) {
+		testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+	}
 
-{{range .}}func BenchmarkDrawFallback{{.Name}}(b *testing.B) { benchmarkDrawFallback({{.Name.Lower}}{}, b, false) }
-{{end}}
+	func BenchmarkDrawFallback{{.Name}}(b *testing.B) {
+		benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
+	}
 
-{{range .}}func BenchmarkDrawFallback{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawFallback({{.Name.Lower}}{}, b, true) }
-{{end}}
+	func BenchmarkDrawFallback{{.Name}}ProtectAlpha(b *testing.B) {
+		benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+	}
 
-{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToNRGBA({{.Name.Lower}}{}, b, false) }
-{{end}}
+	func BenchmarkDrawNRGBAToNRGBA{{.Name}}(b *testing.B) {
+		benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
+	}
 
-{{range .}}func BenchmarkDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawNRGBAToNRGBA({{.Name.Lower}}{}, b, true) }
-{{end}}
+	func BenchmarkDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) {
+		benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+	}
 
-{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToNRGBA({{.Name.Lower}}{}, b, false) }
-{{end}}
+	func BenchmarkDrawRGBAToNRGBA{{.Name}}(b *testing.B) {
+		benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
+	}
 
-{{range .}}func BenchmarkDrawRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawRGBAToNRGBA({{.Name.Lower}}{}, b, true) }
-{{end}}
+	func BenchmarkDrawRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) {
+		benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+	}
 
-{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawNRGBAToRGBA({{.Name.Lower}}{}, b, false) }
-{{end}}
+	func BenchmarkDrawNRGBAToRGBA{{.Name}}(b *testing.B) {
+		benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
+	}
 
-{{range .}}func BenchmarkDrawNRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawNRGBAToRGBA({{.Name.Lower}}{}, b, true) }
-{{end}}
+	func BenchmarkDrawNRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) {
+		benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+	}
 
-{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}(b *testing.B) { benchmarkDrawRGBAToRGBA({{.Name.Lower}}{}, b, false) }
-{{end}}
+	func BenchmarkDrawRGBAToRGBA{{.Name}}(b *testing.B) {
+		benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
+	}
 
-{{range .}}func BenchmarkDrawRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) { benchmarkDrawRGBAToRGBA({{.Name.Lower}}{}, b, true) }
+	func BenchmarkDrawRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) {
+		benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+	}
 {{end}}
 `
 
