@@ -6,6 +6,8 @@ import (
 	"image"
 	"image/draw"
 	"math"
+	"runtime"
+	"sync"
 )
 
 type Drawer interface {
@@ -19,6 +21,36 @@ type drawer interface {
 	drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool)
 	drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool)
 	drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool)
+}
+
+type drawfunc func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int)
+
+func (f drawfunc) Parallel(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+	n := runtime.GOMAXPROCS(0)
+	for n > 1 && n<<1 > y {
+		n--
+	}
+	if n == 1 {
+		f(dest, src, alpha, y, xMin, xMax, dDelta, sDelta, xDelta)
+		return
+	}
+	var wg sync.WaitGroup
+	wg.Add(n)
+	step := y / n
+	for i := 1; i < n; i++ {
+		go func(d []byte, s []byte) {
+			defer wg.Done()
+			f(d, s, alpha, step, xMin, xMax, dDelta, sDelta, xDelta)
+		}(dest, src)
+		dest = dest[dDelta*step:]
+		src = src[sDelta*step:]
+		y -= step
+	}
+	go func() {
+		defer wg.Done()
+		f(dest, src, alpha, y, xMin, xMax, dDelta, sDelta, xDelta)
+	}()
+	wg.Wait()
 }
 
 func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {

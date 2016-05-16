@@ -474,11 +474,13 @@ func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Recta
 	}
 {{end}}
 {{define "draw2"}}
+	var f drawfunc
 	if protectAlpha {
-		{{.}}ProtectAlpha(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+		f = {{.}}ProtectAlpha
 	} else {
-		{{.}}(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+		f = {{.}}
 	}
+	f.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 {{end}}
 {{template "draw1" "NRGBAToNRGBA"}}
 {{template "draw2" printf "draw%sNRGBAToNRGBA" .Name}}
@@ -499,7 +501,7 @@ func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangl
 {{template "draw2" printf "draw%sRGBAToRGBA" .Name}}
 }
 
-var draw{{.Name}}NRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 {{define "drawMain1_SrcIsNotNRGBA"}}
 	dPos, sPos := 0, 0
 	alpha *= 32897
@@ -604,7 +606,7 @@ var draw{{.Name}}NRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 {{end}}
 }
 
-var draw{{.Name}}RGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMain1_SrcIsNotNRGBA" true}}
 	{{template "drawMain2_DestIsNotNRGBA" false}}
 	{{template "drawMain3" .}}
@@ -615,7 +617,7 @@ var draw{{.Name}}RGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 	{{end}}
 }
 
-var draw{{.Name}}NRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMain1_SrcIsNotNRGBA" false}}
 	{{template "drawMain2_DestIsNotNRGBA" true}}
 	{{template "drawMain3" .}}
@@ -626,7 +628,7 @@ var draw{{.Name}}NRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 	{{end}}
 }
 
-var draw{{.Name}}RGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMain1_SrcIsNotNRGBA" true}}
 	{{template "drawMain2_DestIsNotNRGBA" true}}
 	{{template "drawMain3" .}}
@@ -637,7 +639,7 @@ var draw{{.Name}}RGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 	{{end}}
 }
 
-var draw{{.Name}}NRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToNRGBAProtectAlpha drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 {{define "drawMainProtectAlpha1_SrcIsNotNRGBA"}}
 	alpha *= 32897
 	dPos, sPos := 0, 0
@@ -735,7 +737,7 @@ var draw{{.Name}}NRGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha 
 {{end}}
 }
 
-var draw{{.Name}}RGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToNRGBAProtectAlpha drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMainProtectAlpha1_SrcIsNotNRGBA" true}}
 	{{template "drawMainProtectAlpha2_DestIsNotNRGBA" false}}
 	{{template "drawMainProtectAlpha3" .}}
@@ -746,7 +748,7 @@ var draw{{.Name}}RGBAToNRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 	{{end}}
 }
 
-var draw{{.Name}}NRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToRGBAProtectAlpha drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMainProtectAlpha1_SrcIsNotNRGBA" false}}
 	{{template "drawMainProtectAlpha2_DestIsNotNRGBA" true}}
 	{{template "drawMainProtectAlpha3" .}}
@@ -757,7 +759,7 @@ var draw{{.Name}}NRGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha u
 	{{end}}
 }
 
-var draw{{.Name}}RGBAToRGBAProtectAlpha = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToRGBAProtectAlpha drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMainProtectAlpha1_SrcIsNotNRGBA" true}}
 	{{template "drawMainProtectAlpha2_DestIsNotNRGBA" true}}
 	{{template "drawMainProtectAlpha3" .}}
