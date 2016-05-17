@@ -922,83 +922,83 @@ package blend
 import "testing"
 
 {{range .}}
-	func TestDrawFallback{{.Name}}(t *testing.T) {
+	func TestBlendFallback{{.Name}}(t *testing.T) {
 		testDrawFallback(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
 	}
 
-	func TestDrawFallback{{.Name}}ProtectAlpha(t *testing.T) {
+	func TestBlendFallback{{.Name}}ProtectAlpha(t *testing.T) {
 		testDrawFallback(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
 	}
 
-	func TestDrawNRGBAToNRGBA{{.Name}}(t *testing.T) {
+	func TestBlendNRGBAToNRGBA{{.Name}}(t *testing.T) {
 		testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
 	}
 
-	func TestDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) {
+	func TestBlendNRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) {
 		testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
 	}
 
-	func TestDrawRGBAToNRGBA{{.Name}}(t *testing.T) {
+	func TestBlendRGBAToNRGBA{{.Name}}(t *testing.T) {
 		testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
 	}
 
-	func TestDrawRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) {
+	func TestBlendRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) {
 		testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
 	}
 
-	func TestDrawNRGBAToRGBA{{.Name}}(t *testing.T) {
+	func TestBlendNRGBAToRGBA{{.Name}}(t *testing.T) {
 		testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
 	}
 
-	func TestDrawNRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) {
+	func TestBlendNRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) {
 		testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
 	}
 
-	func TestDrawRGBAToRGBA{{.Name}}(t *testing.T) {
+	func TestBlendRGBAToRGBA{{.Name}}(t *testing.T) {
 		testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
 	}
 
-	func TestDrawRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) {
+	func TestBlendRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) {
 		testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
 	}
 
-	func BenchmarkDrawFallback{{.Name}}(b *testing.B) {
+	func BenchmarkBlendFallback{{.Name}}(b *testing.B) {
 		benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
 	}
 
-	func BenchmarkDrawFallback{{.Name}}ProtectAlpha(b *testing.B) {
+	func BenchmarkBlendFallback{{.Name}}ProtectAlpha(b *testing.B) {
 		benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
 	}
 
-	func BenchmarkDrawNRGBAToNRGBA{{.Name}}(b *testing.B) {
+	func BenchmarkBlendNRGBAToNRGBA{{.Name}}(b *testing.B) {
 		benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
 	}
 
-	func BenchmarkDrawNRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) {
+	func BenchmarkBlendNRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) {
 		benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
 	}
 
-	func BenchmarkDrawRGBAToNRGBA{{.Name}}(b *testing.B) {
+	func BenchmarkBlendRGBAToNRGBA{{.Name}}(b *testing.B) {
 		benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
 	}
 
-	func BenchmarkDrawRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) {
+	func BenchmarkBlendRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) {
 		benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
 	}
 
-	func BenchmarkDrawNRGBAToRGBA{{.Name}}(b *testing.B) {
+	func BenchmarkBlendNRGBAToRGBA{{.Name}}(b *testing.B) {
 		benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
 	}
 
-	func BenchmarkDrawNRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) {
+	func BenchmarkBlendNRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) {
 		benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
 	}
 
-	func BenchmarkDrawRGBAToRGBA{{.Name}}(b *testing.B) {
+	func BenchmarkBlendRGBAToRGBA{{.Name}}(b *testing.B) {
 		benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
 	}
 
-	func BenchmarkDrawRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) {
+	func BenchmarkBlendRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) {
 		benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
 	}
 {{end}}

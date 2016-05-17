@@ -5,2162 +5,2162 @@ package blend
 
 import "testing"
 
-func TestDrawFallbackNormal(t *testing.T) {
+func TestBlendFallbackNormal(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", normal{}, false)
 }
 
-func TestDrawFallbackNormalProtectAlpha(t *testing.T) {
+func TestBlendFallbackNormalProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", normal{}, true)
 }
 
-func TestDrawNRGBAToNRGBANormal(t *testing.T) {
+func TestBlendNRGBAToNRGBANormal(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", normal{}, false)
 }
 
-func TestDrawNRGBAToNRGBANormalProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBANormalProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", normal{}, true)
 }
 
-func TestDrawRGBAToNRGBANormal(t *testing.T) {
+func TestBlendRGBAToNRGBANormal(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", normal{}, false)
 }
 
-func TestDrawRGBAToNRGBANormalProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBANormalProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", normal{}, true)
 }
 
-func TestDrawNRGBAToRGBANormal(t *testing.T) {
+func TestBlendNRGBAToRGBANormal(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", normal{}, false)
 }
 
-func TestDrawNRGBAToRGBANormalProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBANormalProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", normal{}, true)
 }
 
-func TestDrawRGBAToRGBANormal(t *testing.T) {
+func TestBlendRGBAToRGBANormal(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", normal{}, false)
 }
 
-func TestDrawRGBAToRGBANormalProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBANormalProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", normal{}, true)
 }
 
-func BenchmarkDrawFallbackNormal(b *testing.B) {
+func BenchmarkBlendFallbackNormal(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", normal{}, false)
 }
 
-func BenchmarkDrawFallbackNormalProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackNormalProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", normal{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBANormal(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBANormal(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", normal{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBANormalProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBANormalProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", normal{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBANormal(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBANormal(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", normal{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBANormalProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBANormalProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", normal{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBANormal(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBANormal(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", normal{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBANormalProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBANormalProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", normal{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBANormal(b *testing.B) {
+func BenchmarkBlendRGBAToRGBANormal(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", normal{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBANormalProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBANormalProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", normal{}, true)
 }
 
-func TestDrawFallbackDarken(t *testing.T) {
+func TestBlendFallbackDarken(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", darken{}, false)
 }
 
-func TestDrawFallbackDarkenProtectAlpha(t *testing.T) {
+func TestBlendFallbackDarkenProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", darken{}, true)
 }
 
-func TestDrawNRGBAToNRGBADarken(t *testing.T) {
+func TestBlendNRGBAToNRGBADarken(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", darken{}, false)
 }
 
-func TestDrawNRGBAToNRGBADarkenProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBADarkenProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", darken{}, true)
 }
 
-func TestDrawRGBAToNRGBADarken(t *testing.T) {
+func TestBlendRGBAToNRGBADarken(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", darken{}, false)
 }
 
-func TestDrawRGBAToNRGBADarkenProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBADarkenProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", darken{}, true)
 }
 
-func TestDrawNRGBAToRGBADarken(t *testing.T) {
+func TestBlendNRGBAToRGBADarken(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", darken{}, false)
 }
 
-func TestDrawNRGBAToRGBADarkenProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBADarkenProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", darken{}, true)
 }
 
-func TestDrawRGBAToRGBADarken(t *testing.T) {
+func TestBlendRGBAToRGBADarken(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", darken{}, false)
 }
 
-func TestDrawRGBAToRGBADarkenProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBADarkenProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", darken{}, true)
 }
 
-func BenchmarkDrawFallbackDarken(b *testing.B) {
+func BenchmarkBlendFallbackDarken(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", darken{}, false)
 }
 
-func BenchmarkDrawFallbackDarkenProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackDarkenProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", darken{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBADarken(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBADarken(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", darken{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBADarkenProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBADarkenProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", darken{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBADarken(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBADarken(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", darken{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBADarkenProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBADarkenProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", darken{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBADarken(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBADarken(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", darken{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBADarkenProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBADarkenProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", darken{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBADarken(b *testing.B) {
+func BenchmarkBlendRGBAToRGBADarken(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", darken{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBADarkenProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBADarkenProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", darken{}, true)
 }
 
-func TestDrawFallbackMultiply(t *testing.T) {
+func TestBlendFallbackMultiply(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", multiply{}, false)
 }
 
-func TestDrawFallbackMultiplyProtectAlpha(t *testing.T) {
+func TestBlendFallbackMultiplyProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", multiply{}, true)
 }
 
-func TestDrawNRGBAToNRGBAMultiply(t *testing.T) {
+func TestBlendNRGBAToNRGBAMultiply(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", multiply{}, false)
 }
 
-func TestDrawNRGBAToNRGBAMultiplyProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAMultiplyProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", multiply{}, true)
 }
 
-func TestDrawRGBAToNRGBAMultiply(t *testing.T) {
+func TestBlendRGBAToNRGBAMultiply(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", multiply{}, false)
 }
 
-func TestDrawRGBAToNRGBAMultiplyProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAMultiplyProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", multiply{}, true)
 }
 
-func TestDrawNRGBAToRGBAMultiply(t *testing.T) {
+func TestBlendNRGBAToRGBAMultiply(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", multiply{}, false)
 }
 
-func TestDrawNRGBAToRGBAMultiplyProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAMultiplyProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", multiply{}, true)
 }
 
-func TestDrawRGBAToRGBAMultiply(t *testing.T) {
+func TestBlendRGBAToRGBAMultiply(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", multiply{}, false)
 }
 
-func TestDrawRGBAToRGBAMultiplyProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAMultiplyProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", multiply{}, true)
 }
 
-func BenchmarkDrawFallbackMultiply(b *testing.B) {
+func BenchmarkBlendFallbackMultiply(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", multiply{}, false)
 }
 
-func BenchmarkDrawFallbackMultiplyProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackMultiplyProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", multiply{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAMultiply(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAMultiply(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", multiply{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAMultiplyProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAMultiplyProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", multiply{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAMultiply(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAMultiply(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", multiply{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAMultiplyProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAMultiplyProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", multiply{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAMultiply(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAMultiply(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", multiply{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAMultiplyProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAMultiplyProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", multiply{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAMultiply(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAMultiply(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", multiply{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAMultiplyProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAMultiplyProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", multiply{}, true)
 }
 
-func TestDrawFallbackColorBurn(t *testing.T) {
+func TestBlendFallbackColorBurn(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", colorBurn{}, false)
 }
 
-func TestDrawFallbackColorBurnProtectAlpha(t *testing.T) {
+func TestBlendFallbackColorBurnProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", colorBurn{}, true)
 }
 
-func TestDrawNRGBAToNRGBAColorBurn(t *testing.T) {
+func TestBlendNRGBAToNRGBAColorBurn(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", colorBurn{}, false)
 }
 
-func TestDrawNRGBAToNRGBAColorBurnProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAColorBurnProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", colorBurn{}, true)
 }
 
-func TestDrawRGBAToNRGBAColorBurn(t *testing.T) {
+func TestBlendRGBAToNRGBAColorBurn(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", colorBurn{}, false)
 }
 
-func TestDrawRGBAToNRGBAColorBurnProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAColorBurnProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", colorBurn{}, true)
 }
 
-func TestDrawNRGBAToRGBAColorBurn(t *testing.T) {
+func TestBlendNRGBAToRGBAColorBurn(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", colorBurn{}, false)
 }
 
-func TestDrawNRGBAToRGBAColorBurnProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAColorBurnProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", colorBurn{}, true)
 }
 
-func TestDrawRGBAToRGBAColorBurn(t *testing.T) {
+func TestBlendRGBAToRGBAColorBurn(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", colorBurn{}, false)
 }
 
-func TestDrawRGBAToRGBAColorBurnProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAColorBurnProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", colorBurn{}, true)
 }
 
-func BenchmarkDrawFallbackColorBurn(b *testing.B) {
+func BenchmarkBlendFallbackColorBurn(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", colorBurn{}, false)
 }
 
-func BenchmarkDrawFallbackColorBurnProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackColorBurnProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", colorBurn{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAColorBurn(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAColorBurn(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", colorBurn{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAColorBurnProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAColorBurnProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", colorBurn{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAColorBurn(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAColorBurn(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", colorBurn{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAColorBurnProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAColorBurnProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", colorBurn{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAColorBurn(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAColorBurn(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", colorBurn{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAColorBurnProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAColorBurnProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", colorBurn{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAColorBurn(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAColorBurn(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", colorBurn{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAColorBurnProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAColorBurnProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", colorBurn{}, true)
 }
 
-func TestDrawFallbackLinearBurn(t *testing.T) {
+func TestBlendFallbackLinearBurn(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", linearBurn{}, false)
 }
 
-func TestDrawFallbackLinearBurnProtectAlpha(t *testing.T) {
+func TestBlendFallbackLinearBurnProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", linearBurn{}, true)
 }
 
-func TestDrawNRGBAToNRGBALinearBurn(t *testing.T) {
+func TestBlendNRGBAToNRGBALinearBurn(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearBurn{}, false)
 }
 
-func TestDrawNRGBAToNRGBALinearBurnProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBALinearBurnProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearBurn{}, true)
 }
 
-func TestDrawRGBAToNRGBALinearBurn(t *testing.T) {
+func TestBlendRGBAToNRGBALinearBurn(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearBurn{}, false)
 }
 
-func TestDrawRGBAToNRGBALinearBurnProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBALinearBurnProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearBurn{}, true)
 }
 
-func TestDrawNRGBAToRGBALinearBurn(t *testing.T) {
+func TestBlendNRGBAToRGBALinearBurn(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearBurn{}, false)
 }
 
-func TestDrawNRGBAToRGBALinearBurnProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBALinearBurnProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearBurn{}, true)
 }
 
-func TestDrawRGBAToRGBALinearBurn(t *testing.T) {
+func TestBlendRGBAToRGBALinearBurn(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearBurn{}, false)
 }
 
-func TestDrawRGBAToRGBALinearBurnProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBALinearBurnProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearBurn{}, true)
 }
 
-func BenchmarkDrawFallbackLinearBurn(b *testing.B) {
+func BenchmarkBlendFallbackLinearBurn(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", linearBurn{}, false)
 }
 
-func BenchmarkDrawFallbackLinearBurnProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackLinearBurnProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", linearBurn{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBALinearBurn(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALinearBurn(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearBurn{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBALinearBurnProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALinearBurnProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearBurn{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBALinearBurn(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALinearBurn(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearBurn{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBALinearBurnProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALinearBurnProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearBurn{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBALinearBurn(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALinearBurn(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearBurn{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBALinearBurnProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALinearBurnProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearBurn{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBALinearBurn(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALinearBurn(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearBurn{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBALinearBurnProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALinearBurnProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearBurn{}, true)
 }
 
-func TestDrawFallbackDarkerColor(t *testing.T) {
+func TestBlendFallbackDarkerColor(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", darkerColor{}, false)
 }
 
-func TestDrawFallbackDarkerColorProtectAlpha(t *testing.T) {
+func TestBlendFallbackDarkerColorProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", darkerColor{}, true)
 }
 
-func TestDrawNRGBAToNRGBADarkerColor(t *testing.T) {
+func TestBlendNRGBAToNRGBADarkerColor(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", darkerColor{}, false)
 }
 
-func TestDrawNRGBAToNRGBADarkerColorProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBADarkerColorProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", darkerColor{}, true)
 }
 
-func TestDrawRGBAToNRGBADarkerColor(t *testing.T) {
+func TestBlendRGBAToNRGBADarkerColor(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", darkerColor{}, false)
 }
 
-func TestDrawRGBAToNRGBADarkerColorProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBADarkerColorProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", darkerColor{}, true)
 }
 
-func TestDrawNRGBAToRGBADarkerColor(t *testing.T) {
+func TestBlendNRGBAToRGBADarkerColor(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", darkerColor{}, false)
 }
 
-func TestDrawNRGBAToRGBADarkerColorProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBADarkerColorProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", darkerColor{}, true)
 }
 
-func TestDrawRGBAToRGBADarkerColor(t *testing.T) {
+func TestBlendRGBAToRGBADarkerColor(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", darkerColor{}, false)
 }
 
-func TestDrawRGBAToRGBADarkerColorProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBADarkerColorProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", darkerColor{}, true)
 }
 
-func BenchmarkDrawFallbackDarkerColor(b *testing.B) {
+func BenchmarkBlendFallbackDarkerColor(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", darkerColor{}, false)
 }
 
-func BenchmarkDrawFallbackDarkerColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackDarkerColorProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", darkerColor{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBADarkerColor(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBADarkerColor(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", darkerColor{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBADarkerColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBADarkerColorProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", darkerColor{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBADarkerColor(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBADarkerColor(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", darkerColor{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBADarkerColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBADarkerColorProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", darkerColor{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBADarkerColor(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBADarkerColor(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", darkerColor{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBADarkerColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBADarkerColorProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", darkerColor{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBADarkerColor(b *testing.B) {
+func BenchmarkBlendRGBAToRGBADarkerColor(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", darkerColor{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBADarkerColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBADarkerColorProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", darkerColor{}, true)
 }
 
-func TestDrawFallbackLighten(t *testing.T) {
+func TestBlendFallbackLighten(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", lighten{}, false)
 }
 
-func TestDrawFallbackLightenProtectAlpha(t *testing.T) {
+func TestBlendFallbackLightenProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", lighten{}, true)
 }
 
-func TestDrawNRGBAToNRGBALighten(t *testing.T) {
+func TestBlendNRGBAToNRGBALighten(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", lighten{}, false)
 }
 
-func TestDrawNRGBAToNRGBALightenProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBALightenProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", lighten{}, true)
 }
 
-func TestDrawRGBAToNRGBALighten(t *testing.T) {
+func TestBlendRGBAToNRGBALighten(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", lighten{}, false)
 }
 
-func TestDrawRGBAToNRGBALightenProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBALightenProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", lighten{}, true)
 }
 
-func TestDrawNRGBAToRGBALighten(t *testing.T) {
+func TestBlendNRGBAToRGBALighten(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", lighten{}, false)
 }
 
-func TestDrawNRGBAToRGBALightenProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBALightenProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", lighten{}, true)
 }
 
-func TestDrawRGBAToRGBALighten(t *testing.T) {
+func TestBlendRGBAToRGBALighten(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", lighten{}, false)
 }
 
-func TestDrawRGBAToRGBALightenProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBALightenProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", lighten{}, true)
 }
 
-func BenchmarkDrawFallbackLighten(b *testing.B) {
+func BenchmarkBlendFallbackLighten(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", lighten{}, false)
 }
 
-func BenchmarkDrawFallbackLightenProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackLightenProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", lighten{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBALighten(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALighten(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", lighten{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBALightenProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALightenProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", lighten{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBALighten(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALighten(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", lighten{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBALightenProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALightenProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", lighten{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBALighten(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALighten(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", lighten{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBALightenProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALightenProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", lighten{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBALighten(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALighten(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", lighten{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBALightenProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALightenProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", lighten{}, true)
 }
 
-func TestDrawFallbackScreen(t *testing.T) {
+func TestBlendFallbackScreen(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", screen{}, false)
 }
 
-func TestDrawFallbackScreenProtectAlpha(t *testing.T) {
+func TestBlendFallbackScreenProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", screen{}, true)
 }
 
-func TestDrawNRGBAToNRGBAScreen(t *testing.T) {
+func TestBlendNRGBAToNRGBAScreen(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", screen{}, false)
 }
 
-func TestDrawNRGBAToNRGBAScreenProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAScreenProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", screen{}, true)
 }
 
-func TestDrawRGBAToNRGBAScreen(t *testing.T) {
+func TestBlendRGBAToNRGBAScreen(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", screen{}, false)
 }
 
-func TestDrawRGBAToNRGBAScreenProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAScreenProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", screen{}, true)
 }
 
-func TestDrawNRGBAToRGBAScreen(t *testing.T) {
+func TestBlendNRGBAToRGBAScreen(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", screen{}, false)
 }
 
-func TestDrawNRGBAToRGBAScreenProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAScreenProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", screen{}, true)
 }
 
-func TestDrawRGBAToRGBAScreen(t *testing.T) {
+func TestBlendRGBAToRGBAScreen(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", screen{}, false)
 }
 
-func TestDrawRGBAToRGBAScreenProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAScreenProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", screen{}, true)
 }
 
-func BenchmarkDrawFallbackScreen(b *testing.B) {
+func BenchmarkBlendFallbackScreen(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", screen{}, false)
 }
 
-func BenchmarkDrawFallbackScreenProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackScreenProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", screen{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAScreen(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAScreen(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", screen{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAScreenProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAScreenProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", screen{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAScreen(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAScreen(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", screen{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAScreenProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAScreenProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", screen{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAScreen(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAScreen(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", screen{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAScreenProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAScreenProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", screen{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAScreen(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAScreen(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", screen{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAScreenProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAScreenProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", screen{}, true)
 }
 
-func TestDrawFallbackColorDodge(t *testing.T) {
+func TestBlendFallbackColorDodge(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", colorDodge{}, false)
 }
 
-func TestDrawFallbackColorDodgeProtectAlpha(t *testing.T) {
+func TestBlendFallbackColorDodgeProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", colorDodge{}, true)
 }
 
-func TestDrawNRGBAToNRGBAColorDodge(t *testing.T) {
+func TestBlendNRGBAToNRGBAColorDodge(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", colorDodge{}, false)
 }
 
-func TestDrawNRGBAToNRGBAColorDodgeProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAColorDodgeProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", colorDodge{}, true)
 }
 
-func TestDrawRGBAToNRGBAColorDodge(t *testing.T) {
+func TestBlendRGBAToNRGBAColorDodge(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", colorDodge{}, false)
 }
 
-func TestDrawRGBAToNRGBAColorDodgeProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAColorDodgeProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", colorDodge{}, true)
 }
 
-func TestDrawNRGBAToRGBAColorDodge(t *testing.T) {
+func TestBlendNRGBAToRGBAColorDodge(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", colorDodge{}, false)
 }
 
-func TestDrawNRGBAToRGBAColorDodgeProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAColorDodgeProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", colorDodge{}, true)
 }
 
-func TestDrawRGBAToRGBAColorDodge(t *testing.T) {
+func TestBlendRGBAToRGBAColorDodge(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", colorDodge{}, false)
 }
 
-func TestDrawRGBAToRGBAColorDodgeProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAColorDodgeProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", colorDodge{}, true)
 }
 
-func BenchmarkDrawFallbackColorDodge(b *testing.B) {
+func BenchmarkBlendFallbackColorDodge(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", colorDodge{}, false)
 }
 
-func BenchmarkDrawFallbackColorDodgeProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackColorDodgeProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", colorDodge{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAColorDodge(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAColorDodge(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", colorDodge{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAColorDodgeProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAColorDodgeProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", colorDodge{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAColorDodge(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAColorDodge(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", colorDodge{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAColorDodgeProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAColorDodgeProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", colorDodge{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAColorDodge(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAColorDodge(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", colorDodge{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAColorDodgeProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAColorDodgeProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", colorDodge{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAColorDodge(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAColorDodge(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", colorDodge{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAColorDodgeProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAColorDodgeProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", colorDodge{}, true)
 }
 
-func TestDrawFallbackLinearDodge(t *testing.T) {
+func TestBlendFallbackLinearDodge(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", linearDodge{}, false)
 }
 
-func TestDrawFallbackLinearDodgeProtectAlpha(t *testing.T) {
+func TestBlendFallbackLinearDodgeProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", linearDodge{}, true)
 }
 
-func TestDrawNRGBAToNRGBALinearDodge(t *testing.T) {
+func TestBlendNRGBAToNRGBALinearDodge(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearDodge{}, false)
 }
 
-func TestDrawNRGBAToNRGBALinearDodgeProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBALinearDodgeProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearDodge{}, true)
 }
 
-func TestDrawRGBAToNRGBALinearDodge(t *testing.T) {
+func TestBlendRGBAToNRGBALinearDodge(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearDodge{}, false)
 }
 
-func TestDrawRGBAToNRGBALinearDodgeProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBALinearDodgeProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearDodge{}, true)
 }
 
-func TestDrawNRGBAToRGBALinearDodge(t *testing.T) {
+func TestBlendNRGBAToRGBALinearDodge(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearDodge{}, false)
 }
 
-func TestDrawNRGBAToRGBALinearDodgeProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBALinearDodgeProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearDodge{}, true)
 }
 
-func TestDrawRGBAToRGBALinearDodge(t *testing.T) {
+func TestBlendRGBAToRGBALinearDodge(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearDodge{}, false)
 }
 
-func TestDrawRGBAToRGBALinearDodgeProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBALinearDodgeProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearDodge{}, true)
 }
 
-func BenchmarkDrawFallbackLinearDodge(b *testing.B) {
+func BenchmarkBlendFallbackLinearDodge(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", linearDodge{}, false)
 }
 
-func BenchmarkDrawFallbackLinearDodgeProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackLinearDodgeProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", linearDodge{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBALinearDodge(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALinearDodge(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearDodge{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBALinearDodgeProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALinearDodgeProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearDodge{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBALinearDodge(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALinearDodge(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearDodge{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBALinearDodgeProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALinearDodgeProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearDodge{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBALinearDodge(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALinearDodge(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearDodge{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBALinearDodgeProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALinearDodgeProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearDodge{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBALinearDodge(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALinearDodge(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearDodge{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBALinearDodgeProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALinearDodgeProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearDodge{}, true)
 }
 
-func TestDrawFallbackLighterColor(t *testing.T) {
+func TestBlendFallbackLighterColor(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", lighterColor{}, false)
 }
 
-func TestDrawFallbackLighterColorProtectAlpha(t *testing.T) {
+func TestBlendFallbackLighterColorProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", lighterColor{}, true)
 }
 
-func TestDrawNRGBAToNRGBALighterColor(t *testing.T) {
+func TestBlendNRGBAToNRGBALighterColor(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", lighterColor{}, false)
 }
 
-func TestDrawNRGBAToNRGBALighterColorProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBALighterColorProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", lighterColor{}, true)
 }
 
-func TestDrawRGBAToNRGBALighterColor(t *testing.T) {
+func TestBlendRGBAToNRGBALighterColor(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", lighterColor{}, false)
 }
 
-func TestDrawRGBAToNRGBALighterColorProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBALighterColorProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", lighterColor{}, true)
 }
 
-func TestDrawNRGBAToRGBALighterColor(t *testing.T) {
+func TestBlendNRGBAToRGBALighterColor(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", lighterColor{}, false)
 }
 
-func TestDrawNRGBAToRGBALighterColorProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBALighterColorProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", lighterColor{}, true)
 }
 
-func TestDrawRGBAToRGBALighterColor(t *testing.T) {
+func TestBlendRGBAToRGBALighterColor(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", lighterColor{}, false)
 }
 
-func TestDrawRGBAToRGBALighterColorProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBALighterColorProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", lighterColor{}, true)
 }
 
-func BenchmarkDrawFallbackLighterColor(b *testing.B) {
+func BenchmarkBlendFallbackLighterColor(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", lighterColor{}, false)
 }
 
-func BenchmarkDrawFallbackLighterColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackLighterColorProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", lighterColor{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBALighterColor(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALighterColor(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", lighterColor{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBALighterColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALighterColorProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", lighterColor{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBALighterColor(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALighterColor(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", lighterColor{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBALighterColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALighterColorProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", lighterColor{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBALighterColor(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALighterColor(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", lighterColor{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBALighterColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALighterColorProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", lighterColor{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBALighterColor(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALighterColor(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", lighterColor{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBALighterColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALighterColorProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", lighterColor{}, true)
 }
 
-func TestDrawFallbackAdd(t *testing.T) {
+func TestBlendFallbackAdd(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", add{}, false)
 }
 
-func TestDrawFallbackAddProtectAlpha(t *testing.T) {
+func TestBlendFallbackAddProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", add{}, true)
 }
 
-func TestDrawNRGBAToNRGBAAdd(t *testing.T) {
+func TestBlendNRGBAToNRGBAAdd(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", add{}, false)
 }
 
-func TestDrawNRGBAToNRGBAAddProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAAddProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", add{}, true)
 }
 
-func TestDrawRGBAToNRGBAAdd(t *testing.T) {
+func TestBlendRGBAToNRGBAAdd(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", add{}, false)
 }
 
-func TestDrawRGBAToNRGBAAddProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAAddProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", add{}, true)
 }
 
-func TestDrawNRGBAToRGBAAdd(t *testing.T) {
+func TestBlendNRGBAToRGBAAdd(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", add{}, false)
 }
 
-func TestDrawNRGBAToRGBAAddProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAAddProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", add{}, true)
 }
 
-func TestDrawRGBAToRGBAAdd(t *testing.T) {
+func TestBlendRGBAToRGBAAdd(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", add{}, false)
 }
 
-func TestDrawRGBAToRGBAAddProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAAddProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", add{}, true)
 }
 
-func BenchmarkDrawFallbackAdd(b *testing.B) {
+func BenchmarkBlendFallbackAdd(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", add{}, false)
 }
 
-func BenchmarkDrawFallbackAddProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackAddProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", add{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAAdd(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAAdd(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", add{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAAddProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAAddProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", add{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAAdd(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAAdd(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", add{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAAddProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAAddProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", add{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAAdd(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAAdd(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", add{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAAddProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAAddProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", add{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAAdd(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAAdd(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", add{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAAddProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAAddProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", add{}, true)
 }
 
-func TestDrawFallbackOverlay(t *testing.T) {
+func TestBlendFallbackOverlay(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", overlay{}, false)
 }
 
-func TestDrawFallbackOverlayProtectAlpha(t *testing.T) {
+func TestBlendFallbackOverlayProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", overlay{}, true)
 }
 
-func TestDrawNRGBAToNRGBAOverlay(t *testing.T) {
+func TestBlendNRGBAToNRGBAOverlay(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", overlay{}, false)
 }
 
-func TestDrawNRGBAToNRGBAOverlayProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAOverlayProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", overlay{}, true)
 }
 
-func TestDrawRGBAToNRGBAOverlay(t *testing.T) {
+func TestBlendRGBAToNRGBAOverlay(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", overlay{}, false)
 }
 
-func TestDrawRGBAToNRGBAOverlayProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAOverlayProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", overlay{}, true)
 }
 
-func TestDrawNRGBAToRGBAOverlay(t *testing.T) {
+func TestBlendNRGBAToRGBAOverlay(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", overlay{}, false)
 }
 
-func TestDrawNRGBAToRGBAOverlayProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAOverlayProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", overlay{}, true)
 }
 
-func TestDrawRGBAToRGBAOverlay(t *testing.T) {
+func TestBlendRGBAToRGBAOverlay(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", overlay{}, false)
 }
 
-func TestDrawRGBAToRGBAOverlayProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAOverlayProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", overlay{}, true)
 }
 
-func BenchmarkDrawFallbackOverlay(b *testing.B) {
+func BenchmarkBlendFallbackOverlay(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", overlay{}, false)
 }
 
-func BenchmarkDrawFallbackOverlayProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackOverlayProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", overlay{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAOverlay(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAOverlay(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", overlay{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAOverlayProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAOverlayProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", overlay{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAOverlay(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAOverlay(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", overlay{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAOverlayProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAOverlayProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", overlay{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAOverlay(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAOverlay(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", overlay{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAOverlayProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAOverlayProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", overlay{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAOverlay(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAOverlay(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", overlay{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAOverlayProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAOverlayProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", overlay{}, true)
 }
 
-func TestDrawFallbackSoftLight(t *testing.T) {
+func TestBlendFallbackSoftLight(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", softLight{}, false)
 }
 
-func TestDrawFallbackSoftLightProtectAlpha(t *testing.T) {
+func TestBlendFallbackSoftLightProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", softLight{}, true)
 }
 
-func TestDrawNRGBAToNRGBASoftLight(t *testing.T) {
+func TestBlendNRGBAToNRGBASoftLight(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", softLight{}, false)
 }
 
-func TestDrawNRGBAToNRGBASoftLightProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBASoftLightProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", softLight{}, true)
 }
 
-func TestDrawRGBAToNRGBASoftLight(t *testing.T) {
+func TestBlendRGBAToNRGBASoftLight(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", softLight{}, false)
 }
 
-func TestDrawRGBAToNRGBASoftLightProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBASoftLightProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", softLight{}, true)
 }
 
-func TestDrawNRGBAToRGBASoftLight(t *testing.T) {
+func TestBlendNRGBAToRGBASoftLight(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", softLight{}, false)
 }
 
-func TestDrawNRGBAToRGBASoftLightProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBASoftLightProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", softLight{}, true)
 }
 
-func TestDrawRGBAToRGBASoftLight(t *testing.T) {
+func TestBlendRGBAToRGBASoftLight(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", softLight{}, false)
 }
 
-func TestDrawRGBAToRGBASoftLightProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBASoftLightProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", softLight{}, true)
 }
 
-func BenchmarkDrawFallbackSoftLight(b *testing.B) {
+func BenchmarkBlendFallbackSoftLight(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", softLight{}, false)
 }
 
-func BenchmarkDrawFallbackSoftLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackSoftLightProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", softLight{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBASoftLight(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBASoftLight(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", softLight{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBASoftLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBASoftLightProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", softLight{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBASoftLight(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBASoftLight(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", softLight{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBASoftLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBASoftLightProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", softLight{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBASoftLight(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBASoftLight(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", softLight{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBASoftLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBASoftLightProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", softLight{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBASoftLight(b *testing.B) {
+func BenchmarkBlendRGBAToRGBASoftLight(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", softLight{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBASoftLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBASoftLightProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", softLight{}, true)
 }
 
-func TestDrawFallbackHardLight(t *testing.T) {
+func TestBlendFallbackHardLight(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", hardLight{}, false)
 }
 
-func TestDrawFallbackHardLightProtectAlpha(t *testing.T) {
+func TestBlendFallbackHardLightProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", hardLight{}, true)
 }
 
-func TestDrawNRGBAToNRGBAHardLight(t *testing.T) {
+func TestBlendNRGBAToNRGBAHardLight(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hardLight{}, false)
 }
 
-func TestDrawNRGBAToNRGBAHardLightProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAHardLightProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hardLight{}, true)
 }
 
-func TestDrawRGBAToNRGBAHardLight(t *testing.T) {
+func TestBlendRGBAToNRGBAHardLight(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hardLight{}, false)
 }
 
-func TestDrawRGBAToNRGBAHardLightProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAHardLightProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hardLight{}, true)
 }
 
-func TestDrawNRGBAToRGBAHardLight(t *testing.T) {
+func TestBlendNRGBAToRGBAHardLight(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", hardLight{}, false)
 }
 
-func TestDrawNRGBAToRGBAHardLightProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAHardLightProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", hardLight{}, true)
 }
 
-func TestDrawRGBAToRGBAHardLight(t *testing.T) {
+func TestBlendRGBAToRGBAHardLight(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", hardLight{}, false)
 }
 
-func TestDrawRGBAToRGBAHardLightProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAHardLightProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", hardLight{}, true)
 }
 
-func BenchmarkDrawFallbackHardLight(b *testing.B) {
+func BenchmarkBlendFallbackHardLight(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", hardLight{}, false)
 }
 
-func BenchmarkDrawFallbackHardLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackHardLightProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", hardLight{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAHardLight(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAHardLight(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hardLight{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAHardLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAHardLightProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hardLight{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAHardLight(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAHardLight(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hardLight{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAHardLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAHardLightProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hardLight{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAHardLight(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAHardLight(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", hardLight{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAHardLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAHardLightProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", hardLight{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAHardLight(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAHardLight(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", hardLight{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAHardLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAHardLightProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", hardLight{}, true)
 }
 
-func TestDrawFallbackLinearLight(t *testing.T) {
+func TestBlendFallbackLinearLight(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", linearLight{}, false)
 }
 
-func TestDrawFallbackLinearLightProtectAlpha(t *testing.T) {
+func TestBlendFallbackLinearLightProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", linearLight{}, true)
 }
 
-func TestDrawNRGBAToNRGBALinearLight(t *testing.T) {
+func TestBlendNRGBAToNRGBALinearLight(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearLight{}, false)
 }
 
-func TestDrawNRGBAToNRGBALinearLightProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBALinearLightProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearLight{}, true)
 }
 
-func TestDrawRGBAToNRGBALinearLight(t *testing.T) {
+func TestBlendRGBAToNRGBALinearLight(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearLight{}, false)
 }
 
-func TestDrawRGBAToNRGBALinearLightProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBALinearLightProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", linearLight{}, true)
 }
 
-func TestDrawNRGBAToRGBALinearLight(t *testing.T) {
+func TestBlendNRGBAToRGBALinearLight(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearLight{}, false)
 }
 
-func TestDrawNRGBAToRGBALinearLightProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBALinearLightProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearLight{}, true)
 }
 
-func TestDrawRGBAToRGBALinearLight(t *testing.T) {
+func TestBlendRGBAToRGBALinearLight(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearLight{}, false)
 }
 
-func TestDrawRGBAToRGBALinearLightProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBALinearLightProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", linearLight{}, true)
 }
 
-func BenchmarkDrawFallbackLinearLight(b *testing.B) {
+func BenchmarkBlendFallbackLinearLight(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", linearLight{}, false)
 }
 
-func BenchmarkDrawFallbackLinearLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackLinearLightProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", linearLight{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBALinearLight(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALinearLight(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearLight{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBALinearLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALinearLightProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearLight{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBALinearLight(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALinearLight(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearLight{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBALinearLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALinearLightProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", linearLight{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBALinearLight(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALinearLight(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearLight{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBALinearLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALinearLightProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearLight{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBALinearLight(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALinearLight(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearLight{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBALinearLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALinearLightProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", linearLight{}, true)
 }
 
-func TestDrawFallbackVividLight(t *testing.T) {
+func TestBlendFallbackVividLight(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", vividLight{}, false)
 }
 
-func TestDrawFallbackVividLightProtectAlpha(t *testing.T) {
+func TestBlendFallbackVividLightProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", vividLight{}, true)
 }
 
-func TestDrawNRGBAToNRGBAVividLight(t *testing.T) {
+func TestBlendNRGBAToNRGBAVividLight(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", vividLight{}, false)
 }
 
-func TestDrawNRGBAToNRGBAVividLightProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAVividLightProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", vividLight{}, true)
 }
 
-func TestDrawRGBAToNRGBAVividLight(t *testing.T) {
+func TestBlendRGBAToNRGBAVividLight(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", vividLight{}, false)
 }
 
-func TestDrawRGBAToNRGBAVividLightProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAVividLightProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", vividLight{}, true)
 }
 
-func TestDrawNRGBAToRGBAVividLight(t *testing.T) {
+func TestBlendNRGBAToRGBAVividLight(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", vividLight{}, false)
 }
 
-func TestDrawNRGBAToRGBAVividLightProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAVividLightProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", vividLight{}, true)
 }
 
-func TestDrawRGBAToRGBAVividLight(t *testing.T) {
+func TestBlendRGBAToRGBAVividLight(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", vividLight{}, false)
 }
 
-func TestDrawRGBAToRGBAVividLightProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAVividLightProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", vividLight{}, true)
 }
 
-func BenchmarkDrawFallbackVividLight(b *testing.B) {
+func BenchmarkBlendFallbackVividLight(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", vividLight{}, false)
 }
 
-func BenchmarkDrawFallbackVividLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackVividLightProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", vividLight{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAVividLight(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAVividLight(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", vividLight{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAVividLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAVividLightProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", vividLight{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAVividLight(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAVividLight(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", vividLight{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAVividLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAVividLightProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", vividLight{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAVividLight(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAVividLight(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", vividLight{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAVividLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAVividLightProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", vividLight{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAVividLight(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAVividLight(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", vividLight{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAVividLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAVividLightProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", vividLight{}, true)
 }
 
-func TestDrawFallbackPinLight(t *testing.T) {
+func TestBlendFallbackPinLight(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", pinLight{}, false)
 }
 
-func TestDrawFallbackPinLightProtectAlpha(t *testing.T) {
+func TestBlendFallbackPinLightProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", pinLight{}, true)
 }
 
-func TestDrawNRGBAToNRGBAPinLight(t *testing.T) {
+func TestBlendNRGBAToNRGBAPinLight(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", pinLight{}, false)
 }
 
-func TestDrawNRGBAToNRGBAPinLightProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAPinLightProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", pinLight{}, true)
 }
 
-func TestDrawRGBAToNRGBAPinLight(t *testing.T) {
+func TestBlendRGBAToNRGBAPinLight(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", pinLight{}, false)
 }
 
-func TestDrawRGBAToNRGBAPinLightProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAPinLightProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", pinLight{}, true)
 }
 
-func TestDrawNRGBAToRGBAPinLight(t *testing.T) {
+func TestBlendNRGBAToRGBAPinLight(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", pinLight{}, false)
 }
 
-func TestDrawNRGBAToRGBAPinLightProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAPinLightProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", pinLight{}, true)
 }
 
-func TestDrawRGBAToRGBAPinLight(t *testing.T) {
+func TestBlendRGBAToRGBAPinLight(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", pinLight{}, false)
 }
 
-func TestDrawRGBAToRGBAPinLightProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAPinLightProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", pinLight{}, true)
 }
 
-func BenchmarkDrawFallbackPinLight(b *testing.B) {
+func BenchmarkBlendFallbackPinLight(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", pinLight{}, false)
 }
 
-func BenchmarkDrawFallbackPinLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackPinLightProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", pinLight{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAPinLight(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAPinLight(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", pinLight{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAPinLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAPinLightProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", pinLight{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAPinLight(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAPinLight(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", pinLight{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAPinLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAPinLightProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", pinLight{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAPinLight(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAPinLight(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", pinLight{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAPinLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAPinLightProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", pinLight{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAPinLight(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAPinLight(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", pinLight{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAPinLightProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAPinLightProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", pinLight{}, true)
 }
 
-func TestDrawFallbackHardMix(t *testing.T) {
+func TestBlendFallbackHardMix(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", hardMix{}, false)
 }
 
-func TestDrawFallbackHardMixProtectAlpha(t *testing.T) {
+func TestBlendFallbackHardMixProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", hardMix{}, true)
 }
 
-func TestDrawNRGBAToNRGBAHardMix(t *testing.T) {
+func TestBlendNRGBAToNRGBAHardMix(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hardMix{}, false)
 }
 
-func TestDrawNRGBAToNRGBAHardMixProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAHardMixProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hardMix{}, true)
 }
 
-func TestDrawRGBAToNRGBAHardMix(t *testing.T) {
+func TestBlendRGBAToNRGBAHardMix(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hardMix{}, false)
 }
 
-func TestDrawRGBAToNRGBAHardMixProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAHardMixProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hardMix{}, true)
 }
 
-func TestDrawNRGBAToRGBAHardMix(t *testing.T) {
+func TestBlendNRGBAToRGBAHardMix(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", hardMix{}, false)
 }
 
-func TestDrawNRGBAToRGBAHardMixProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAHardMixProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", hardMix{}, true)
 }
 
-func TestDrawRGBAToRGBAHardMix(t *testing.T) {
+func TestBlendRGBAToRGBAHardMix(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", hardMix{}, false)
 }
 
-func TestDrawRGBAToRGBAHardMixProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAHardMixProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", hardMix{}, true)
 }
 
-func BenchmarkDrawFallbackHardMix(b *testing.B) {
+func BenchmarkBlendFallbackHardMix(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", hardMix{}, false)
 }
 
-func BenchmarkDrawFallbackHardMixProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackHardMixProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", hardMix{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAHardMix(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAHardMix(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hardMix{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAHardMixProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAHardMixProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hardMix{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAHardMix(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAHardMix(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hardMix{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAHardMixProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAHardMixProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hardMix{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAHardMix(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAHardMix(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", hardMix{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAHardMixProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAHardMixProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", hardMix{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAHardMix(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAHardMix(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", hardMix{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAHardMixProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAHardMixProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", hardMix{}, true)
 }
 
-func TestDrawFallbackDifference(t *testing.T) {
+func TestBlendFallbackDifference(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", difference{}, false)
 }
 
-func TestDrawFallbackDifferenceProtectAlpha(t *testing.T) {
+func TestBlendFallbackDifferenceProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", difference{}, true)
 }
 
-func TestDrawNRGBAToNRGBADifference(t *testing.T) {
+func TestBlendNRGBAToNRGBADifference(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", difference{}, false)
 }
 
-func TestDrawNRGBAToNRGBADifferenceProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBADifferenceProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", difference{}, true)
 }
 
-func TestDrawRGBAToNRGBADifference(t *testing.T) {
+func TestBlendRGBAToNRGBADifference(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", difference{}, false)
 }
 
-func TestDrawRGBAToNRGBADifferenceProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBADifferenceProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", difference{}, true)
 }
 
-func TestDrawNRGBAToRGBADifference(t *testing.T) {
+func TestBlendNRGBAToRGBADifference(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", difference{}, false)
 }
 
-func TestDrawNRGBAToRGBADifferenceProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBADifferenceProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", difference{}, true)
 }
 
-func TestDrawRGBAToRGBADifference(t *testing.T) {
+func TestBlendRGBAToRGBADifference(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", difference{}, false)
 }
 
-func TestDrawRGBAToRGBADifferenceProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBADifferenceProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", difference{}, true)
 }
 
-func BenchmarkDrawFallbackDifference(b *testing.B) {
+func BenchmarkBlendFallbackDifference(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", difference{}, false)
 }
 
-func BenchmarkDrawFallbackDifferenceProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackDifferenceProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", difference{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBADifference(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBADifference(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", difference{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBADifferenceProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBADifferenceProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", difference{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBADifference(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBADifference(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", difference{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBADifferenceProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBADifferenceProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", difference{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBADifference(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBADifference(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", difference{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBADifferenceProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBADifferenceProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", difference{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBADifference(b *testing.B) {
+func BenchmarkBlendRGBAToRGBADifference(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", difference{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBADifferenceProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBADifferenceProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", difference{}, true)
 }
 
-func TestDrawFallbackExclusion(t *testing.T) {
+func TestBlendFallbackExclusion(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", exclusion{}, false)
 }
 
-func TestDrawFallbackExclusionProtectAlpha(t *testing.T) {
+func TestBlendFallbackExclusionProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", exclusion{}, true)
 }
 
-func TestDrawNRGBAToNRGBAExclusion(t *testing.T) {
+func TestBlendNRGBAToNRGBAExclusion(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", exclusion{}, false)
 }
 
-func TestDrawNRGBAToNRGBAExclusionProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAExclusionProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", exclusion{}, true)
 }
 
-func TestDrawRGBAToNRGBAExclusion(t *testing.T) {
+func TestBlendRGBAToNRGBAExclusion(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", exclusion{}, false)
 }
 
-func TestDrawRGBAToNRGBAExclusionProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAExclusionProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", exclusion{}, true)
 }
 
-func TestDrawNRGBAToRGBAExclusion(t *testing.T) {
+func TestBlendNRGBAToRGBAExclusion(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", exclusion{}, false)
 }
 
-func TestDrawNRGBAToRGBAExclusionProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAExclusionProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", exclusion{}, true)
 }
 
-func TestDrawRGBAToRGBAExclusion(t *testing.T) {
+func TestBlendRGBAToRGBAExclusion(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", exclusion{}, false)
 }
 
-func TestDrawRGBAToRGBAExclusionProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAExclusionProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", exclusion{}, true)
 }
 
-func BenchmarkDrawFallbackExclusion(b *testing.B) {
+func BenchmarkBlendFallbackExclusion(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", exclusion{}, false)
 }
 
-func BenchmarkDrawFallbackExclusionProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackExclusionProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", exclusion{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAExclusion(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAExclusion(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", exclusion{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAExclusionProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAExclusionProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", exclusion{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAExclusion(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAExclusion(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", exclusion{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAExclusionProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAExclusionProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", exclusion{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAExclusion(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAExclusion(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", exclusion{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAExclusionProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAExclusionProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", exclusion{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAExclusion(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAExclusion(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", exclusion{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAExclusionProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAExclusionProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", exclusion{}, true)
 }
 
-func TestDrawFallbackSubtract(t *testing.T) {
+func TestBlendFallbackSubtract(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", subtract{}, false)
 }
 
-func TestDrawFallbackSubtractProtectAlpha(t *testing.T) {
+func TestBlendFallbackSubtractProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", subtract{}, true)
 }
 
-func TestDrawNRGBAToNRGBASubtract(t *testing.T) {
+func TestBlendNRGBAToNRGBASubtract(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", subtract{}, false)
 }
 
-func TestDrawNRGBAToNRGBASubtractProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBASubtractProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", subtract{}, true)
 }
 
-func TestDrawRGBAToNRGBASubtract(t *testing.T) {
+func TestBlendRGBAToNRGBASubtract(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", subtract{}, false)
 }
 
-func TestDrawRGBAToNRGBASubtractProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBASubtractProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", subtract{}, true)
 }
 
-func TestDrawNRGBAToRGBASubtract(t *testing.T) {
+func TestBlendNRGBAToRGBASubtract(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", subtract{}, false)
 }
 
-func TestDrawNRGBAToRGBASubtractProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBASubtractProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", subtract{}, true)
 }
 
-func TestDrawRGBAToRGBASubtract(t *testing.T) {
+func TestBlendRGBAToRGBASubtract(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", subtract{}, false)
 }
 
-func TestDrawRGBAToRGBASubtractProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBASubtractProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", subtract{}, true)
 }
 
-func BenchmarkDrawFallbackSubtract(b *testing.B) {
+func BenchmarkBlendFallbackSubtract(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", subtract{}, false)
 }
 
-func BenchmarkDrawFallbackSubtractProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackSubtractProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", subtract{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBASubtract(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBASubtract(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", subtract{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBASubtractProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBASubtractProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", subtract{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBASubtract(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBASubtract(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", subtract{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBASubtractProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBASubtractProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", subtract{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBASubtract(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBASubtract(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", subtract{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBASubtractProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBASubtractProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", subtract{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBASubtract(b *testing.B) {
+func BenchmarkBlendRGBAToRGBASubtract(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", subtract{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBASubtractProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBASubtractProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", subtract{}, true)
 }
 
-func TestDrawFallbackDivide(t *testing.T) {
+func TestBlendFallbackDivide(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", divide{}, false)
 }
 
-func TestDrawFallbackDivideProtectAlpha(t *testing.T) {
+func TestBlendFallbackDivideProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", divide{}, true)
 }
 
-func TestDrawNRGBAToNRGBADivide(t *testing.T) {
+func TestBlendNRGBAToNRGBADivide(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", divide{}, false)
 }
 
-func TestDrawNRGBAToNRGBADivideProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBADivideProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", divide{}, true)
 }
 
-func TestDrawRGBAToNRGBADivide(t *testing.T) {
+func TestBlendRGBAToNRGBADivide(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", divide{}, false)
 }
 
-func TestDrawRGBAToNRGBADivideProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBADivideProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", divide{}, true)
 }
 
-func TestDrawNRGBAToRGBADivide(t *testing.T) {
+func TestBlendNRGBAToRGBADivide(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", divide{}, false)
 }
 
-func TestDrawNRGBAToRGBADivideProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBADivideProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", divide{}, true)
 }
 
-func TestDrawRGBAToRGBADivide(t *testing.T) {
+func TestBlendRGBAToRGBADivide(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", divide{}, false)
 }
 
-func TestDrawRGBAToRGBADivideProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBADivideProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", divide{}, true)
 }
 
-func BenchmarkDrawFallbackDivide(b *testing.B) {
+func BenchmarkBlendFallbackDivide(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", divide{}, false)
 }
 
-func BenchmarkDrawFallbackDivideProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackDivideProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", divide{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBADivide(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBADivide(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", divide{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBADivideProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBADivideProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", divide{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBADivide(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBADivide(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", divide{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBADivideProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBADivideProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", divide{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBADivide(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBADivide(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", divide{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBADivideProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBADivideProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", divide{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBADivide(b *testing.B) {
+func BenchmarkBlendRGBAToRGBADivide(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", divide{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBADivideProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBADivideProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", divide{}, true)
 }
 
-func TestDrawFallbackHue(t *testing.T) {
+func TestBlendFallbackHue(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", hue{}, false)
 }
 
-func TestDrawFallbackHueProtectAlpha(t *testing.T) {
+func TestBlendFallbackHueProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", hue{}, true)
 }
 
-func TestDrawNRGBAToNRGBAHue(t *testing.T) {
+func TestBlendNRGBAToNRGBAHue(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hue{}, false)
 }
 
-func TestDrawNRGBAToNRGBAHueProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAHueProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hue{}, true)
 }
 
-func TestDrawRGBAToNRGBAHue(t *testing.T) {
+func TestBlendRGBAToNRGBAHue(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hue{}, false)
 }
 
-func TestDrawRGBAToNRGBAHueProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAHueProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", hue{}, true)
 }
 
-func TestDrawNRGBAToRGBAHue(t *testing.T) {
+func TestBlendNRGBAToRGBAHue(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", hue{}, false)
 }
 
-func TestDrawNRGBAToRGBAHueProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAHueProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", hue{}, true)
 }
 
-func TestDrawRGBAToRGBAHue(t *testing.T) {
+func TestBlendRGBAToRGBAHue(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", hue{}, false)
 }
 
-func TestDrawRGBAToRGBAHueProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAHueProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", hue{}, true)
 }
 
-func BenchmarkDrawFallbackHue(b *testing.B) {
+func BenchmarkBlendFallbackHue(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", hue{}, false)
 }
 
-func BenchmarkDrawFallbackHueProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackHueProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", hue{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAHue(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAHue(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hue{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAHueProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAHueProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hue{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAHue(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAHue(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hue{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAHueProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAHueProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", hue{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAHue(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAHue(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", hue{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAHueProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAHueProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", hue{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAHue(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAHue(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", hue{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAHueProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAHueProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", hue{}, true)
 }
 
-func TestDrawFallbackSaturation(t *testing.T) {
+func TestBlendFallbackSaturation(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", saturation{}, false)
 }
 
-func TestDrawFallbackSaturationProtectAlpha(t *testing.T) {
+func TestBlendFallbackSaturationProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", saturation{}, true)
 }
 
-func TestDrawNRGBAToNRGBASaturation(t *testing.T) {
+func TestBlendNRGBAToNRGBASaturation(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", saturation{}, false)
 }
 
-func TestDrawNRGBAToNRGBASaturationProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBASaturationProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", saturation{}, true)
 }
 
-func TestDrawRGBAToNRGBASaturation(t *testing.T) {
+func TestBlendRGBAToNRGBASaturation(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", saturation{}, false)
 }
 
-func TestDrawRGBAToNRGBASaturationProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBASaturationProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", saturation{}, true)
 }
 
-func TestDrawNRGBAToRGBASaturation(t *testing.T) {
+func TestBlendNRGBAToRGBASaturation(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", saturation{}, false)
 }
 
-func TestDrawNRGBAToRGBASaturationProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBASaturationProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", saturation{}, true)
 }
 
-func TestDrawRGBAToRGBASaturation(t *testing.T) {
+func TestBlendRGBAToRGBASaturation(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", saturation{}, false)
 }
 
-func TestDrawRGBAToRGBASaturationProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBASaturationProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", saturation{}, true)
 }
 
-func BenchmarkDrawFallbackSaturation(b *testing.B) {
+func BenchmarkBlendFallbackSaturation(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", saturation{}, false)
 }
 
-func BenchmarkDrawFallbackSaturationProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackSaturationProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", saturation{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBASaturation(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBASaturation(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", saturation{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBASaturationProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBASaturationProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", saturation{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBASaturation(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBASaturation(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", saturation{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBASaturationProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBASaturationProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", saturation{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBASaturation(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBASaturation(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", saturation{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBASaturationProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBASaturationProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", saturation{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBASaturation(b *testing.B) {
+func BenchmarkBlendRGBAToRGBASaturation(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", saturation{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBASaturationProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBASaturationProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", saturation{}, true)
 }
 
-func TestDrawFallbackColor(t *testing.T) {
+func TestBlendFallbackColor(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", color{}, false)
 }
 
-func TestDrawFallbackColorProtectAlpha(t *testing.T) {
+func TestBlendFallbackColorProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", color{}, true)
 }
 
-func TestDrawNRGBAToNRGBAColor(t *testing.T) {
+func TestBlendNRGBAToNRGBAColor(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", color{}, false)
 }
 
-func TestDrawNRGBAToNRGBAColorProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBAColorProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", color{}, true)
 }
 
-func TestDrawRGBAToNRGBAColor(t *testing.T) {
+func TestBlendRGBAToNRGBAColor(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", color{}, false)
 }
 
-func TestDrawRGBAToNRGBAColorProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBAColorProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", color{}, true)
 }
 
-func TestDrawNRGBAToRGBAColor(t *testing.T) {
+func TestBlendNRGBAToRGBAColor(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", color{}, false)
 }
 
-func TestDrawNRGBAToRGBAColorProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBAColorProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", color{}, true)
 }
 
-func TestDrawRGBAToRGBAColor(t *testing.T) {
+func TestBlendRGBAToRGBAColor(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", color{}, false)
 }
 
-func TestDrawRGBAToRGBAColorProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBAColorProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", color{}, true)
 }
 
-func BenchmarkDrawFallbackColor(b *testing.B) {
+func BenchmarkBlendFallbackColor(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", color{}, false)
 }
 
-func BenchmarkDrawFallbackColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackColorProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", color{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBAColor(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAColor(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", color{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBAColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBAColorProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", color{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBAColor(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAColor(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", color{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBAColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBAColorProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", color{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBAColor(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAColor(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", color{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBAColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBAColorProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", color{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBAColor(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAColor(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", color{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBAColorProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBAColorProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", color{}, true)
 }
 
-func TestDrawFallbackLuminosity(t *testing.T) {
+func TestBlendFallbackLuminosity(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", luminosity{}, false)
 }
 
-func TestDrawFallbackLuminosityProtectAlpha(t *testing.T) {
+func TestBlendFallbackLuminosityProtectAlpha(t *testing.T) {
 	testDrawFallback(t, "png/bg.png", "png/fg.png", luminosity{}, true)
 }
 
-func TestDrawNRGBAToNRGBALuminosity(t *testing.T) {
+func TestBlendNRGBAToNRGBALuminosity(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", luminosity{}, false)
 }
 
-func TestDrawNRGBAToNRGBALuminosityProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToNRGBALuminosityProtectAlpha(t *testing.T) {
 	testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", luminosity{}, true)
 }
 
-func TestDrawRGBAToNRGBALuminosity(t *testing.T) {
+func TestBlendRGBAToNRGBALuminosity(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", luminosity{}, false)
 }
 
-func TestDrawRGBAToNRGBALuminosityProtectAlpha(t *testing.T) {
+func TestBlendRGBAToNRGBALuminosityProtectAlpha(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", luminosity{}, true)
 }
 
-func TestDrawNRGBAToRGBALuminosity(t *testing.T) {
+func TestBlendNRGBAToRGBALuminosity(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", luminosity{}, false)
 }
 
-func TestDrawNRGBAToRGBALuminosityProtectAlpha(t *testing.T) {
+func TestBlendNRGBAToRGBALuminosityProtectAlpha(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", luminosity{}, true)
 }
 
-func TestDrawRGBAToRGBALuminosity(t *testing.T) {
+func TestBlendRGBAToRGBALuminosity(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", luminosity{}, false)
 }
 
-func TestDrawRGBAToRGBALuminosityProtectAlpha(t *testing.T) {
+func TestBlendRGBAToRGBALuminosityProtectAlpha(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", luminosity{}, true)
 }
 
-func BenchmarkDrawFallbackLuminosity(b *testing.B) {
+func BenchmarkBlendFallbackLuminosity(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", luminosity{}, false)
 }
 
-func BenchmarkDrawFallbackLuminosityProtectAlpha(b *testing.B) {
+func BenchmarkBlendFallbackLuminosityProtectAlpha(b *testing.B) {
 	benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", luminosity{}, true)
 }
 
-func BenchmarkDrawNRGBAToNRGBALuminosity(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALuminosity(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", luminosity{}, false)
 }
 
-func BenchmarkDrawNRGBAToNRGBALuminosityProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToNRGBALuminosityProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", luminosity{}, true)
 }
 
-func BenchmarkDrawRGBAToNRGBALuminosity(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALuminosity(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", luminosity{}, false)
 }
 
-func BenchmarkDrawRGBAToNRGBALuminosityProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToNRGBALuminosityProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", luminosity{}, true)
 }
 
-func BenchmarkDrawNRGBAToRGBALuminosity(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALuminosity(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", luminosity{}, false)
 }
 
-func BenchmarkDrawNRGBAToRGBALuminosityProtectAlpha(b *testing.B) {
+func BenchmarkBlendNRGBAToRGBALuminosityProtectAlpha(b *testing.B) {
 	benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", luminosity{}, true)
 }
 
-func BenchmarkDrawRGBAToRGBALuminosity(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALuminosity(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", luminosity{}, false)
 }
 
-func BenchmarkDrawRGBAToRGBALuminosityProtectAlpha(b *testing.B) {
+func BenchmarkBlendRGBAToRGBALuminosityProtectAlpha(b *testing.B) {
 	benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", luminosity{}, true)
 }
