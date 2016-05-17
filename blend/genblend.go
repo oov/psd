@@ -415,6 +415,7 @@ import (
 	"image/draw"
 )
 
+// blend modes
 var (
 {{range .blendModes}}	{{.Name}} Drawer = {{.Name.Lower}}{}
 {{end}}

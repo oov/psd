@@ -1,4 +1,5 @@
 //go:generate go run genblend.go
+//go:generate go run genporterduff.go
 
 package blend
 

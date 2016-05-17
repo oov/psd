@@ -9,6 +9,7 @@ import (
 	"image/draw"
 )
 
+// blend modes
 var (
 	Normal       Drawer = normal{}
 	Darken       Drawer = darken{}
