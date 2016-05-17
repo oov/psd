@@ -69,7 +69,7 @@ func (d clear) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawClearNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawClearNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -103,7 +103,7 @@ func (d clear) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawClearRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawClearRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -137,7 +137,7 @@ func (d clear) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawClearNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawClearNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -171,11 +171,11 @@ func (d clear) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawClearRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawClearRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawClearNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawClearNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -209,7 +209,7 @@ var drawClearNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 
 }
 
-var drawClearRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawClearRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -243,7 +243,7 @@ var drawClearRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 
 }
 
-var drawClearNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawClearNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -267,7 +267,7 @@ var drawClearNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 
 }
 
-var drawClearRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawClearRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -370,7 +370,7 @@ func (d copy) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawCopyNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawCopyNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -404,7 +404,7 @@ func (d copy) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawCopyRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawCopyRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -438,7 +438,7 @@ func (d copy) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawCopyNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawCopyNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -472,11 +472,11 @@ func (d copy) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawCopyRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawCopyRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawCopyNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawCopyNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -535,7 +535,7 @@ var drawCopyNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 
 }
 
-var drawCopyRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawCopyRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -584,7 +584,7 @@ var drawCopyRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMi
 
 }
 
-var drawCopyNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawCopyNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -633,7 +633,7 @@ var drawCopyNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMi
 
 }
 
-var drawCopyRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawCopyRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -761,7 +761,7 @@ func (d dest) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -795,7 +795,7 @@ func (d dest) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -829,7 +829,7 @@ func (d dest) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -863,11 +863,11 @@ func (d dest) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawDestNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -924,7 +924,7 @@ var drawDestNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 
 }
 
-var drawDestRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -981,7 +981,7 @@ var drawDestRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMi
 
 }
 
-var drawDestNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1018,7 +1018,7 @@ var drawDestNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMi
 
 }
 
-var drawDestRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1144,7 +1144,7 @@ func (d srcOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOverNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOverNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -1178,7 +1178,7 @@ func (d srcOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOverRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOverRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -1212,7 +1212,7 @@ func (d srcOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOverNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOverNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -1246,11 +1246,11 @@ func (d srcOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOverRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOverRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawSrcOverNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOverNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1325,7 +1325,7 @@ var drawSrcOverNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 
 }
 
-var drawSrcOverRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOverRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1390,7 +1390,7 @@ var drawSrcOverRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 
 }
 
-var drawSrcOverNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOverNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1445,7 +1445,7 @@ var drawSrcOverNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 
 }
 
-var drawSrcOverRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOverRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1582,7 +1582,7 @@ func (d destOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOverNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOverNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -1616,7 +1616,7 @@ func (d destOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOverRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOverRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -1650,7 +1650,7 @@ func (d destOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOverNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOverNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -1684,11 +1684,11 @@ func (d destOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOverRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOverRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawDestOverNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOverNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1763,7 +1763,7 @@ var drawDestOverNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 
 }
 
-var drawDestOverRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOverRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1828,7 +1828,7 @@ var drawDestOverRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 
 }
 
-var drawDestOverNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOverNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1883,7 +1883,7 @@ var drawDestOverNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 
 }
 
-var drawDestOverRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOverRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2020,7 +2020,7 @@ func (d srcIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcInNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcInNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -2054,7 +2054,7 @@ func (d srcIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcInRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcInRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -2088,7 +2088,7 @@ func (d srcIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcInNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcInNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -2122,11 +2122,11 @@ func (d srcIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcInRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcInRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawSrcInNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcInNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2187,7 +2187,7 @@ var drawSrcInNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 
 }
 
-var drawSrcInRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcInRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2238,7 +2238,7 @@ var drawSrcInRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 
 }
 
-var drawSrcInNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcInNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2289,7 +2289,7 @@ var drawSrcInNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xM
 
 }
 
-var drawSrcInRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcInRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2421,7 +2421,7 @@ func (d destIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestInNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestInNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -2455,7 +2455,7 @@ func (d destIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestInRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestInRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -2489,7 +2489,7 @@ func (d destIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestInNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestInNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -2523,11 +2523,11 @@ func (d destIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestInRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestInRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawDestInNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestInNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2588,7 +2588,7 @@ var drawDestInNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 
 }
 
-var drawDestInRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestInRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2649,7 +2649,7 @@ var drawDestInRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 
 }
 
-var drawDestInNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestInNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2690,7 +2690,7 @@ var drawDestInNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 
 }
 
-var drawDestInRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestInRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2822,7 +2822,7 @@ func (d srcOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOutNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOutNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -2856,7 +2856,7 @@ func (d srcOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOutRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOutRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -2890,7 +2890,7 @@ func (d srcOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOutNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOutNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -2924,11 +2924,11 @@ func (d srcOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOutRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOutRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawSrcOutNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOutNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2990,7 +2990,7 @@ var drawSrcOutNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 
 }
 
-var drawSrcOutRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOutRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3042,7 +3042,7 @@ var drawSrcOutRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 
 }
 
-var drawSrcOutNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOutNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3094,7 +3094,7 @@ var drawSrcOutNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, x
 
 }
 
-var drawSrcOutRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOutRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3228,7 +3228,7 @@ func (d destOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOutNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOutNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -3262,7 +3262,7 @@ func (d destOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOutRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOutRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -3296,7 +3296,7 @@ func (d destOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOutNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOutNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -3330,11 +3330,11 @@ func (d destOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOutRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOutRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawDestOutNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOutNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3396,7 +3396,7 @@ var drawDestOutNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 
 }
 
-var drawDestOutRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOutRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3458,7 +3458,7 @@ var drawDestOutRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 
 }
 
-var drawDestOutNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOutNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3500,7 +3500,7 @@ var drawDestOutNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 
 }
 
-var drawDestOutRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOutRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3634,7 +3634,7 @@ func (d srcAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcAtopNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcAtopNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -3668,7 +3668,7 @@ func (d srcAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcAtopRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcAtopRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -3702,7 +3702,7 @@ func (d srcAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcAtopNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcAtopNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -3736,11 +3736,11 @@ func (d srcAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcAtopRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcAtopRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawSrcAtopNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcAtopNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3815,7 +3815,7 @@ var drawSrcAtopNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 
 }
 
-var drawSrcAtopRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcAtopRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3880,7 +3880,7 @@ var drawSrcAtopRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 
 }
 
-var drawSrcAtopNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcAtopNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3935,7 +3935,7 @@ var drawSrcAtopNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, 
 
 }
 
-var drawSrcAtopRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcAtopRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4072,7 +4072,7 @@ func (d destAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestAtopNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestAtopNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -4106,7 +4106,7 @@ func (d destAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestAtopRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestAtopRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -4140,7 +4140,7 @@ func (d destAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestAtopNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestAtopNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -4174,11 +4174,11 @@ func (d destAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestAtopRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestAtopRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawDestAtopNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestAtopNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4253,7 +4253,7 @@ var drawDestAtopNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 
 }
 
-var drawDestAtopRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestAtopRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4318,7 +4318,7 @@ var drawDestAtopRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 
 }
 
-var drawDestAtopNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestAtopNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4373,7 +4373,7 @@ var drawDestAtopNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int,
 
 }
 
-var drawDestAtopRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestAtopRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4510,7 +4510,7 @@ func (d xOR) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawXORNRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawXORNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -4544,7 +4544,7 @@ func (d xOR) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawXORRGBAToNRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawXORRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -4578,7 +4578,7 @@ func (d xOR) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawXORNRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawXORNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
@@ -4612,11 +4612,11 @@ func (d xOR) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 		i0, i1, idelta = (dx-1)<<2, -4, -4
 	}
 
-	drawXORRGBAToRGBA(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawXORRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 
 }
 
-var drawXORNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawXORNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4690,7 +4690,7 @@ var drawXORNRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMi
 
 }
 
-var drawXORRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawXORRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4754,7 +4754,7 @@ var drawXORRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin
 
 }
 
-var drawXORNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawXORNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4808,7 +4808,7 @@ var drawXORNRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin
 
 }
 
-var drawXORRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawXORRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897

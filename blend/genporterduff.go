@@ -303,7 +303,7 @@ func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Recta
 	}
 {{end}}
 {{define "draw2"}}
-	{{.}}(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	{{.}}.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
 {{end}}
 {{template "draw1" "NRGBAToNRGBA"}}
 {{template "draw2" printf "draw%sNRGBAToNRGBA" .Name}}
@@ -324,7 +324,7 @@ func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangl
 {{template "draw2" printf "draw%sRGBAToRGBA" .Name}}
 }
 
-var draw{{.Name}}NRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 {{define "drawMain1"}}
 	var dPos, sPos int
 	alpha *= 32897
@@ -432,7 +432,7 @@ var draw{{.Name}}NRGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y in
 {{template "drawMain3" .}}
 }
 
-var draw{{.Name}}RGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMain1" .}}
 	{{if and (ne .DestRead "skip") (ne .DestRead "alpha")}}
 		{{template "drawMain1_DestNRGBAToRGBA" .}}
@@ -442,7 +442,7 @@ var draw{{.Name}}RGBAToNRGBA = func(dest []byte, src []byte, alpha uint32, y int
 	{{template "drawMain3" .}}
 }
 
-var draw{{.Name}}NRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMain1" .}}
 	{{if and (ne .SrcRead "skip") (ne .SrcRead "alpha")}}
 		{{template "drawMain1_SrcNRGBAToRGBA" .}}
@@ -452,7 +452,7 @@ var draw{{.Name}}NRGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int
 	{{template "drawMain3" .}}
 }
 
-var draw{{.Name}}RGBAToRGBA = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
 	{{template "drawMain1" .}}
 	{{template "drawMain2" .}}
 	{{template "drawMain2_SetByRGBA" .}}
