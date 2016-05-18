@@ -135,6 +135,40 @@ func loadRGBAToRGBAImages(path1 string, path2 string) (*image.RGBA, *image.RGBA,
 	return img, img2, nil
 }
 
+func loadAlphaToRGBAImages(path1 string, path2 string) (*image.RGBA, *image.Alpha, error) {
+	src1, err := loadImage(path1)
+	if err != nil {
+		return nil, nil, err
+	}
+	src2, err := loadImage(path2)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	img := image.NewRGBA(src1.Bounds())
+	draw.Draw(img, src1.Bounds(), src1, image.Pt(0, 0), draw.Over)
+	img2 := image.NewAlpha(src2.Bounds())
+	draw.Draw(img2, src2.Bounds(), src2, image.Pt(0, 0), draw.Over)
+	return img, img2, nil
+}
+
+func loadAlphaToNRGBAImages(path1 string, path2 string) (*image.NRGBA, *image.Alpha, error) {
+	src1, err := loadImage(path1)
+	if err != nil {
+		return nil, nil, err
+	}
+	src2, err := loadImage(path2)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	img := image.NewNRGBA(src1.Bounds())
+	draw.Draw(img, src1.Bounds(), src1, image.Pt(0, 0), draw.Over)
+	img2 := image.NewAlpha(src2.Bounds())
+	draw.Draw(img2, src2.Bounds(), src2, image.Pt(0, 0), draw.Over)
+	return img, img2, nil
+}
+
 func testDrawFallback(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawFallback"
 	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
@@ -279,6 +313,70 @@ func testDrawRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, prot
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
 		fmt.Sprintf("reference/%v.png", d),
+	)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	errorRate, err := verify(created, ref)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
+	if errorRate > 0.262 {
+		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	}
+}
+
+func testDrawAlphaToRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer, protectAlpha bool) {
+	name := "DrawAlphaToRGBA"
+	img, img2, err := loadAlphaToRGBAImages(path1, path2)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	d.drawAlphaToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+
+	os.MkdirAll("output/"+name, os.ModePerm)
+	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
+		t.Fatalf("Cannot create png: %v", err)
+	}
+
+	created, ref, err := loadImages(
+		fmt.Sprintf("output/%s/%v.png", name, d),
+		fmt.Sprintf("reference/alpha-%v.png", d),
+	)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	errorRate, err := verify(created, ref)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
+	if errorRate > 0.262 {
+		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	}
+}
+
+func testDrawAlphaToNRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer, protectAlpha bool) {
+	name := "DrawAlphaToNRGBA"
+	img, img2, err := loadAlphaToNRGBAImages(path1, path2)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	d.drawAlphaToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+
+	os.MkdirAll("output/"+name, os.ModePerm)
+	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
+		t.Fatalf("Cannot create png: %v", err)
+	}
+
+	created, ref, err := loadImages(
+		fmt.Sprintf("output/%s/%v.png", name, d),
+		fmt.Sprintf("reference/alpha-%v.png", d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)

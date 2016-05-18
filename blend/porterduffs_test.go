@@ -17,12 +17,20 @@ func TestPorterDuffRGBAToNRGBAClear(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", clear{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBAClear(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", clear{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBAClear(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", clear{}, false)
 }
 
 func TestPorterDuffRGBAToRGBAClear(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", clear{}, false)
+}
+
+func TestPorterDuffAlphaToRGBAClear(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", clear{}, false)
 }
 
 func BenchmarkPorterDuffFallbackClear(b *testing.B) {
@@ -57,12 +65,20 @@ func TestPorterDuffRGBAToNRGBACopy(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", copy{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBACopy(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", copy{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBACopy(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", copy{}, false)
 }
 
 func TestPorterDuffRGBAToRGBACopy(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", copy{}, false)
+}
+
+func TestPorterDuffAlphaToRGBACopy(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", copy{}, false)
 }
 
 func BenchmarkPorterDuffFallbackCopy(b *testing.B) {
@@ -97,12 +113,20 @@ func TestPorterDuffRGBAToNRGBADest(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", dest{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBADest(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", dest{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBADest(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", dest{}, false)
 }
 
 func TestPorterDuffRGBAToRGBADest(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", dest{}, false)
+}
+
+func TestPorterDuffAlphaToRGBADest(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", dest{}, false)
 }
 
 func BenchmarkPorterDuffFallbackDest(b *testing.B) {
@@ -137,12 +161,20 @@ func TestPorterDuffRGBAToNRGBASrcOver(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", srcOver{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBASrcOver(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", srcOver{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBASrcOver(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", srcOver{}, false)
 }
 
 func TestPorterDuffRGBAToRGBASrcOver(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", srcOver{}, false)
+}
+
+func TestPorterDuffAlphaToRGBASrcOver(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", srcOver{}, false)
 }
 
 func BenchmarkPorterDuffFallbackSrcOver(b *testing.B) {
@@ -177,12 +209,20 @@ func TestPorterDuffRGBAToNRGBADestOver(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", destOver{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBADestOver(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", destOver{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBADestOver(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", destOver{}, false)
 }
 
 func TestPorterDuffRGBAToRGBADestOver(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", destOver{}, false)
+}
+
+func TestPorterDuffAlphaToRGBADestOver(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", destOver{}, false)
 }
 
 func BenchmarkPorterDuffFallbackDestOver(b *testing.B) {
@@ -217,12 +257,20 @@ func TestPorterDuffRGBAToNRGBASrcIn(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", srcIn{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBASrcIn(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", srcIn{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBASrcIn(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", srcIn{}, false)
 }
 
 func TestPorterDuffRGBAToRGBASrcIn(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", srcIn{}, false)
+}
+
+func TestPorterDuffAlphaToRGBASrcIn(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", srcIn{}, false)
 }
 
 func BenchmarkPorterDuffFallbackSrcIn(b *testing.B) {
@@ -257,12 +305,20 @@ func TestPorterDuffRGBAToNRGBADestIn(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", destIn{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBADestIn(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", destIn{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBADestIn(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", destIn{}, false)
 }
 
 func TestPorterDuffRGBAToRGBADestIn(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", destIn{}, false)
+}
+
+func TestPorterDuffAlphaToRGBADestIn(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", destIn{}, false)
 }
 
 func BenchmarkPorterDuffFallbackDestIn(b *testing.B) {
@@ -297,12 +353,20 @@ func TestPorterDuffRGBAToNRGBASrcOut(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", srcOut{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBASrcOut(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", srcOut{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBASrcOut(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", srcOut{}, false)
 }
 
 func TestPorterDuffRGBAToRGBASrcOut(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", srcOut{}, false)
+}
+
+func TestPorterDuffAlphaToRGBASrcOut(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", srcOut{}, false)
 }
 
 func BenchmarkPorterDuffFallbackSrcOut(b *testing.B) {
@@ -337,12 +401,20 @@ func TestPorterDuffRGBAToNRGBADestOut(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", destOut{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBADestOut(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", destOut{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBADestOut(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", destOut{}, false)
 }
 
 func TestPorterDuffRGBAToRGBADestOut(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", destOut{}, false)
+}
+
+func TestPorterDuffAlphaToRGBADestOut(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", destOut{}, false)
 }
 
 func BenchmarkPorterDuffFallbackDestOut(b *testing.B) {
@@ -377,12 +449,20 @@ func TestPorterDuffRGBAToNRGBASrcAtop(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", srcAtop{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBASrcAtop(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", srcAtop{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBASrcAtop(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", srcAtop{}, false)
 }
 
 func TestPorterDuffRGBAToRGBASrcAtop(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", srcAtop{}, false)
+}
+
+func TestPorterDuffAlphaToRGBASrcAtop(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", srcAtop{}, false)
 }
 
 func BenchmarkPorterDuffFallbackSrcAtop(b *testing.B) {
@@ -417,12 +497,20 @@ func TestPorterDuffRGBAToNRGBADestAtop(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", destAtop{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBADestAtop(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", destAtop{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBADestAtop(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", destAtop{}, false)
 }
 
 func TestPorterDuffRGBAToRGBADestAtop(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", destAtop{}, false)
+}
+
+func TestPorterDuffAlphaToRGBADestAtop(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", destAtop{}, false)
 }
 
 func BenchmarkPorterDuffFallbackDestAtop(b *testing.B) {
@@ -457,12 +545,20 @@ func TestPorterDuffRGBAToNRGBAXOR(t *testing.T) {
 	testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", xOR{}, false)
 }
 
+func TestPorterDuffAlphaToNRGBAXOR(t *testing.T) {
+	testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", xOR{}, false)
+}
+
 func TestPorterDuffNRGBAToRGBAXOR(t *testing.T) {
 	testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", xOR{}, false)
 }
 
 func TestPorterDuffRGBAToRGBAXOR(t *testing.T) {
 	testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", xOR{}, false)
+}
+
+func TestPorterDuffAlphaToRGBAXOR(t *testing.T) {
+	testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", xOR{}, false)
 }
 
 func BenchmarkPorterDuffFallbackXOR(b *testing.B) {
