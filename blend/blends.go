@@ -297,9 +297,11 @@ var drawNormalRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -352,7 +354,7 @@ var drawNormalNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -409,11 +411,13 @@ var drawNormalRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -510,9 +514,11 @@ var drawNormalRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -560,9 +566,11 @@ var drawNormalNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -610,13 +618,17 @@ var drawNormalRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -671,12 +683,12 @@ func (d normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -1026,9 +1038,11 @@ var drawDarkenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -1093,7 +1107,7 @@ var drawDarkenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -1162,11 +1176,13 @@ var drawDarkenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -1287,9 +1303,11 @@ var drawDarkenRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -1349,9 +1367,11 @@ var drawDarkenNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -1411,13 +1431,17 @@ var drawDarkenRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -1484,12 +1508,12 @@ func (d darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -1851,9 +1875,11 @@ var drawMultiplyRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -1906,7 +1932,7 @@ var drawMultiplyNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -1963,11 +1989,13 @@ var drawMultiplyRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -2064,9 +2092,11 @@ var drawMultiplyRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -2114,9 +2144,11 @@ var drawMultiplyNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -2164,13 +2196,17 @@ var drawMultiplyRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -2225,12 +2261,12 @@ func (d multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -2586,9 +2622,11 @@ var drawColorBurnRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -2659,7 +2697,7 @@ var drawColorBurnNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -2734,11 +2772,13 @@ var drawColorBurnRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -2871,9 +2911,11 @@ var drawColorBurnRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -2939,9 +2981,11 @@ var drawColorBurnNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -3007,13 +3051,17 @@ var drawColorBurnRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -3086,12 +3134,12 @@ func (d colorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -3480,9 +3528,11 @@ var drawLinearBurnRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -3550,7 +3600,7 @@ var drawLinearBurnNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -3622,11 +3672,13 @@ var drawLinearBurnRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -3753,9 +3805,11 @@ var drawLinearBurnRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -3818,9 +3872,11 @@ var drawLinearBurnNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -3883,13 +3939,17 @@ var drawLinearBurnRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -3959,12 +4019,12 @@ func (d linearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -4336,9 +4396,11 @@ var drawDarkerColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -4395,7 +4457,7 @@ var drawDarkerColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -4456,11 +4518,13 @@ var drawDarkerColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -4565,9 +4629,11 @@ var drawDarkerColorRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -4619,9 +4685,11 @@ var drawDarkerColorNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -4673,13 +4741,17 @@ var drawDarkerColorRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -4738,12 +4810,12 @@ func (d darkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -5101,9 +5173,11 @@ var drawLightenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -5168,7 +5242,7 @@ var drawLightenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -5237,11 +5311,13 @@ var drawLightenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -5362,9 +5438,11 @@ var drawLightenRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -5424,9 +5502,11 @@ var drawLightenNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -5486,13 +5566,17 @@ var drawLightenRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -5559,12 +5643,12 @@ func (d lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -5926,9 +6010,11 @@ var drawScreenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -5981,7 +6067,7 @@ var drawScreenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -6038,11 +6124,13 @@ var drawScreenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -6139,9 +6227,11 @@ var drawScreenRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -6189,9 +6279,11 @@ var drawScreenNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -6239,13 +6331,17 @@ var drawScreenRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -6300,12 +6396,12 @@ func (d screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -6661,9 +6757,11 @@ var drawColorDodgeRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -6734,7 +6832,7 @@ var drawColorDodgeNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -6809,11 +6907,13 @@ var drawColorDodgeRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -6946,9 +7046,11 @@ var drawColorDodgeRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -7014,9 +7116,11 @@ var drawColorDodgeNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -7082,13 +7186,17 @@ var drawColorDodgeRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -7161,12 +7269,12 @@ func (d colorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -7540,9 +7648,11 @@ var drawLinearDodgeRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -7595,7 +7705,7 @@ var drawLinearDodgeNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -7652,11 +7762,13 @@ var drawLinearDodgeRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -7753,9 +7865,11 @@ var drawLinearDodgeRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -7803,9 +7917,11 @@ var drawLinearDodgeNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -7853,13 +7969,17 @@ var drawLinearDodgeRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -7914,12 +8034,12 @@ func (d linearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -8261,9 +8381,11 @@ var drawLighterColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -8320,7 +8442,7 @@ var drawLighterColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -8381,11 +8503,13 @@ var drawLighterColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -8490,9 +8614,11 @@ var drawLighterColorRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []b
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -8544,9 +8670,11 @@ var drawLighterColorNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []b
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -8598,13 +8726,17 @@ var drawLighterColorRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -8663,12 +8795,12 @@ func (d lighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -9014,9 +9146,11 @@ var drawAddRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -9069,7 +9203,7 @@ var drawAddNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -9126,11 +9260,13 @@ var drawAddRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y i
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -9227,9 +9363,11 @@ var drawAddRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alph
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -9277,9 +9415,11 @@ var drawAddNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alph
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -9327,13 +9467,17 @@ var drawAddRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -9388,12 +9532,12 @@ func (d add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -9743,9 +9887,11 @@ var drawOverlayRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -9810,7 +9956,7 @@ var drawOverlayNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -9879,11 +10025,13 @@ var drawOverlayRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -10004,9 +10152,11 @@ var drawOverlayRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -10066,9 +10216,11 @@ var drawOverlayNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -10128,13 +10280,17 @@ var drawOverlayRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -10201,12 +10357,12 @@ func (d overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -10595,9 +10751,11 @@ var drawSoftLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -10677,7 +10835,7 @@ var drawSoftLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -10761,11 +10919,13 @@ var drawSoftLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -10916,9 +11076,11 @@ var drawSoftLightRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -10993,9 +11155,11 @@ var drawSoftLightNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -11070,13 +11234,17 @@ var drawSoftLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -11158,12 +11326,12 @@ func (d softLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -11570,9 +11738,11 @@ var drawHardLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -11640,7 +11810,7 @@ var drawHardLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -11712,11 +11882,13 @@ var drawHardLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -11843,9 +12015,11 @@ var drawHardLightRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -11908,9 +12082,11 @@ var drawHardLightNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -11973,13 +12149,17 @@ var drawHardLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -12049,12 +12229,12 @@ func (d hardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -12434,9 +12614,11 @@ var drawLinearLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -12501,7 +12683,7 @@ var drawLinearLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -12570,11 +12752,13 @@ var drawLinearLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -12695,9 +12879,11 @@ var drawLinearLightRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -12757,9 +12943,11 @@ var drawLinearLightNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -12819,13 +13007,17 @@ var drawLinearLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -12892,12 +13084,12 @@ func (d linearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -13301,9 +13493,11 @@ var drawVividLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -13398,7 +13592,7 @@ var drawVividLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -13497,11 +13691,13 @@ var drawVividLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -13682,9 +13878,11 @@ var drawVividLightRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -13774,9 +13972,11 @@ var drawVividLightNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -13866,13 +14066,17 @@ var drawVividLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -13969,12 +14173,12 @@ func (d vividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -14438,9 +14642,11 @@ var drawPinLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -14535,7 +14741,7 @@ var drawPinLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -14634,11 +14840,13 @@ var drawPinLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -14819,9 +15027,11 @@ var drawPinLightRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -14911,9 +15121,11 @@ var drawPinLightNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -15003,13 +15215,17 @@ var drawPinLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -15106,12 +15322,12 @@ func (d pinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -15602,9 +15818,11 @@ var drawHardMixRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -15726,7 +15944,7 @@ var drawHardMixNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -15852,11 +16070,13 @@ var drawHardMixRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -16091,9 +16311,11 @@ var drawHardMixRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -16210,9 +16432,11 @@ var drawHardMixNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -16329,13 +16553,17 @@ var drawHardMixRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -16459,12 +16687,12 @@ func (d hardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -16952,9 +17180,11 @@ var drawDifferenceRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -17019,7 +17249,7 @@ var drawDifferenceNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -17088,11 +17318,13 @@ var drawDifferenceRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -17213,9 +17445,11 @@ var drawDifferenceRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -17275,9 +17509,11 @@ var drawDifferenceNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -17337,13 +17573,17 @@ var drawDifferenceRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -17410,12 +17650,12 @@ func (d difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -17777,9 +18017,11 @@ var drawExclusionRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -17832,7 +18074,7 @@ var drawExclusionNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -17889,11 +18131,13 @@ var drawExclusionRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -17990,9 +18234,11 @@ var drawExclusionRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -18040,9 +18286,11 @@ var drawExclusionNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -18090,13 +18338,17 @@ var drawExclusionRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -18151,12 +18403,12 @@ func (d exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -18506,9 +18758,11 @@ var drawSubtractRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -18573,7 +18827,7 @@ var drawSubtractNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -18642,11 +18896,13 @@ var drawSubtractRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -18767,9 +19023,11 @@ var drawSubtractRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -18829,9 +19087,11 @@ var drawSubtractNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -18891,13 +19151,17 @@ var drawSubtractRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -18964,12 +19228,12 @@ func (d subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -19349,9 +19613,11 @@ var drawDivideRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -19422,7 +19688,7 @@ var drawDivideNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -19497,11 +19763,13 @@ var drawDivideRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -19634,9 +19902,11 @@ var drawDivideRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -19702,9 +19972,11 @@ var drawDivideNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -19770,13 +20042,17 @@ var drawDivideRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -19849,12 +20125,12 @@ func (d divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -20225,9 +20501,11 @@ var drawHueRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -20277,7 +20555,7 @@ var drawHueNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -20331,11 +20609,13 @@ var drawHueRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y i
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -20426,9 +20706,11 @@ var drawHueRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alph
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -20473,9 +20755,11 @@ var drawHueNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alph
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -20520,13 +20804,17 @@ var drawHueRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -20578,12 +20866,12 @@ func (d hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -20912,9 +21200,11 @@ var drawSaturationRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -20964,7 +21254,7 @@ var drawSaturationNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -21018,11 +21308,13 @@ var drawSaturationRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -21113,9 +21405,11 @@ var drawSaturationRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -21160,9 +21454,11 @@ var drawSaturationNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -21207,13 +21503,17 @@ var drawSaturationRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -21265,12 +21565,12 @@ func (d saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -21598,9 +21898,11 @@ var drawColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -21649,7 +21951,7 @@ var drawColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -21702,11 +22004,13 @@ var drawColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -21795,9 +22099,11 @@ var drawColorRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -21841,9 +22147,11 @@ var drawColorNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -21887,13 +22195,17 @@ var drawColorRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alp
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -21944,12 +22256,12 @@ func (d color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -22275,9 +22587,11 @@ var drawLuminosityRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var r, g, b uint32
 
@@ -22326,7 +22640,7 @@ var drawLuminosityNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -22379,11 +22693,13 @@ var drawLuminosityRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -22472,9 +22788,11 @@ var drawLuminosityRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -22518,9 +22836,11 @@ var drawLuminosityNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -22564,13 +22884,17 @@ var drawLuminosityRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
 
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 
 			var tmp, r, g, b uint32
 			_ = tmp
@@ -22621,12 +22945,12 @@ func (d luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da

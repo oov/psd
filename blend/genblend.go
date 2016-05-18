@@ -528,12 +528,14 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a := a1 + a2 + a3
 {{end}}
 {{define "drawMain1_SrcRGBAToNRGBA"}}
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 {{end}}
 {{define "drawMain1_DestRGBAToNRGBA"}}
-			if da > 0 && da < 255 {
+			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -644,14 +646,18 @@ var draw{{.Name}}NRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			a3 := 255 - a1
 {{end}}
 {{define "drawMainProtectAlpha1_SrcRGBAToNRGBA"}}
-			sr = sr * 0xff / sa
-			sg = sg * 0xff / sa
-			sb = sb * 0xff / sa
+			if sa < 0xff {
+				sr = sr * 0xff / sa
+				sg = sg * 0xff / sa
+				sb = sb * 0xff / sa
+			}
 {{end}}
 {{define "drawMainProtectAlpha1_DestRGBAToNRGBA"}}
-			dr = dr * 0xff / da
-			dg = dg * 0xff / da
-			db = db * 0xff / da
+			if da < 0xff {
+				dr = dr * 0xff / da
+				dg = dg * 0xff / da
+				db = db * 0xff / da
+			}
 {{end}}
 {{define "drawMainProtectAlpha2"}}
 			var tmp, r, g, b uint32
@@ -765,12 +771,12 @@ func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src ima
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if sa > 0 {
+				if 0 < sa && sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if 0 < da && da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
