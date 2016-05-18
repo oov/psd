@@ -1,6 +1,6 @@
 #include "textflag.h"
 
-TEXT	·drawNormalNRGBAToNRGBAFast(SB),0,$0-104
+TEXT	·drawNormalNRGBAToNRGBAFast(SB),0,$0-128
    MOVL alpha+48(FP), AX
    IMULL $0x00008081, AX
    MOVL AX, alpha+48(FP)
@@ -9,9 +9,9 @@ TEXT	·drawNormalNRGBAToNRGBAFast(SB),0,$0-104
    MOVQ dest+0(FP), DI
    MOVQ y+56(FP), CX
 
-   MOVQ dDelta+80(FP), R12
-   MOVQ sDelta+88(FP), R13
-   MOVQ xDelta+96(FP), R14
+   MOVQ dyDelta+120(FP), R12
+   MOVQ syDelta+88(FP), R13
+   MOVQ sxDelta+80(FP), R14
 
    MOVQ $0x0000808180818081, AX
    MOVQ AX, X14
@@ -19,7 +19,7 @@ TEXT	·drawNormalNRGBAToNRGBAFast(SB),0,$0-104
    PXOR X15, X15
 
 LOOPY:
-   MOVQ xMin+64(FP), R15
+   MOVQ sx0+64(FP), R15
 
    LOOPX:
       MOVL (SI)(R15*1), AX
@@ -127,7 +127,7 @@ LOOPY:
 
       NEXTX:
       ADDQ R14, R15
-      CMPL R15, xMax+72(FP)
+      CMPQ R15, sx1+72(FP)
       JNE LOOPX
 
    ADDQ R12, DI
@@ -136,7 +136,7 @@ LOOPY:
    JNZ LOOPY
    RET
 
-TEXT	·drawNormalNRGBAToNRGBAProtectAlphaFast(SB),0,$0-104
+TEXT	·drawNormalNRGBAToNRGBAProtectAlphaFast(SB),0,$0-128
    MOVL alpha+48(FP), AX
    IMULL $0x00008081, AX
    MOVL AX, alpha+48(FP)
@@ -145,14 +145,14 @@ TEXT	·drawNormalNRGBAToNRGBAProtectAlphaFast(SB),0,$0-104
    MOVQ dest+0(FP), DI
    MOVQ y+56(FP), CX
 
-   MOVQ dDelta+80(FP), R12
-   MOVQ sDelta+88(FP), R13
-   MOVQ xDelta+96(FP), R14
+   MOVQ dyDelta+120(FP), R12
+   MOVQ syDelta+88(FP), R13
+   MOVQ sxDelta+80(FP), R14
 
    PXOR X15, X15
 
 LOOPY:
-   MOVQ xMin+64(FP), R15
+   MOVQ sx0+64(FP), R15
 
    LOOPX:
       MOVL (SI)(R15*1), AX
@@ -234,7 +234,7 @@ LOOPY:
 
       NEXTX:
       ADDQ R14, R15
-      CMPL R15, xMax+72(FP)
+      CMPQ R15, sx1+72(FP)
       JNE LOOPX
 
    ADDQ R12, DI

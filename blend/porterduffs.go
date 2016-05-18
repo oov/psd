@@ -54,22 +54,22 @@ func (d clear) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawClearNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawClearNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -88,22 +88,22 @@ func (d clear) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawClearRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawClearRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -122,22 +122,22 @@ func (d clear) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawClearNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawClearNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -156,137 +156,137 @@ func (d clear) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawClearRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawClearRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawClearNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawClearNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[dPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawClearRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawClearRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[dPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawClearNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawClearNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[dPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawClearRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawClearRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[dPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -355,22 +355,22 @@ func (d copy) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawCopyNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawCopyNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -389,22 +389,22 @@ func (d copy) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawCopyRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawCopyRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -423,22 +423,22 @@ func (d copy) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawCopyNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawCopyNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -457,26 +457,26 @@ func (d copy) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawCopyRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawCopyRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawCopyNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawCopyNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -485,7 +485,7 @@ var drawCopyNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
@@ -513,29 +513,29 @@ var drawCopyNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 			b = sb
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawCopyRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawCopyRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -544,7 +544,7 @@ var drawCopyRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
@@ -562,29 +562,29 @@ var drawCopyRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y
 
 			b = sb
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawCopyNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawCopyNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -593,7 +593,7 @@ var drawCopyNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
@@ -621,19 +621,19 @@ var drawCopyNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y
 
 			b = sb
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawCopyRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawCopyRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -642,7 +642,7 @@ var drawCopyRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y 
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
@@ -660,14 +660,14 @@ var drawCopyRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y 
 
 			b = sb
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -746,22 +746,22 @@ func (d dest) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -780,22 +780,22 @@ func (d dest) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -814,22 +814,22 @@ func (d dest) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -848,38 +848,38 @@ func (d dest) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawDestNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[dPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -902,41 +902,41 @@ var drawDestNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 			b = db
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[dPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -959,41 +959,41 @@ var drawDestRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y
 
 			b = db
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[dPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -1006,31 +1006,31 @@ var drawDestNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y
 
 			b = db
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[dPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -1043,14 +1043,14 @@ var drawDestRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y 
 
 			b = db
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -1129,22 +1129,22 @@ func (d srcOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOverNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOverNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -1163,22 +1163,22 @@ func (d srcOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOverRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOverRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -1197,22 +1197,22 @@ func (d srcOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOverNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOverNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -1231,26 +1231,26 @@ func (d srcOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOverRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOverRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawSrcOverNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOverNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1259,17 +1259,17 @@ var drawSrcOverNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if sa == 0 {
 				sr = 0
@@ -1303,29 +1303,29 @@ var drawSrcOverNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 			b = sb + (tmp*db*32768)>>23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcOverRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOverRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1334,17 +1334,17 @@ var drawSrcOverRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -1368,29 +1368,29 @@ var drawSrcOverRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 			b = sb + (tmp*db*32768)>>23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcOverNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOverNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1399,17 +1399,17 @@ var drawSrcOverNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if sa == 0 {
 				sr = 0
@@ -1433,19 +1433,19 @@ var drawSrcOverNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 			b = sb + (tmp*db*32768)>>23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcOverRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOverRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1454,17 +1454,17 @@ var drawSrcOverRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -1478,14 +1478,14 @@ var drawSrcOverRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 			b = sb + (tmp*db*32768)>>23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -1567,22 +1567,22 @@ func (d destOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOverNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOverNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -1601,22 +1601,22 @@ func (d destOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOverRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOverRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -1635,22 +1635,22 @@ func (d destOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOverNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOverNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -1669,26 +1669,26 @@ func (d destOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOverRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOverRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawDestOverNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOverNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1697,17 +1697,17 @@ var drawDestOverNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if sa == 0 {
 				sr = 0
@@ -1741,29 +1741,29 @@ var drawDestOverNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint
 
 			b = db + (tmp*sb*32768)>>23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestOverRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOverRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1772,17 +1772,17 @@ var drawDestOverRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -1806,29 +1806,29 @@ var drawDestOverRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 			b = db + (tmp*sb*32768)>>23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestOverNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOverNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1837,17 +1837,17 @@ var drawDestOverNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if sa == 0 {
 				sr = 0
@@ -1871,19 +1871,19 @@ var drawDestOverNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 			b = db + (tmp*sb*32768)>>23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestOverRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOverRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -1892,17 +1892,17 @@ var drawDestOverRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -1916,14 +1916,14 @@ var drawDestOverRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 			b = db + (tmp*sb*32768)>>23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -2005,22 +2005,22 @@ func (d srcIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcInNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcInNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -2039,22 +2039,22 @@ func (d srcIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcInRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcInRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -2073,22 +2073,22 @@ func (d srcIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcInNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcInNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -2107,26 +2107,26 @@ func (d srcIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcInRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcInRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawSrcInNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcInNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2135,14 +2135,14 @@ var drawSrcInNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
+			da := uint32(dpix[j+3])
 
 			if sa == 0 {
 				sr = 0
@@ -2165,29 +2165,29 @@ var drawSrcInNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 			b = (da * sb * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcInRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcInRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2196,14 +2196,14 @@ var drawSrcInRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
+			da := uint32(dpix[j+3])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -2216,29 +2216,29 @@ var drawSrcInRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 			b = (da * sb * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcInNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcInNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2247,14 +2247,14 @@ var drawSrcInNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
+			da := uint32(dpix[j+3])
 
 			if sa == 0 {
 				sr = 0
@@ -2277,19 +2277,19 @@ var drawSrcInNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 			b = (da * sb * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcInRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcInRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2298,14 +2298,14 @@ var drawSrcInRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
+			da := uint32(dpix[j+3])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -2318,14 +2318,14 @@ var drawSrcInRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y
 
 			b = (da * sb * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -2406,22 +2406,22 @@ func (d destIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestInNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestInNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -2440,22 +2440,22 @@ func (d destIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestInRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestInRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -2474,22 +2474,22 @@ func (d destIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestInNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestInNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -2508,26 +2508,26 @@ func (d destIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestInRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestInRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawDestInNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestInNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2536,14 +2536,14 @@ var drawDestInNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -2566,29 +2566,29 @@ var drawDestInNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 			b = (sa * db * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestInRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestInRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2597,14 +2597,14 @@ var drawDestInRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -2627,29 +2627,29 @@ var drawDestInRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 			b = (sa * db * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestInNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestInNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2658,14 +2658,14 @@ var drawDestInNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -2678,19 +2678,19 @@ var drawDestInNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 			b = (sa * db * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestInRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestInRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2699,14 +2699,14 @@ var drawDestInRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -2719,14 +2719,14 @@ var drawDestInRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 			b = (sa * db * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -2807,22 +2807,22 @@ func (d srcOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOutNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOutNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -2841,22 +2841,22 @@ func (d srcOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOutRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOutRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -2875,22 +2875,22 @@ func (d srcOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOutNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOutNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -2909,26 +2909,26 @@ func (d srcOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcOutRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcOutRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawSrcOutNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOutNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2937,14 +2937,14 @@ var drawSrcOutNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
+			da := uint32(dpix[j+3])
 
 			if sa == 0 {
 				sr = 0
@@ -2968,29 +2968,29 @@ var drawSrcOutNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 			b = (tmp * sb * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcOutRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOutRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -2999,14 +2999,14 @@ var drawSrcOutRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
+			da := uint32(dpix[j+3])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -3020,29 +3020,29 @@ var drawSrcOutRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 			b = (tmp * sb * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcOutNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOutNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3051,14 +3051,14 @@ var drawSrcOutNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
+			da := uint32(dpix[j+3])
 
 			if sa == 0 {
 				sr = 0
@@ -3082,19 +3082,19 @@ var drawSrcOutNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 			b = (tmp * sb * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcOutRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcOutRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3103,14 +3103,14 @@ var drawSrcOutRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
+			da := uint32(dpix[j+3])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -3124,14 +3124,14 @@ var drawSrcOutRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, 
 
 			b = (tmp * sb * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -3213,22 +3213,22 @@ func (d destOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOutNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOutNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -3247,22 +3247,22 @@ func (d destOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOutRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOutRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -3281,22 +3281,22 @@ func (d destOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOutNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOutNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -3315,26 +3315,26 @@ func (d destOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestOutRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestOutRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawDestOutNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOutNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3343,14 +3343,14 @@ var drawDestOutNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -3374,29 +3374,29 @@ var drawDestOutNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 			b = (tmp * db * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestOutRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOutRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3405,14 +3405,14 @@ var drawDestOutRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -3436,29 +3436,29 @@ var drawDestOutRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 			b = (tmp * db * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestOutNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOutNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3467,14 +3467,14 @@ var drawDestOutNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -3488,19 +3488,19 @@ var drawDestOutNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 			b = (tmp * db * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestOutRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestOutRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3509,14 +3509,14 @@ var drawDestOutRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -3530,14 +3530,14 @@ var drawDestOutRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 			b = (tmp * db * 32768) >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -3619,22 +3619,22 @@ func (d srcAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcAtopNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcAtopNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -3653,22 +3653,22 @@ func (d srcAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcAtopRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcAtopRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -3687,22 +3687,22 @@ func (d srcAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcAtopNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcAtopNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -3721,26 +3721,26 @@ func (d srcAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawSrcAtopRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawSrcAtopRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawSrcAtopNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcAtopNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3749,17 +3749,17 @@ var drawSrcAtopNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if sa == 0 {
 				sr = 0
@@ -3793,29 +3793,29 @@ var drawSrcAtopNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 			b = (sb*da + db*tmp) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcAtopRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcAtopRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3824,17 +3824,17 @@ var drawSrcAtopRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -3858,29 +3858,29 @@ var drawSrcAtopRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 			b = (sb*da + db*tmp) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcAtopNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcAtopNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3889,17 +3889,17 @@ var drawSrcAtopNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if sa == 0 {
 				sr = 0
@@ -3923,19 +3923,19 @@ var drawSrcAtopNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 			b = (sb*da + db*tmp) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawSrcAtopRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawSrcAtopRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -3944,17 +3944,17 @@ var drawSrcAtopRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -3968,14 +3968,14 @@ var drawSrcAtopRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32,
 
 			b = (sb*da + db*tmp) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -4057,22 +4057,22 @@ func (d destAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestAtopNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestAtopNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -4091,22 +4091,22 @@ func (d destAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestAtopRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestAtopRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -4125,22 +4125,22 @@ func (d destAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestAtopNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestAtopNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -4159,26 +4159,26 @@ func (d destAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawDestAtopRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawDestAtopRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawDestAtopNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestAtopNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4187,17 +4187,17 @@ var drawDestAtopNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if sa == 0 {
 				sr = 0
@@ -4231,29 +4231,29 @@ var drawDestAtopNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint
 
 			b = (sb*tmp + db*sa) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestAtopRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestAtopRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4262,17 +4262,17 @@ var drawDestAtopRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -4296,29 +4296,29 @@ var drawDestAtopRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 			b = (sb*tmp + db*sa) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestAtopNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestAtopNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4327,17 +4327,17 @@ var drawDestAtopNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if sa == 0 {
 				sr = 0
@@ -4361,19 +4361,19 @@ var drawDestAtopNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint3
 
 			b = (sb*tmp + db*sa) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawDestAtopRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawDestAtopRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4382,17 +4382,17 @@ var drawDestAtopRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -4406,14 +4406,14 @@ var drawDestAtopRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32
 
 			b = (sb*tmp + db*sa) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
@@ -4495,22 +4495,22 @@ func (d xOR) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawXORNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawXORNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -4529,22 +4529,22 @@ func (d xOR) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawXORRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawXORRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -4563,22 +4563,22 @@ func (d xOR) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawXORNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawXORNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
@@ -4597,26 +4597,26 @@ func (d xOR) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta   int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 
-	drawXORRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	drawXORRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
 
-var drawXORNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawXORNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4625,17 +4625,17 @@ var drawXORNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if sa == 0 {
 				sr = 0
@@ -4668,29 +4668,29 @@ var drawXORNRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y
 
 			b = (sb*(0xff-da) + db*(0xff-sa)) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawXORRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawXORRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4699,17 +4699,17 @@ var drawXORRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y 
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if da == 0 {
 				dr = 0
@@ -4732,29 +4732,29 @@ var drawXORRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y 
 
 			b = (sb*(0xff-da) + db*(0xff-sa)) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawXORNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawXORNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4763,17 +4763,17 @@ var drawXORNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y 
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			if sa == 0 {
 				sr = 0
@@ -4796,19 +4796,19 @@ var drawXORNRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y 
 
 			b = (sb*(0xff-da) + db*(0xff-sa)) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }
 
-var drawXORRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var drawXORRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
 	alpha *= 32897
@@ -4817,17 +4817,17 @@ var drawXORRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y i
 
 		spix := src[sPos:]
 
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
 
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
 
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 
 			var r, g, b, a, tmp uint32
 			_ = tmp
@@ -4840,14 +4840,14 @@ var drawXORRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y i
 
 			b = (sb*(0xff-da) + db*(0xff-sa)) * 32768 >> 23
 
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 
 }

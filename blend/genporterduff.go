@@ -287,44 +287,44 @@ func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Recta
 	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
 	s0 := src.PixOffset(sp.X, sp.Y)
 	var (
-		ddelta, sdelta int
-		i0, i1, idelta int
+		dyDelta, syDelta int
+		x0, x1, xDelta int
 	)
 	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		ddelta = dst.Stride
-		sdelta = src.Stride
-		i0, i1, idelta = 0, dx<<2, +4
+		dyDelta = dst.Stride
+		syDelta = src.Stride
+		x0, x1, xDelta = 0, dx<<2, +4
 	} else {
 		d0 += (dy - 1) * dst.Stride
 		s0 += (dy - 1) * src.Stride
-		ddelta = -dst.Stride
-		sdelta = -src.Stride
-		i0, i1, idelta = (dx-1)<<2, -4, -4
+		dyDelta = -dst.Stride
+		syDelta = -src.Stride
+		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
 {{end}}
 {{define "draw2"}}
-	{{.}}.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, i0, i1, ddelta, sdelta, idelta)
+	{{.}}.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 {{end}}
-{{template "draw1" "NRGBAToNRGBA"}}
+{{template "draw1" .}}
 {{template "draw2" printf "draw%sNRGBAToNRGBA" .Name}}
 }
 
 func (d {{.Name.Lower}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw1" "RGBAToNRGBA"}}
+{{template "draw1" .}}
 {{template "draw2" printf "draw%sRGBAToNRGBA" .Name}}
 }
 
 func (d {{.Name.Lower}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw1" "NRGBAToRGBA"}}
+{{template "draw1" .}}
 {{template "draw2" printf "draw%sNRGBAToRGBA" .Name}}
 }
 
 func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw1" "RGBAToRGBA"}}
+{{template "draw1" .}}
 {{template "draw2" printf "draw%sRGBAToRGBA" .Name}}
 }
 
-var draw{{.Name}}NRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 {{define "drawMain1"}}
 	var dPos, sPos int
 	alpha *= 32897
@@ -333,7 +333,7 @@ var draw{{.Name}}NRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uin
 {{if ne .SrcRead "skip"}}
 		spix := src[sPos:]
 {{end}}
-		for i := xMin; i != xMax; i += xDelta {
+		for i, j := sx0, dx0; i != sx1; i, j = i + sxDelta, j + dxDelta {
 {{if eq .SrcRead "alpha"}}
 			sa := (uint32(spix[i+3]) * alpha) >> 23
 {{else if ne .SrcRead "skip"}}
@@ -344,12 +344,12 @@ var draw{{.Name}}NRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uin
 {{end}}
 
 {{if eq .DestRead "alpha"}}
-			da := uint32(dpix[i+3])
+			da := uint32(dpix[j+3])
 {{else if ne .DestRead "skip"}}
-			da := uint32(dpix[i+3])
-			db := uint32(dpix[i+2])
-			dg := uint32(dpix[i+1])
-			dr := uint32(dpix[i])
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
 {{end}}
 {{end}}
 {{define "drawMain1_SrcNRGBAToRGBA"}}
@@ -393,31 +393,31 @@ var draw{{.Name}}NRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uin
 			{{end}}
 {{end}}
 {{define "drawMain2_SetByRGBA"}}
-			dpix[i+3] = uint8(a)
-			dpix[i+2] = uint8(b)
-			dpix[i+1] = uint8(g)
-			dpix[i+0] = uint8(r)
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
 {{end}}
 {{define "drawMain2_SetByNRGBA"}}
-			dpix[i+3] = uint8(a)
+			dpix[j+3] = uint8(a)
 			if a == 255 {
-				dpix[i+2] = uint8(b)
-				dpix[i+1] = uint8(g)
-				dpix[i+0] = uint8(r)
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
 			} else if a == 0 {
-				dpix[i+2] = 0
-				dpix[i+1] = 0
-				dpix[i+0] = 0
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
 			} else {
-				dpix[i+2] = uint8(b * 0xff / a)
-				dpix[i+1] = uint8(g * 0xff / a)
-				dpix[i+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
 			}
 {{end}}
 {{define "drawMain3"}}
 		}
-		dPos += dDelta
-		sPos += sDelta
+		dPos += dyDelta
+		sPos += syDelta
 	}
 {{end}}
 {{template "drawMain1" .}}
@@ -432,7 +432,7 @@ var draw{{.Name}}NRGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uin
 {{template "drawMain3" .}}
 }
 
-var draw{{.Name}}RGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 	{{template "drawMain1" .}}
 	{{if and (ne .DestRead "skip") (ne .DestRead "alpha")}}
 		{{template "drawMain1_DestNRGBAToRGBA" .}}
@@ -442,7 +442,7 @@ var draw{{.Name}}RGBAToNRGBA drawfunc = func(dest []byte, src []byte, alpha uint
 	{{template "drawMain3" .}}
 }
 
-var draw{{.Name}}NRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}NRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 	{{template "drawMain1" .}}
 	{{if and (ne .SrcRead "skip") (ne .SrcRead "alpha")}}
 		{{template "drawMain1_SrcNRGBAToRGBA" .}}
@@ -452,7 +452,7 @@ var draw{{.Name}}NRGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint
 	{{template "drawMain3" .}}
 }
 
-var draw{{.Name}}RGBAToRGBA drawfunc = func(dest []byte, src []byte, alpha uint32, y int, xMin int, xMax int, dDelta int, sDelta int, xDelta int) {
+var draw{{.Name}}RGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 	{{template "drawMain1" .}}
 	{{template "drawMain2" .}}
 	{{template "drawMain2_SetByRGBA" .}}
