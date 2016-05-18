@@ -445,14 +445,14 @@ func (d {{.Name.Lower}}) DrawMask(dst draw.Image, r image.Rectangle, src image.I
 }
 
 func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{define "draw1"}}
+{{define "draw"}}
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -473,8 +473,6 @@ func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Recta
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-{{end}}
-{{define "draw2"}}
 	var f drawFunc
 	if protectAlpha {
 		f = {{.}}ProtectAlpha
@@ -483,27 +481,23 @@ func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Recta
 	}
 	f.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 {{end}}
-{{template "draw1" "NRGBAToNRGBA"}}
-{{template "draw2" printf "draw%sNRGBAToNRGBA" .Name}}
+{{template "draw" printf "draw%sNRGBAToNRGBA" .Name}}
 }
 
 func (d {{.Name.Lower}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw1" "RGBAToNRGBA"}}
-{{template "draw2" printf "draw%sRGBAToNRGBA" .Name}}
+{{template "draw" printf "draw%sRGBAToNRGBA" .Name}}
 }
 
 func (d {{.Name.Lower}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw1" "NRGBAToRGBA"}}
-{{template "draw2" printf "draw%sNRGBAToRGBA" .Name}}
+{{template "draw" printf "draw%sNRGBAToRGBA" .Name}}
 }
 
 func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw1" "RGBAToRGBA"}}
-{{template "draw2" printf "draw%sRGBAToRGBA" .Name}}
+{{template "draw" printf "draw%sRGBAToRGBA" .Name}}
 }
 
 var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-{{define "drawMain1_SrcIsNotNRGBA"}}
+{{define "drawMain1"}}
 	dPos, sPos := 0, 0
 	alpha *= 32897
 	for ; y > 0; y-- {
@@ -532,22 +526,20 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
-{{if .}}
+{{end}}
+{{define "drawMain1_SrcRGBAToNRGBA"}}
 			sr = sr * 0xff / sa
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 {{end}}
-{{end}}
-{{define "drawMain2_DestIsNotNRGBA"}}
-{{if .}}
-			if da > 0 {
+{{define "drawMain1_DestRGBAToNRGBA"}}
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
 			}
 {{end}}
-{{end}}
-{{define "drawMain3"}}
+{{define "drawMain2"}}
 			var r, g, b uint32
 			{{if .CodePerChannel}}
 				{{.CodePerChannel.To8.Channel "r"}}
@@ -563,85 +555,71 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 				{{.Code16.To8}}
 			{{end}}
 {{end}}
-{{define "drawMain4_Clip_DestIsNotNRGBA"}}
-{{if .}}
-			dpix[j+3] = uint8(a)
-			dpix[j+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[j+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[j+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
-{{else}}
+{{define "drawMain2_SetNRGBA"}}
+{{if .OverMax}}
 			dpix[j+3] = uint8(a)
 			dpix[j+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
 			dpix[j+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
 			dpix[j+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
-{{end}}
-		}
-		dPos += dyDelta
-		sPos += syDelta
-	}
-{{end}}
-{{define "drawMain4_DestIsNotNRGBA"}}
-{{if .}}
-			dpix[j+3] = uint8(a)
-			dpix[j+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
 {{else}}
 			dpix[j+3] = uint8(a)
 			dpix[j+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
 			dpix[j+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
 			dpix[j+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
 {{end}}
+{{end}}
+{{define "drawMain2_SetRGBA"}}
+{{if .OverMax}}
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
+			dpix[j+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
+			dpix[j+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+{{else}}
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23)
+{{end}}
+{{end}}
+{{define "drawMain3"}}
 		}
 		dPos += dyDelta
 		sPos += syDelta
 	}
 {{end}}
-{{template "drawMain1_SrcIsNotNRGBA" false}}
-{{template "drawMain2_DestIsNotNRGBA" false}}
+{{template "drawMain1" .}}
+{{template "drawMain2" .}}
+{{template "drawMain2_SetNRGBA" .}}
 {{template "drawMain3" .}}
-{{if .OverMax}}
-	{{template "drawMain4_Clip_DestIsNotNRGBA" false}}
-{{else}}
-	{{template "drawMain4_DestIsNotNRGBA" false}}
-{{end}}
 }
 
 var draw{{.Name}}RGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-	{{template "drawMain1_SrcIsNotNRGBA" true}}
-	{{template "drawMain2_DestIsNotNRGBA" false}}
+	{{template "drawMain1" .}}
+	{{template "drawMain1_SrcRGBAToNRGBA" .}}
+	{{template "drawMain2" .}}
+	{{template "drawMain2_SetNRGBA" .}}
 	{{template "drawMain3" .}}
-	{{if .OverMax}}
-		{{template "drawMain4_Clip_DestIsNotNRGBA" false}}
-	{{else}}
-		{{template "drawMain4_DestIsNotNRGBA" false}}
-	{{end}}
 }
 
 var draw{{.Name}}NRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-	{{template "drawMain1_SrcIsNotNRGBA" false}}
-	{{template "drawMain2_DestIsNotNRGBA" true}}
+	{{template "drawMain1" .}}
+	{{template "drawMain1_DestRGBAToNRGBA" .}}
+	{{template "drawMain2" .}}
+	{{template "drawMain2_SetRGBA" .}}
 	{{template "drawMain3" .}}
-	{{if .OverMax}}
-		{{template "drawMain4_Clip_DestIsNotNRGBA" true}}
-	{{else}}
-		{{template "drawMain4_DestIsNotNRGBA" true}}
-	{{end}}
 }
 
 var draw{{.Name}}RGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-	{{template "drawMain1_SrcIsNotNRGBA" true}}
-	{{template "drawMain2_DestIsNotNRGBA" true}}
+	{{template "drawMain1" .}}
+	{{template "drawMain1_SrcRGBAToNRGBA" .}}
+	{{template "drawMain1_DestRGBAToNRGBA" .}}
+	{{template "drawMain2" .}}
+	{{template "drawMain2_SetRGBA" .}}
 	{{template "drawMain3" .}}
-	{{if .OverMax}}
-		{{template "drawMain4_Clip_DestIsNotNRGBA" true}}
-	{{else}}
-		{{template "drawMain4_DestIsNotNRGBA" true}}
-	{{end}}
 }
 
 var draw{{.Name}}NRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-{{define "drawMainProtectAlpha1_SrcIsNotNRGBA"}}
+{{define "drawMainProtectAlpha1"}}
 	alpha *= 32897
 	dPos, sPos := 0, 0
 	for ; y > 0; y-- {
@@ -664,20 +642,18 @@ var draw{{.Name}}NRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 
 			a1 := sa * alpha >> 23
 			a3 := 255 - a1
-{{if .}}
+{{end}}
+{{define "drawMainProtectAlpha1_SrcRGBAToNRGBA"}}
 			sr = sr * 0xff / sa
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 {{end}}
-{{end}}
-{{define "drawMainProtectAlpha2_DestIsNotNRGBA"}}
-{{if .}}
+{{define "drawMainProtectAlpha1_DestRGBAToNRGBA"}}
 			dr = dr * 0xff / da
 			dg = dg * 0xff / da
 			db = db * 0xff / da
 {{end}}
-{{end}}
-{{define "drawMainProtectAlpha3"}}
+{{define "drawMainProtectAlpha2"}}
 			var tmp, r, g, b uint32
 			_ = tmp
 			{{if .CodePerChannel}}
@@ -694,81 +670,67 @@ var draw{{.Name}}NRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 				{{.Code16.To8}}
 			{{end}}
 {{end}}
-{{define "drawMainProtectAlpha4_Clip_DestIsNotNRGBA"}}
-{{if .}}
-			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
-{{else}}
+{{define "drawMainProtectAlpha2_SetNRGBA"}}
+{{if .OverMax}}
 			dpix[j+3] = uint8(da)
 			dpix[j+2] = uint8(clip8((b*a1 + db*a3) / da))
 			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) / da))
 			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) / da))
-{{end}}
-		}
-		dPos += dyDelta
-		sPos += syDelta
-	}
-{{end}}
-{{define "drawMainProtectAlpha4_DestIsNotNRGBA"}}
-{{if .}}
-			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 {{else}}
 			dpix[j+3] = uint8(da)
 			dpix[j+2] = uint8((b*a1 + db*a3) / da)
 			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
 			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
 {{end}}
+{{end}}
+{{define "drawMainProtectAlpha2_SetRGBA"}}
+{{if .OverMax}}
+			dpix[j+3] = uint8(da)
+			dpix[j+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
+			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
+			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+{{else}}
+			dpix[j+3] = uint8(da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+{{end}}
+{{end}}
+{{define "drawMainProtectAlpha3"}}
 		}
 		dPos += dyDelta
 		sPos += syDelta
 	}
 {{end}}
-{{template "drawMainProtectAlpha1_SrcIsNotNRGBA" false}}
-{{template "drawMainProtectAlpha2_DestIsNotNRGBA" false}}
+{{template "drawMainProtectAlpha1" .}}
+{{template "drawMainProtectAlpha2" .}}
+{{template "drawMainProtectAlpha2_SetNRGBA" .}}
 {{template "drawMainProtectAlpha3" .}}
-{{if .OverMax}}
-	{{template "drawMainProtectAlpha4_Clip_DestIsNotNRGBA" false}}
-{{else}}
-	{{template "drawMainProtectAlpha4_DestIsNotNRGBA" false}}
-{{end}}
 }
 
 var draw{{.Name}}RGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-	{{template "drawMainProtectAlpha1_SrcIsNotNRGBA" true}}
-	{{template "drawMainProtectAlpha2_DestIsNotNRGBA" false}}
+	{{template "drawMainProtectAlpha1" .}}
+	{{template "drawMainProtectAlpha1_SrcRGBAToNRGBA" .}}
+	{{template "drawMainProtectAlpha2" .}}
+	{{template "drawMainProtectAlpha2_SetNRGBA" .}}
 	{{template "drawMainProtectAlpha3" .}}
-	{{if .OverMax}}
-		{{template "drawMainProtectAlpha4_Clip_DestIsNotNRGBA" false}}
-	{{else}}
-		{{template "drawMainProtectAlpha4_DestIsNotNRGBA" false}}
-	{{end}}
 }
 
 var draw{{.Name}}NRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-	{{template "drawMainProtectAlpha1_SrcIsNotNRGBA" false}}
-	{{template "drawMainProtectAlpha2_DestIsNotNRGBA" true}}
+	{{template "drawMainProtectAlpha1" .}}
+	{{template "drawMainProtectAlpha1_DestRGBAToNRGBA" .}}
+	{{template "drawMainProtectAlpha2" .}}
+	{{template "drawMainProtectAlpha2_SetRGBA" .}}
 	{{template "drawMainProtectAlpha3" .}}
-	{{if .OverMax}}
-		{{template "drawMainProtectAlpha4_Clip_DestIsNotNRGBA" true}}
-	{{else}}
-		{{template "drawMainProtectAlpha4_DestIsNotNRGBA" true}}
-	{{end}}
 }
 
 var draw{{.Name}}RGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-	{{template "drawMainProtectAlpha1_SrcIsNotNRGBA" true}}
-	{{template "drawMainProtectAlpha2_DestIsNotNRGBA" true}}
+	{{template "drawMainProtectAlpha1" .}}
+	{{template "drawMainProtectAlpha1_SrcRGBAToNRGBA" .}}
+	{{template "drawMainProtectAlpha1_DestRGBAToNRGBA" .}}
+	{{template "drawMainProtectAlpha2" .}}
+	{{template "drawMainProtectAlpha2_SetRGBA" .}}
 	{{template "drawMainProtectAlpha3" .}}
-	{{if .OverMax}}
-		{{template "drawMainProtectAlpha4_Clip_DestIsNotNRGBA" true}}
-	{{else}}
-		{{template "drawMainProtectAlpha4_DestIsNotNRGBA" true}}
-	{{end}}
 }
 
 func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {

@@ -273,7 +273,7 @@ func (d {{.Name.Lower}}) Draw(dst draw.Image, r image.Rectangle, src image.Image
 }
 
 func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{define "draw1"}}
+{{define "draw"}}
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
@@ -301,27 +301,21 @@ func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Recta
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-{{end}}
-{{define "draw2"}}
 	{{.}}.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 {{end}}
-{{template "draw1" .}}
-{{template "draw2" printf "draw%sNRGBAToNRGBA" .Name}}
+{{template "draw" printf "draw%sNRGBAToNRGBA" .Name}}
 }
 
 func (d {{.Name.Lower}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw1" .}}
-{{template "draw2" printf "draw%sRGBAToNRGBA" .Name}}
+{{template "draw" printf "draw%sRGBAToNRGBA" .Name}}
 }
 
 func (d {{.Name.Lower}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw1" .}}
-{{template "draw2" printf "draw%sNRGBAToRGBA" .Name}}
+{{template "draw" printf "draw%sNRGBAToRGBA" .Name}}
 }
 
 func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
-{{template "draw1" .}}
-{{template "draw2" printf "draw%sRGBAToRGBA" .Name}}
+{{template "draw" printf "draw%sRGBAToRGBA" .Name}}
 }
 
 var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {

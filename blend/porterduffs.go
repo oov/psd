@@ -68,7 +68,6 @@ func (d clear) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawClearNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -102,7 +101,6 @@ func (d clear) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawClearRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -136,7 +134,6 @@ func (d clear) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawClearNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -170,7 +167,6 @@ func (d clear) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawClearRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -369,7 +365,6 @@ func (d copy) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawCopyNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -403,7 +398,6 @@ func (d copy) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawCopyRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -437,7 +431,6 @@ func (d copy) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawCopyNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -471,7 +464,6 @@ func (d copy) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawCopyRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -760,7 +752,6 @@ func (d dest) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -794,7 +785,6 @@ func (d dest) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -828,7 +818,6 @@ func (d dest) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -862,7 +851,6 @@ func (d dest) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -1143,7 +1131,6 @@ func (d srcOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcOverNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -1177,7 +1164,6 @@ func (d srcOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcOverRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -1211,7 +1197,6 @@ func (d srcOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcOverNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -1245,7 +1230,6 @@ func (d srcOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcOverRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -1581,7 +1565,6 @@ func (d destOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestOverNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -1615,7 +1598,6 @@ func (d destOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestOverRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -1649,7 +1631,6 @@ func (d destOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestOverNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -1683,7 +1664,6 @@ func (d destOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestOverRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2019,7 +1999,6 @@ func (d srcIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcInNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2053,7 +2032,6 @@ func (d srcIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcInRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2087,7 +2065,6 @@ func (d srcIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcInNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2121,7 +2098,6 @@ func (d srcIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcInRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2420,7 +2396,6 @@ func (d destIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestInNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2454,7 +2429,6 @@ func (d destIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestInRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2488,7 +2462,6 @@ func (d destIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestInNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2522,7 +2495,6 @@ func (d destIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestInRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2821,7 +2793,6 @@ func (d srcOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcOutNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2855,7 +2826,6 @@ func (d srcOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcOutRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2889,7 +2859,6 @@ func (d srcOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcOutNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -2923,7 +2892,6 @@ func (d srcOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcOutRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -3227,7 +3195,6 @@ func (d destOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestOutNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -3261,7 +3228,6 @@ func (d destOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestOutRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -3295,7 +3261,6 @@ func (d destOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestOutNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -3329,7 +3294,6 @@ func (d destOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestOutRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -3633,7 +3597,6 @@ func (d srcAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcAtopNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -3667,7 +3630,6 @@ func (d srcAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcAtopRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -3701,7 +3663,6 @@ func (d srcAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcAtopNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -3735,7 +3696,6 @@ func (d srcAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawSrcAtopRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -4071,7 +4031,6 @@ func (d destAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestAtopNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -4105,7 +4064,6 @@ func (d destAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestAtopRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -4139,7 +4097,6 @@ func (d destAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestAtopNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -4173,7 +4130,6 @@ func (d destAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawDestAtopRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -4509,7 +4465,6 @@ func (d xOR) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawXORNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -4543,7 +4498,6 @@ func (d xOR) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawXORRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -4577,7 +4531,6 @@ func (d xOR) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawXORNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }
@@ -4611,7 +4564,6 @@ func (d xOR) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	drawXORRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 
 }

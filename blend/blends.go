@@ -64,10 +64,10 @@ func (d normal) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -88,7 +88,6 @@ func (d normal) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawNormalNRGBAToNRGBAProtectAlpha
@@ -104,10 +103,10 @@ func (d normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -128,7 +127,6 @@ func (d normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawNormalRGBAToNRGBAProtectAlpha
@@ -144,10 +142,10 @@ func (d normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -168,7 +166,6 @@ func (d normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawNormalNRGBAToRGBAProtectAlpha
@@ -184,10 +181,10 @@ func (d normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -208,7 +205,6 @@ func (d normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawNormalRGBAToRGBAProtectAlpha
@@ -356,7 +352,7 @@ var drawNormalNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -417,7 +413,7 @@ var drawNormalRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -785,10 +781,10 @@ func (d darken) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -809,7 +805,6 @@ func (d darken) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDarkenNRGBAToNRGBAProtectAlpha
@@ -825,10 +820,10 @@ func (d darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -849,7 +844,6 @@ func (d darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDarkenRGBAToNRGBAProtectAlpha
@@ -865,10 +859,10 @@ func (d darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -889,7 +883,6 @@ func (d darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDarkenNRGBAToRGBAProtectAlpha
@@ -905,10 +898,10 @@ func (d darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -929,7 +922,6 @@ func (d darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDarkenRGBAToRGBAProtectAlpha
@@ -1101,7 +1093,7 @@ var drawDarkenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -1174,7 +1166,7 @@ var drawDarkenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -1626,10 +1618,10 @@ func (d multiply) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -1650,7 +1642,6 @@ func (d multiply) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawMultiplyNRGBAToNRGBAProtectAlpha
@@ -1666,10 +1657,10 @@ func (d multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -1690,7 +1681,6 @@ func (d multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawMultiplyRGBAToNRGBAProtectAlpha
@@ -1706,10 +1696,10 @@ func (d multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -1730,7 +1720,6 @@ func (d multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawMultiplyNRGBAToRGBAProtectAlpha
@@ -1746,10 +1735,10 @@ func (d multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -1770,7 +1759,6 @@ func (d multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawMultiplyRGBAToRGBAProtectAlpha
@@ -1918,7 +1906,7 @@ var drawMultiplyNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -1979,7 +1967,7 @@ var drawMultiplyRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -2347,10 +2335,10 @@ func (d colorBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -2371,7 +2359,6 @@ func (d colorBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorBurnNRGBAToNRGBAProtectAlpha
@@ -2387,10 +2374,10 @@ func (d colorBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -2411,7 +2398,6 @@ func (d colorBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorBurnRGBAToNRGBAProtectAlpha
@@ -2427,10 +2413,10 @@ func (d colorBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -2451,7 +2437,6 @@ func (d colorBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorBurnNRGBAToRGBAProtectAlpha
@@ -2467,10 +2452,10 @@ func (d colorBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -2491,7 +2476,6 @@ func (d colorBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorBurnRGBAToRGBAProtectAlpha
@@ -2675,7 +2659,7 @@ var drawColorBurnNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -2754,7 +2738,7 @@ var drawColorBurnRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -3248,10 +3232,10 @@ func (d linearBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -3272,7 +3256,6 @@ func (d linearBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearBurnNRGBAToNRGBAProtectAlpha
@@ -3288,10 +3271,10 @@ func (d linearBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -3312,7 +3295,6 @@ func (d linearBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearBurnRGBAToNRGBAProtectAlpha
@@ -3328,10 +3310,10 @@ func (d linearBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -3352,7 +3334,6 @@ func (d linearBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearBurnNRGBAToRGBAProtectAlpha
@@ -3368,10 +3349,10 @@ func (d linearBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -3392,7 +3373,6 @@ func (d linearBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearBurnRGBAToRGBAProtectAlpha
@@ -3570,7 +3550,7 @@ var drawLinearBurnNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -3646,7 +3626,7 @@ var drawLinearBurnRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -4119,10 +4099,10 @@ func (d darkerColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -4143,7 +4123,6 @@ func (d darkerColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDarkerColorNRGBAToNRGBAProtectAlpha
@@ -4159,10 +4138,10 @@ func (d darkerColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -4183,7 +4162,6 @@ func (d darkerColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDarkerColorRGBAToNRGBAProtectAlpha
@@ -4199,10 +4177,10 @@ func (d darkerColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -4223,7 +4201,6 @@ func (d darkerColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDarkerColorNRGBAToRGBAProtectAlpha
@@ -4239,10 +4216,10 @@ func (d darkerColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -4263,7 +4240,6 @@ func (d darkerColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDarkerColorRGBAToRGBAProtectAlpha
@@ -4419,7 +4395,7 @@ var drawDarkerColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -4484,7 +4460,7 @@ var drawDarkerColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -4880,10 +4856,10 @@ func (d lighten) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -4904,7 +4880,6 @@ func (d lighten) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLightenNRGBAToNRGBAProtectAlpha
@@ -4920,10 +4895,10 @@ func (d lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -4944,7 +4919,6 @@ func (d lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLightenRGBAToNRGBAProtectAlpha
@@ -4960,10 +4934,10 @@ func (d lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -4984,7 +4958,6 @@ func (d lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLightenNRGBAToRGBAProtectAlpha
@@ -5000,10 +4973,10 @@ func (d lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -5024,7 +4997,6 @@ func (d lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLightenRGBAToRGBAProtectAlpha
@@ -5196,7 +5168,7 @@ var drawLightenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -5269,7 +5241,7 @@ var drawLightenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -5721,10 +5693,10 @@ func (d screen) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -5745,7 +5717,6 @@ func (d screen) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawScreenNRGBAToNRGBAProtectAlpha
@@ -5761,10 +5732,10 @@ func (d screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -5785,7 +5756,6 @@ func (d screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawScreenRGBAToNRGBAProtectAlpha
@@ -5801,10 +5771,10 @@ func (d screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -5825,7 +5795,6 @@ func (d screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawScreenNRGBAToRGBAProtectAlpha
@@ -5841,10 +5810,10 @@ func (d screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -5865,7 +5834,6 @@ func (d screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawScreenRGBAToRGBAProtectAlpha
@@ -6013,7 +5981,7 @@ var drawScreenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -6074,7 +6042,7 @@ var drawScreenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -6442,10 +6410,10 @@ func (d colorDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -6466,7 +6434,6 @@ func (d colorDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorDodgeNRGBAToNRGBAProtectAlpha
@@ -6482,10 +6449,10 @@ func (d colorDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -6506,7 +6473,6 @@ func (d colorDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorDodgeRGBAToNRGBAProtectAlpha
@@ -6522,10 +6488,10 @@ func (d colorDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -6546,7 +6512,6 @@ func (d colorDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorDodgeNRGBAToRGBAProtectAlpha
@@ -6562,10 +6527,10 @@ func (d colorDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -6586,7 +6551,6 @@ func (d colorDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorDodgeRGBAToRGBAProtectAlpha
@@ -6770,7 +6734,7 @@ var drawColorDodgeNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -6849,7 +6813,7 @@ var drawColorDodgeRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -7343,10 +7307,10 @@ func (d linearDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -7367,7 +7331,6 @@ func (d linearDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearDodgeNRGBAToNRGBAProtectAlpha
@@ -7383,10 +7346,10 @@ func (d linearDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -7407,7 +7370,6 @@ func (d linearDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearDodgeRGBAToNRGBAProtectAlpha
@@ -7423,10 +7385,10 @@ func (d linearDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -7447,7 +7409,6 @@ func (d linearDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearDodgeNRGBAToRGBAProtectAlpha
@@ -7463,10 +7424,10 @@ func (d linearDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -7487,7 +7448,6 @@ func (d linearDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearDodgeRGBAToRGBAProtectAlpha
@@ -7635,7 +7595,7 @@ var drawLinearDodgeNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -7696,7 +7656,7 @@ var drawLinearDodgeRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -8064,10 +8024,10 @@ func (d lighterColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangl
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -8088,7 +8048,6 @@ func (d lighterColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangl
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLighterColorNRGBAToNRGBAProtectAlpha
@@ -8104,10 +8063,10 @@ func (d lighterColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -8128,7 +8087,6 @@ func (d lighterColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLighterColorRGBAToNRGBAProtectAlpha
@@ -8144,10 +8102,10 @@ func (d lighterColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle,
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -8168,7 +8126,6 @@ func (d lighterColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle,
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLighterColorNRGBAToRGBAProtectAlpha
@@ -8184,10 +8141,10 @@ func (d lighterColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -8208,7 +8165,6 @@ func (d lighterColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLighterColorRGBAToRGBAProtectAlpha
@@ -8364,7 +8320,7 @@ var drawLighterColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -8429,7 +8385,7 @@ var drawLighterColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -8825,10 +8781,10 @@ func (d add) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -8849,7 +8805,6 @@ func (d add) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawAddNRGBAToNRGBAProtectAlpha
@@ -8865,10 +8820,10 @@ func (d add) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -8889,7 +8844,6 @@ func (d add) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawAddRGBAToNRGBAProtectAlpha
@@ -8905,10 +8859,10 @@ func (d add) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -8929,7 +8883,6 @@ func (d add) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawAddNRGBAToRGBAProtectAlpha
@@ -8945,10 +8898,10 @@ func (d add) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -8969,7 +8922,6 @@ func (d add) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawAddRGBAToRGBAProtectAlpha
@@ -9117,7 +9069,7 @@ var drawAddNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -9178,7 +9130,7 @@ var drawAddRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y i
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -9546,10 +9498,10 @@ func (d overlay) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -9570,7 +9522,6 @@ func (d overlay) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawOverlayNRGBAToNRGBAProtectAlpha
@@ -9586,10 +9537,10 @@ func (d overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -9610,7 +9561,6 @@ func (d overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawOverlayRGBAToNRGBAProtectAlpha
@@ -9626,10 +9576,10 @@ func (d overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -9650,7 +9600,6 @@ func (d overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawOverlayNRGBAToRGBAProtectAlpha
@@ -9666,10 +9615,10 @@ func (d overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -9690,7 +9639,6 @@ func (d overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawOverlayRGBAToRGBAProtectAlpha
@@ -9862,7 +9810,7 @@ var drawOverlayNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -9935,7 +9883,7 @@ var drawOverlayRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -10387,10 +10335,10 @@ func (d softLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -10411,7 +10359,6 @@ func (d softLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSoftLightNRGBAToNRGBAProtectAlpha
@@ -10427,10 +10374,10 @@ func (d softLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -10451,7 +10398,6 @@ func (d softLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSoftLightRGBAToNRGBAProtectAlpha
@@ -10467,10 +10413,10 @@ func (d softLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -10491,7 +10437,6 @@ func (d softLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSoftLightNRGBAToRGBAProtectAlpha
@@ -10507,10 +10452,10 @@ func (d softLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -10531,7 +10476,6 @@ func (d softLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSoftLightRGBAToRGBAProtectAlpha
@@ -10733,7 +10677,7 @@ var drawSoftLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -10821,7 +10765,7 @@ var drawSoftLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -11378,10 +11322,10 @@ func (d hardLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -11402,7 +11346,6 @@ func (d hardLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHardLightNRGBAToNRGBAProtectAlpha
@@ -11418,10 +11361,10 @@ func (d hardLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -11442,7 +11385,6 @@ func (d hardLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHardLightRGBAToNRGBAProtectAlpha
@@ -11458,10 +11400,10 @@ func (d hardLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -11482,7 +11424,6 @@ func (d hardLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHardLightNRGBAToRGBAProtectAlpha
@@ -11498,10 +11439,10 @@ func (d hardLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -11522,7 +11463,6 @@ func (d hardLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHardLightRGBAToRGBAProtectAlpha
@@ -11700,7 +11640,7 @@ var drawHardLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -11776,7 +11716,7 @@ var drawHardLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -12249,10 +12189,10 @@ func (d linearLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -12273,7 +12213,6 @@ func (d linearLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearLightNRGBAToNRGBAProtectAlpha
@@ -12289,10 +12228,10 @@ func (d linearLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -12313,7 +12252,6 @@ func (d linearLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearLightRGBAToNRGBAProtectAlpha
@@ -12329,10 +12267,10 @@ func (d linearLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -12353,7 +12291,6 @@ func (d linearLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearLightNRGBAToRGBAProtectAlpha
@@ -12369,10 +12306,10 @@ func (d linearLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -12393,7 +12330,6 @@ func (d linearLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLinearLightRGBAToRGBAProtectAlpha
@@ -12565,7 +12501,7 @@ var drawLinearLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -12638,7 +12574,7 @@ var drawLinearLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -13090,10 +13026,10 @@ func (d vividLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -13114,7 +13050,6 @@ func (d vividLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawVividLightNRGBAToNRGBAProtectAlpha
@@ -13130,10 +13065,10 @@ func (d vividLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -13154,7 +13089,6 @@ func (d vividLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawVividLightRGBAToNRGBAProtectAlpha
@@ -13170,10 +13104,10 @@ func (d vividLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -13194,7 +13128,6 @@ func (d vividLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawVividLightNRGBAToRGBAProtectAlpha
@@ -13210,10 +13143,10 @@ func (d vividLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -13234,7 +13167,6 @@ func (d vividLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawVividLightRGBAToRGBAProtectAlpha
@@ -13466,7 +13398,7 @@ var drawVividLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -13569,7 +13501,7 @@ var drawVividLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -14231,10 +14163,10 @@ func (d pinLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -14255,7 +14187,6 @@ func (d pinLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawPinLightNRGBAToNRGBAProtectAlpha
@@ -14271,10 +14202,10 @@ func (d pinLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -14295,7 +14226,6 @@ func (d pinLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawPinLightRGBAToNRGBAProtectAlpha
@@ -14311,10 +14241,10 @@ func (d pinLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -14335,7 +14265,6 @@ func (d pinLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawPinLightNRGBAToRGBAProtectAlpha
@@ -14351,10 +14280,10 @@ func (d pinLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -14375,7 +14304,6 @@ func (d pinLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawPinLightRGBAToRGBAProtectAlpha
@@ -14607,7 +14535,7 @@ var drawPinLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -14710,7 +14638,7 @@ var drawPinLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -15372,10 +15300,10 @@ func (d hardMix) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -15396,7 +15324,6 @@ func (d hardMix) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHardMixNRGBAToNRGBAProtectAlpha
@@ -15412,10 +15339,10 @@ func (d hardMix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -15436,7 +15363,6 @@ func (d hardMix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHardMixRGBAToNRGBAProtectAlpha
@@ -15452,10 +15378,10 @@ func (d hardMix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -15476,7 +15402,6 @@ func (d hardMix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHardMixNRGBAToRGBAProtectAlpha
@@ -15492,10 +15417,10 @@ func (d hardMix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -15516,7 +15441,6 @@ func (d hardMix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHardMixRGBAToRGBAProtectAlpha
@@ -15802,7 +15726,7 @@ var drawHardMixNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -15932,7 +15856,7 @@ var drawHardMixRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -16783,10 +16707,10 @@ func (d difference) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -16807,7 +16731,6 @@ func (d difference) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDifferenceNRGBAToNRGBAProtectAlpha
@@ -16823,10 +16746,10 @@ func (d difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -16847,7 +16770,6 @@ func (d difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDifferenceRGBAToNRGBAProtectAlpha
@@ -16863,10 +16785,10 @@ func (d difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -16887,7 +16809,6 @@ func (d difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDifferenceNRGBAToRGBAProtectAlpha
@@ -16903,10 +16824,10 @@ func (d difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -16927,7 +16848,6 @@ func (d difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDifferenceRGBAToRGBAProtectAlpha
@@ -17099,7 +17019,7 @@ var drawDifferenceNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -17172,7 +17092,7 @@ var drawDifferenceRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -17624,10 +17544,10 @@ func (d exclusion) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -17648,7 +17568,6 @@ func (d exclusion) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawExclusionNRGBAToNRGBAProtectAlpha
@@ -17664,10 +17583,10 @@ func (d exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -17688,7 +17607,6 @@ func (d exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawExclusionRGBAToNRGBAProtectAlpha
@@ -17704,10 +17622,10 @@ func (d exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -17728,7 +17646,6 @@ func (d exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawExclusionNRGBAToRGBAProtectAlpha
@@ -17744,10 +17661,10 @@ func (d exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -17768,7 +17685,6 @@ func (d exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawExclusionRGBAToRGBAProtectAlpha
@@ -17916,7 +17832,7 @@ var drawExclusionNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -17977,7 +17893,7 @@ var drawExclusionRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -18345,10 +18261,10 @@ func (d subtract) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -18369,7 +18285,6 @@ func (d subtract) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSubtractNRGBAToNRGBAProtectAlpha
@@ -18385,10 +18300,10 @@ func (d subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -18409,7 +18324,6 @@ func (d subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSubtractRGBAToNRGBAProtectAlpha
@@ -18425,10 +18339,10 @@ func (d subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -18449,7 +18363,6 @@ func (d subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSubtractNRGBAToRGBAProtectAlpha
@@ -18465,10 +18378,10 @@ func (d subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -18489,7 +18402,6 @@ func (d subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSubtractRGBAToRGBAProtectAlpha
@@ -18661,7 +18573,7 @@ var drawSubtractNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -18734,7 +18646,7 @@ var drawSubtractRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -19186,10 +19098,10 @@ func (d divide) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -19210,7 +19122,6 @@ func (d divide) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDivideNRGBAToNRGBAProtectAlpha
@@ -19226,10 +19137,10 @@ func (d divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -19250,7 +19161,6 @@ func (d divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDivideRGBAToNRGBAProtectAlpha
@@ -19266,10 +19176,10 @@ func (d divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -19290,7 +19200,6 @@ func (d divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDivideNRGBAToRGBAProtectAlpha
@@ -19306,10 +19215,10 @@ func (d divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -19330,7 +19239,6 @@ func (d divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawDivideRGBAToRGBAProtectAlpha
@@ -19514,7 +19422,7 @@ var drawDivideNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -19593,7 +19501,7 @@ var drawDivideRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -20087,10 +19995,10 @@ func (d hue) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -20111,7 +20019,6 @@ func (d hue) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHueNRGBAToNRGBAProtectAlpha
@@ -20127,10 +20034,10 @@ func (d hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -20151,7 +20058,6 @@ func (d hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHueRGBAToNRGBAProtectAlpha
@@ -20167,10 +20073,10 @@ func (d hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -20191,7 +20097,6 @@ func (d hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHueNRGBAToRGBAProtectAlpha
@@ -20207,10 +20112,10 @@ func (d hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -20231,7 +20136,6 @@ func (d hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawHueRGBAToRGBAProtectAlpha
@@ -20373,7 +20277,7 @@ var drawHueNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -20431,7 +20335,7 @@ var drawHueRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y i
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -20778,10 +20682,10 @@ func (d saturation) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -20802,7 +20706,6 @@ func (d saturation) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSaturationNRGBAToNRGBAProtectAlpha
@@ -20818,10 +20721,10 @@ func (d saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -20842,7 +20745,6 @@ func (d saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSaturationRGBAToNRGBAProtectAlpha
@@ -20858,10 +20760,10 @@ func (d saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -20882,7 +20784,6 @@ func (d saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSaturationNRGBAToRGBAProtectAlpha
@@ -20898,10 +20799,10 @@ func (d saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -20922,7 +20823,6 @@ func (d saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawSaturationRGBAToRGBAProtectAlpha
@@ -21064,7 +20964,7 @@ var drawSaturationNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -21122,7 +21022,7 @@ var drawSaturationRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -21469,10 +21369,10 @@ func (d color) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -21493,7 +21393,6 @@ func (d color) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorNRGBAToNRGBAProtectAlpha
@@ -21509,10 +21408,10 @@ func (d color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -21533,7 +21432,6 @@ func (d color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorRGBAToNRGBAProtectAlpha
@@ -21549,10 +21447,10 @@ func (d color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -21573,7 +21471,6 @@ func (d color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorNRGBAToRGBAProtectAlpha
@@ -21589,10 +21486,10 @@ func (d color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -21613,7 +21510,6 @@ func (d color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawColorRGBAToRGBAProtectAlpha
@@ -21753,7 +21649,7 @@ var drawColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -21810,7 +21706,7 @@ var drawColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -22150,10 +22046,10 @@ func (d luminosity) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -22174,7 +22070,6 @@ func (d luminosity) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLuminosityNRGBAToNRGBAProtectAlpha
@@ -22190,10 +22085,10 @@ func (d luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -22214,7 +22109,6 @@ func (d luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLuminosityRGBAToNRGBAProtectAlpha
@@ -22230,10 +22124,10 @@ func (d luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -22254,7 +22148,6 @@ func (d luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLuminosityNRGBAToRGBAProtectAlpha
@@ -22270,10 +22163,10 @@ func (d luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 	alpha := uint32(0xff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
+		alpha >>= 8
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	dx, dy := r.Dx(), r.Dy()
@@ -22294,7 +22187,6 @@ func (d luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-
 	var f drawFunc
 	if protectAlpha {
 		f = drawLuminosityRGBAToRGBAProtectAlpha
@@ -22434,7 +22326,7 @@ var drawLuminosityNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
@@ -22491,7 +22383,7 @@ var drawLuminosityRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sg = sg * 0xff / sa
 			sb = sb * 0xff / sa
 
-			if da > 0 {
+			if da > 0 && da < 255 {
 				dr = dr * 0xff / da
 				dg = dg * 0xff / da
 				db = db * 0xff / da
