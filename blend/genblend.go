@@ -573,9 +573,9 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 {{define "drawMain2_SetRGBA"}}
 {{if .OverMax}}
 			dpix[j+3] = uint8(a)
-			dpix[j+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[j+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[j+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[j+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a) * a * 32897 >> 23)
+			dpix[j+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a) * a * 32897 >> 23)
+			dpix[j+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a) * a * 32897 >> 23)
 {{else}}
 			dpix[j+3] = uint8(a)
 			dpix[j+2] = uint8((b*a1 + sb*a2 + db*a3) * 32897 >> 23)
@@ -679,27 +679,27 @@ var draw{{.Name}}NRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 {{define "drawMainProtectAlpha2_SetNRGBA"}}
 {{if .OverMax}}
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) / da))
-{{else}}
-			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
-{{end}}
-{{end}}
-{{define "drawMainProtectAlpha2_SetRGBA"}}
-{{if .OverMax}}
-			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[j+2] = uint8(clip8((b*a1 + db*a3) / 255))
+			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) / 255))
+			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) / 255))
 {{else}}
 			dpix[j+3] = uint8(da)
 			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
 			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
 			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+{{end}}
+{{end}}
+{{define "drawMainProtectAlpha2_SetRGBA"}}
+{{if .OverMax}}
+			dpix[j+3] = uint8(da)
+			dpix[j+2] = uint8(clip8((b*a1 + db*a3) / (a1+a3)) * da * 32897 >> 23)
+			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) / (a1+a3)) * da * 32897 >> 23)
+			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) / (a1+a3)) * da * 32897 >> 23)
+{{else}}
+			dpix[j+3] = uint8(da)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 {{end}}
 {{end}}
 {{define "drawMainProtectAlpha3"}}
@@ -771,12 +771,20 @@ func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src ima
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -798,14 +806,14 @@ func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src ima
 	{{.Code.To16}}
 {{end}}
 {{if .OverMax}}
-				out.R = uint16(clip16(dr*a3 / 0xffff + uint32(uint64(r)*uint64(a1) / 0xffff)))
-				out.G = uint16(clip16(dg*a3 / 0xffff + uint32(uint64(g)*uint64(a1) / 0xffff)))
-				out.B = uint16(clip16(db*a3 / 0xffff + uint32(uint64(b)*uint64(a1) / 0xffff)))
+				out.R = uint16(clip6416((uint64(dr*a3)+uint64(r)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
+				out.G = uint16(clip6416((uint64(dg*a3)+uint64(g)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
+				out.B = uint16(clip6416((uint64(db*a3)+uint64(b)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 {{else}}
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 {{end}}
 
@@ -840,12 +848,20 @@ func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src ima
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -866,9 +882,9 @@ func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src ima
 	{{.Code.To16}}
 {{end}}
 {{if .OverMax}}
-				out.R = uint16(clip16((sr*a2 + dr*a3) / 0xffff + uint32(uint64(r)*uint64(a1) / 0xffff)))
-				out.G = uint16(clip16((sg*a2 + dg*a3) / 0xffff + uint32(uint64(g)*uint64(a1) / 0xffff)))
-				out.B = uint16(clip16((sb*a2 + db*a3) / 0xffff + uint32(uint64(b)*uint64(a1) / 0xffff)))
+				out.R = uint16(clip6416(uint64(sr*a2 + dr*a3)/0xffff + uint64(r)*uint64(a1) / uint64(a)) * a / 0xffff)
+				out.G = uint16(clip6416(uint64(sg*a2 + dg*a3)/0xffff + uint64(g)*uint64(a1) / uint64(a)) * a / 0xffff)
+				out.B = uint16(clip6416(uint64(sb*a2 + db*a3)/0xffff + uint64(b)*uint64(a1) / uint64(a)) * a / 0xffff)
 				out.A = uint16(a)
 {{else}}
 				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)

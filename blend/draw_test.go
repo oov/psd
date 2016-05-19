@@ -51,20 +51,41 @@ func verify(a image.Image, b image.Image) (float64, error) {
 	}
 
 	bounds := a.Bounds()
-	er := 0
+	var score float64
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			ar, ag, ab, aa := a.At(x, y).RGBA()
 			br, bg, bb, ba := b.At(x, y).RGBA()
-			if math.Abs(float64(ar)-float64(br)) >= 0x0200 ||
+			switch {
+			case math.Abs(float64(ar)-float64(br)) >= 0x4000 ||
+				math.Abs(float64(ag)-float64(bg)) >= 0x4000 ||
+				math.Abs(float64(ab)-float64(bb)) >= 0x4000 ||
+				math.Abs(float64(aa)-float64(ba)) >= 0x4000:
+				score += 256.0
+			case math.Abs(float64(ar)-float64(br)) >= 0x2000 ||
+				math.Abs(float64(ag)-float64(bg)) >= 0x2000 ||
+				math.Abs(float64(ab)-float64(bb)) >= 0x2000 ||
+				math.Abs(float64(aa)-float64(ba)) >= 0x2000:
+				score += 128.0
+			case math.Abs(float64(ar)-float64(br)) >= 0x1000 ||
+				math.Abs(float64(ag)-float64(bg)) >= 0x1000 ||
+				math.Abs(float64(ab)-float64(bb)) >= 0x1000 ||
+				math.Abs(float64(aa)-float64(ba)) >= 0x1000:
+				score += 64.0
+			case math.Abs(float64(ar)-float64(br)) >= 0x0800 ||
+				math.Abs(float64(ag)-float64(bg)) >= 0x0800 ||
+				math.Abs(float64(ab)-float64(bb)) >= 0x0800 ||
+				math.Abs(float64(aa)-float64(ba)) >= 0x0800:
+				score += 0.1
+			case math.Abs(float64(ar)-float64(br)) >= 0x0200 ||
 				math.Abs(float64(ag)-float64(bg)) >= 0x0200 ||
 				math.Abs(float64(ab)-float64(bb)) >= 0x0200 ||
-				math.Abs(float64(aa)-float64(ba)) >= 0x0200 {
-				er++
+				math.Abs(float64(aa)-float64(ba)) >= 0x0200:
+				score += 0.01
 			}
 		}
 	}
-	return float64(er) / float64(bounds.Dx()*bounds.Dy()), nil
+	return score / float64(a.Bounds().Dx()*a.Bounds().Dy()), nil
 }
 
 func loadNRGBAToNRGBAImages(path1 string, path2 string) (*image.NRGBA, *image.NRGBA, error) {
@@ -171,6 +192,10 @@ func loadAlphaToNRGBAImages(path1 string, path2 string) (*image.NRGBA, *image.Al
 
 func testDrawFallback(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawFallback"
+	if protectAlpha {
+		name += "ProtectAlpha"
+	}
+
 	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -182,27 +207,35 @@ func testDrawFallback(t *testing.T, path1 string, path2 string, d drawer, protec
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
+	var prefix string
+	if protectAlpha {
+		prefix = "ProtectAlpha/"
+	}
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%v.png", d),
+		fmt.Sprintf("reference/%s%v.png", prefix, d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	errorRate, err := verify(created, ref)
+	score, err := verify(created, ref)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-	if errorRate > 0.262 {
-		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	t.Logf("score: %f", score)
+	if score > 3.0 {
+		t.Errorf("too many erros: %f", score)
 	}
 }
 
 func testDrawNRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawNRGBAToNRGBA"
+	if protectAlpha {
+		name += "ProtectAlpha"
+	}
+
 	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -214,27 +247,35 @@ func testDrawNRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer, pr
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
+	var prefix string
+	if protectAlpha {
+		prefix = "ProtectAlpha/"
+	}
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%v.png", d),
+		fmt.Sprintf("reference/%s%v.png", prefix, d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	errorRate, err := verify(created, ref)
+	score, err := verify(created, ref)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-	if errorRate > 0.262 {
-		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	t.Logf("score: %f", score)
+	if score > 3.0 {
+		t.Errorf("too many erros: %f", score)
 	}
 }
 
 func testDrawRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawRGBAToNRGBA"
+	if protectAlpha {
+		name += "ProtectAlpha"
+	}
+
 	img, img2, err := loadRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -246,27 +287,35 @@ func testDrawRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer, pro
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
+	var prefix string
+	if protectAlpha {
+		prefix = "ProtectAlpha/"
+	}
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%v.png", d),
+		fmt.Sprintf("reference/%s%v.png", prefix, d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	errorRate, err := verify(created, ref)
+	score, err := verify(created, ref)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-	if errorRate > 0.262 {
-		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	t.Logf("score: %f", score)
+	if score > 3.0 {
+		t.Errorf("too many erros: %f", score)
 	}
 }
 
 func testDrawNRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawNRGBAToRGBA"
+	if protectAlpha {
+		name += "ProtectAlpha"
+	}
+
 	img, img2, err := loadNRGBAToRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -278,27 +327,35 @@ func testDrawNRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, pro
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
+	var prefix string
+	if protectAlpha {
+		prefix = "ProtectAlpha/"
+	}
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%v.png", d),
+		fmt.Sprintf("reference/%s%v.png", prefix, d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	errorRate, err := verify(created, ref)
+	score, err := verify(created, ref)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-	if errorRate > 0.262 {
-		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	t.Logf("score: %f", score)
+	if score > 3.0 {
+		t.Errorf("too many erros: %f", score)
 	}
 }
 
 func testDrawRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
 	name := "DrawRGBAToRGBA"
+	if protectAlpha {
+		name += "ProtectAlpha"
+	}
+
 	img, img2, err := loadRGBAToRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -310,27 +367,35 @@ func testDrawRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, prot
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
+	var prefix string
+	if protectAlpha {
+		prefix = "ProtectAlpha/"
+	}
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%v.png", d),
+		fmt.Sprintf("reference/%s%v.png", prefix, d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	errorRate, err := verify(created, ref)
+	score, err := verify(created, ref)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-	if errorRate > 0.262 {
-		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	t.Logf("score: %f", score)
+	if score > 3.0 {
+		t.Errorf("too many erros: %f", score)
 	}
 }
 
 func testDrawAlphaToRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer, protectAlpha bool) {
 	name := "DrawAlphaToRGBA"
+	if protectAlpha {
+		name += "ProtectAlpha"
+	}
+
 	img, img2, err := loadAlphaToRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -342,27 +407,32 @@ func testDrawAlphaToRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
+	prefix := "alpha/"
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/alpha-%v.png", d),
+		fmt.Sprintf("reference/%s%v.png", prefix, d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	errorRate, err := verify(created, ref)
+	score, err := verify(created, ref)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-	if errorRate > 0.262 {
-		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	t.Logf("score: %f", score)
+	if score > 3.0 {
+		t.Errorf("too many erros: %f", score)
 	}
 }
 
 func testDrawAlphaToNRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer, protectAlpha bool) {
 	name := "DrawAlphaToNRGBA"
+	if protectAlpha {
+		name += "ProtectAlpha"
+	}
+
 	img, img2, err := loadAlphaToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -374,22 +444,23 @@ func testDrawAlphaToNRGBA(t *testing.T, path1 string, path2 string, d alphaDrawe
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
+	prefix := "alpha/"
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/alpha-%v.png", d),
+		fmt.Sprintf("reference/%s%v.png", prefix, d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	errorRate, err := verify(created, ref)
+	score, err := verify(created, ref)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	t.Logf("ErrorRate: %3.2f%%", errorRate*100)
-	if errorRate > 0.262 {
-		t.Errorf("too many erros: %3.2f%%", errorRate*100)
+	t.Logf("score: %f", score)
+	if score > 3.0 {
+		t.Errorf("too many erros: %f", score)
 	}
 }
 

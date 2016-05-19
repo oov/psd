@@ -172,6 +172,13 @@ func clip16(a uint32) uint32 {
 	return 0xffff
 }
 
+func clip6416(a uint64) uint32 {
+	if a < 0xffff {
+		return uint32(a)
+	}
+	return 0xffff
+}
+
 func clamp8s(a int32) uint32 {
 	if a < 0 {
 		return 0

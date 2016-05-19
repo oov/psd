@@ -478,9 +478,9 @@ var drawNormalNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			b = sb
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -530,9 +530,9 @@ var drawNormalRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			b = sb
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -582,9 +582,9 @@ var drawNormalNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			b = sb
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -640,9 +640,9 @@ var drawNormalRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			b = sb
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -683,12 +683,20 @@ func (d normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -703,9 +711,9 @@ func (d normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				b = sb
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -739,12 +747,20 @@ func (d normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -1267,9 +1283,9 @@ var drawDarkenNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -1331,9 +1347,9 @@ var drawDarkenRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -1395,9 +1411,9 @@ var drawDarkenNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -1465,9 +1481,9 @@ var drawDarkenRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -1508,12 +1524,20 @@ func (d darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -1540,9 +1564,9 @@ func (d darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 					b = db
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -1576,12 +1600,20 @@ func (d darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -2056,9 +2088,9 @@ var drawMultiplyNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			b = sb * db * 32897 >> 23
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -2108,9 +2140,9 @@ var drawMultiplyRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			b = sb * db * 32897 >> 23
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -2160,9 +2192,9 @@ var drawMultiplyNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			b = sb * db * 32897 >> 23
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -2218,9 +2250,9 @@ var drawMultiplyRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			b = sb * db * 32897 >> 23
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -2261,12 +2293,20 @@ func (d multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -2281,9 +2321,9 @@ func (d multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 
 				b = sb * db / 0xffff
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -2317,12 +2357,20 @@ func (d multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -2875,9 +2923,9 @@ var drawColorBurnNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -2945,9 +2993,9 @@ var drawColorBurnRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -3015,9 +3063,9 @@ var drawColorBurnNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -3091,9 +3139,9 @@ var drawColorBurnRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -3134,12 +3182,20 @@ func (d colorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -3172,9 +3228,9 @@ func (d colorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					b = 0xffff - clip16((0xffff-db)*0xffff/sb)
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -3208,12 +3264,20 @@ func (d colorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -3769,9 +3833,9 @@ var drawLinearBurnNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -3836,9 +3900,9 @@ var drawLinearBurnRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -3903,9 +3967,9 @@ var drawLinearBurnNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -3976,9 +4040,9 @@ var drawLinearBurnRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -4019,12 +4083,20 @@ func (d linearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -4054,9 +4126,9 @@ func (d linearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					b = 0
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -4090,12 +4162,20 @@ func (d linearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -4593,9 +4673,9 @@ var drawDarkerColorNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []b
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -4649,9 +4729,9 @@ var drawDarkerColorRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -4705,9 +4785,9 @@ var drawDarkerColorNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -4767,9 +4847,9 @@ var drawDarkerColorRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -4810,12 +4890,20 @@ func (d darkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -4834,9 +4922,9 @@ func (d darkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 					b = db
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -4870,12 +4958,20 @@ func (d darkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -5402,9 +5498,9 @@ var drawLightenNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -5466,9 +5562,9 @@ var drawLightenRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -5530,9 +5626,9 @@ var drawLightenNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -5600,9 +5696,9 @@ var drawLightenRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -5643,12 +5739,20 @@ func (d lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -5675,9 +5779,9 @@ func (d lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					b = db
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -5711,12 +5815,20 @@ func (d lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -6191,9 +6303,9 @@ var drawScreenNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -6243,9 +6355,9 @@ var drawScreenRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -6295,9 +6407,9 @@ var drawScreenNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -6353,9 +6465,9 @@ var drawScreenRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			b = sb + db - (sb * db * 32897 >> 23)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -6396,12 +6508,20 @@ func (d screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -6416,9 +6536,9 @@ func (d screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				b = sb + db - (sb * db / 0xffff)
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -6452,12 +6572,20 @@ func (d screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -7010,9 +7138,9 @@ var drawColorDodgeNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -7080,9 +7208,9 @@ var drawColorDodgeRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -7150,9 +7278,9 @@ var drawColorDodgeNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -7226,9 +7354,9 @@ var drawColorDodgeRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -7269,12 +7397,20 @@ func (d colorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -7307,9 +7443,9 @@ func (d colorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					b = clip16(db * 0xffff / (0xffff - sb))
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -7343,12 +7479,20 @@ func (d colorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -7829,9 +7973,9 @@ var drawLinearDodgeNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []b
 			b = clip8(sb + db)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -7881,9 +8025,9 @@ var drawLinearDodgeRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			b = clip8(sb + db)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -7933,9 +8077,9 @@ var drawLinearDodgeNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			b = clip8(sb + db)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -7991,9 +8135,9 @@ var drawLinearDodgeRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			b = clip8(sb + db)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -8034,12 +8178,20 @@ func (d linearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -8054,9 +8206,9 @@ func (d linearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 
 				b = clip16(sb + db)
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -8090,12 +8242,20 @@ func (d linearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -8578,9 +8738,9 @@ var drawLighterColorNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -8634,9 +8794,9 @@ var drawLighterColorRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []b
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -8690,9 +8850,9 @@ var drawLighterColorNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []b
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -8752,9 +8912,9 @@ var drawLighterColorRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -8795,12 +8955,20 @@ func (d lighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -8819,9 +8987,9 @@ func (d lighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 					b = db
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -8855,12 +9023,20 @@ func (d lighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -9218,9 +9394,9 @@ var drawAddNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			b = sb + db
 
 			dpix[j+3] = uint8(a)
-			dpix[j+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[j+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[j+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[j+2] = uint8(clip8((b*a1+sb*a2+db*a3)/a) * a * 32897 >> 23)
+			dpix[j+1] = uint8(clip8((g*a1+sg*a2+dg*a3)/a) * a * 32897 >> 23)
+			dpix[j+0] = uint8(clip8((r*a1+sr*a2+dr*a3)/a) * a * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -9281,9 +9457,9 @@ var drawAddRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y i
 			b = sb + db
 
 			dpix[j+3] = uint8(a)
-			dpix[j+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) * 32897 >> 23))
-			dpix[j+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) * 32897 >> 23))
-			dpix[j+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) * 32897 >> 23))
+			dpix[j+2] = uint8(clip8((b*a1+sb*a2+db*a3)/a) * a * 32897 >> 23)
+			dpix[j+1] = uint8(clip8((g*a1+sg*a2+dg*a3)/a) * a * 32897 >> 23)
+			dpix[j+0] = uint8(clip8((r*a1+sr*a2+dr*a3)/a) * a * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -9327,9 +9503,9 @@ var drawAddNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alp
 			b = sb + db
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[j+2] = uint8(clip8((b*a1 + db*a3) / 255))
+			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) / 255))
+			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) / 255))
 
 		}
 		dPos += dyDelta
@@ -9379,9 +9555,9 @@ var drawAddRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alph
 			b = sb + db
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8(clip8((b*a1 + db*a3) / da))
-			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) / da))
-			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) / da))
+			dpix[j+2] = uint8(clip8((b*a1 + db*a3) / 255))
+			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) / 255))
+			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) / 255))
 
 		}
 		dPos += dyDelta
@@ -9431,9 +9607,9 @@ var drawAddNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alph
 			b = sb + db
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[j+2] = uint8(clip8((b*a1+db*a3)/(a1+a3)) * da * 32897 >> 23)
+			dpix[j+1] = uint8(clip8((g*a1+dg*a3)/(a1+a3)) * da * 32897 >> 23)
+			dpix[j+0] = uint8(clip8((r*a1+dr*a3)/(a1+a3)) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -9489,9 +9665,9 @@ var drawAddRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha
 			b = sb + db
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8(clip8((b*a1 + db*a3) * 32897 >> 23))
-			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) * 32897 >> 23))
-			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) * 32897 >> 23))
+			dpix[j+2] = uint8(clip8((b*a1+db*a3)/(a1+a3)) * da * 32897 >> 23)
+			dpix[j+1] = uint8(clip8((g*a1+dg*a3)/(a1+a3)) * da * 32897 >> 23)
+			dpix[j+0] = uint8(clip8((r*a1+dr*a3)/(a1+a3)) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -9532,12 +9708,20 @@ func (d add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -9552,9 +9736,9 @@ func (d add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 
 				b = sb + db
 
-				out.R = uint16(clip16(dr*a3/0xffff + uint32(uint64(r)*uint64(a1)/0xffff)))
-				out.G = uint16(clip16(dg*a3/0xffff + uint32(uint64(g)*uint64(a1)/0xffff)))
-				out.B = uint16(clip16(db*a3/0xffff + uint32(uint64(b)*uint64(a1)/0xffff)))
+				out.R = uint16(clip6416((uint64(dr*a3)+uint64(r)*uint64(a1))/uint64(a1+a3)) * (a1 + a3) / 0xffff * da / 0xffff)
+				out.G = uint16(clip6416((uint64(dg*a3)+uint64(g)*uint64(a1))/uint64(a1+a3)) * (a1 + a3) / 0xffff * da / 0xffff)
+				out.B = uint16(clip6416((uint64(db*a3)+uint64(b)*uint64(a1))/uint64(a1+a3)) * (a1 + a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -9588,12 +9772,20 @@ func (d add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -9607,9 +9799,9 @@ func (d add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 
 				b = sb + db
 
-				out.R = uint16(clip16((sr*a2+dr*a3)/0xffff + uint32(uint64(r)*uint64(a1)/0xffff)))
-				out.G = uint16(clip16((sg*a2+dg*a3)/0xffff + uint32(uint64(g)*uint64(a1)/0xffff)))
-				out.B = uint16(clip16((sb*a2+db*a3)/0xffff + uint32(uint64(b)*uint64(a1)/0xffff)))
+				out.R = uint16(clip6416(uint64(sr*a2+dr*a3)/0xffff+uint64(r)*uint64(a1)/uint64(a)) * a / 0xffff)
+				out.G = uint16(clip6416(uint64(sg*a2+dg*a3)/0xffff+uint64(g)*uint64(a1)/uint64(a)) * a / 0xffff)
+				out.B = uint16(clip6416(uint64(sb*a2+db*a3)/0xffff+uint64(b)*uint64(a1)/uint64(a)) * a / 0xffff)
 				out.A = uint16(a)
 
 				dst.Set(x, y, &out)
@@ -10116,9 +10308,9 @@ var drawOverlayNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -10180,9 +10372,9 @@ var drawOverlayRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -10244,9 +10436,9 @@ var drawOverlayNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -10314,9 +10506,9 @@ var drawOverlayRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -10357,12 +10549,20 @@ func (d overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -10389,9 +10589,9 @@ func (d overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					b = 0xffff - ((0xffff - ((db - 0x8000) << 1)) * (0xffff - sb) / 0xffff)
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -10425,12 +10625,20 @@ func (d overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -11040,9 +11248,9 @@ var drawSoftLightNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -11119,9 +11327,9 @@ var drawSoftLightRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -11198,9 +11406,9 @@ var drawSoftLightNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -11283,9 +11491,9 @@ var drawSoftLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -11326,12 +11534,20 @@ func (d softLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -11373,9 +11589,9 @@ func (d softLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					b = db + (((sb << 1) - 0xffff) * (tmp - db) / 0xffff)
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -11409,12 +11625,20 @@ func (d softLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -11979,9 +12203,9 @@ var drawHardLightNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -12046,9 +12270,9 @@ var drawHardLightRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -12113,9 +12337,9 @@ var drawHardLightNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -12186,9 +12410,9 @@ var drawHardLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -12229,12 +12453,20 @@ func (d hardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -12264,9 +12496,9 @@ func (d hardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					b = db + tmp - (db * tmp / 0xffff)
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -12300,12 +12532,20 @@ func (d hardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -12843,9 +13083,9 @@ var drawLinearLightNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []b
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -12907,9 +13147,9 @@ var drawLinearLightRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -12971,9 +13211,9 @@ var drawLinearLightNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -13041,9 +13281,9 @@ var drawLinearLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -13084,12 +13324,20 @@ func (d linearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -13116,9 +13364,9 @@ func (d linearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 					b = clip16(db + ((sb - 0x8000) << 1))
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -13152,12 +13400,20 @@ func (d linearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -13842,9 +14098,9 @@ var drawVividLightNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -13936,9 +14192,9 @@ var drawVividLightRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -14030,9 +14286,9 @@ var drawVividLightNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -14130,9 +14386,9 @@ var drawVividLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -14173,12 +14429,20 @@ func (d vividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -14235,9 +14499,9 @@ func (d vividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					}
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -14271,12 +14535,20 @@ func (d vividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -14991,9 +15263,9 @@ var drawPinLightNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -15085,9 +15357,9 @@ var drawPinLightRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -15179,9 +15451,9 @@ var drawPinLightNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -15279,9 +15551,9 @@ var drawPinLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -15322,12 +15594,20 @@ func (d pinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -15384,9 +15664,9 @@ func (d pinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 					}
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -15420,12 +15700,20 @@ func (d pinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -16275,9 +16563,9 @@ var drawHardMixNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -16396,9 +16684,9 @@ var drawHardMixRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -16517,9 +16805,9 @@ var drawHardMixNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -16644,9 +16932,9 @@ var drawHardMixRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -16687,12 +16975,20 @@ func (d hardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -16776,9 +17072,9 @@ func (d hardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					b = 0xffff
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -16812,12 +17108,20 @@ func (d hardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -17409,9 +17713,9 @@ var drawDifferenceNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -17473,9 +17777,9 @@ var drawDifferenceRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -17537,9 +17841,9 @@ var drawDifferenceNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -17607,9 +17911,9 @@ var drawDifferenceRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -17650,12 +17954,20 @@ func (d difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -17682,9 +17994,9 @@ func (d difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					b = db - sb
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -17718,12 +18030,20 @@ func (d difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -18198,9 +18518,9 @@ var drawExclusionNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -18250,9 +18570,9 @@ var drawExclusionRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -18302,9 +18622,9 @@ var drawExclusionNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -18360,9 +18680,9 @@ var drawExclusionRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			b = db + sb - (db * sb * 32897 >> 22)
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -18403,12 +18723,20 @@ func (d exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -18423,9 +18751,9 @@ func (d exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 
 				b = db + sb - (db * sb / 0x8000)
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -18459,12 +18787,20 @@ func (d exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -18987,9 +19323,9 @@ var drawSubtractNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -19051,9 +19387,9 @@ var drawSubtractRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -19115,9 +19451,9 @@ var drawSubtractNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -19185,9 +19521,9 @@ var drawSubtractRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -19228,12 +19564,20 @@ func (d subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -19260,9 +19604,9 @@ func (d subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 					b = db - sb
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -19296,12 +19640,20 @@ func (d subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -19866,9 +20218,9 @@ var drawDivideNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -19936,9 +20288,9 @@ var drawDivideRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -20006,9 +20358,9 @@ var drawDivideNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -20082,9 +20434,9 @@ var drawDivideRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			}
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -20125,12 +20477,20 @@ func (d divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -20163,9 +20523,9 @@ func (d divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 					b = clip16(db * 0xffff / sb)
 				}
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -20199,12 +20559,20 @@ func (d divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -20670,9 +21038,9 @@ var drawHueNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alp
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -20719,9 +21087,9 @@ var drawHueRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alph
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -20768,9 +21136,9 @@ var drawHueNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alph
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -20823,9 +21191,9 @@ var drawHueRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -20866,12 +21234,20 @@ func (d hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -20883,9 +21259,9 @@ func (d hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 				r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
 				r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -20919,12 +21295,20 @@ func (d hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -21369,9 +21753,9 @@ var drawSaturationNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -21418,9 +21802,9 @@ var drawSaturationRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -21467,9 +21851,9 @@ var drawSaturationNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -21522,9 +21906,9 @@ var drawSaturationRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			r, g, b = setLum8(r, g, b, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -21565,12 +21949,20 @@ func (d saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -21582,9 +21974,9 @@ func (d saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 				r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
 				r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -21618,12 +22010,20 @@ func (d saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -22063,9 +22463,9 @@ var drawColorNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -22111,9 +22511,9 @@ var drawColorRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -22159,9 +22559,9 @@ var drawColorNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -22213,9 +22613,9 @@ var drawColorRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alp
 			r, g, b = setLum8(sr, sg, sb, lum8(dr, dg, db))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -22256,12 +22656,20 @@ func (d color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -22272,9 +22680,9 @@ func (d color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 
 				r, g, b = setLum16(sr, sg, sb, lum16(dr, dg, db))
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -22308,12 +22716,20 @@ func (d color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -22752,9 +23168,9 @@ var drawLuminosityNRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -22800,9 +23216,9 @@ var drawLuminosityRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) / da)
-			dpix[j+1] = uint8((g*a1 + dg*a3) / da)
-			dpix[j+0] = uint8((r*a1 + dr*a3) / da)
+			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
+			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
+			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -22848,9 +23264,9 @@ var drawLuminosityNRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -22902,9 +23318,9 @@ var drawLuminosityRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 			r, g, b = setLum8(dr, dg, db, lum8(sr, sg, sb))
 
 			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
+			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
+			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
 
 		}
 		dPos += dyDelta
@@ -22945,12 +23361,20 @@ func (d luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				a1 := sa * ma / 0xffff
 				a3 := 0xffff - a1
-				if 0 < sa && sa < 0xffff {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if 0 < da && da < 0xffff {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da
@@ -22961,9 +23385,9 @@ func (d luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 
 				r, g, b = setLum16(dr, dg, db, lum16(sr, sg, sb))
 
-				out.R = uint16((r*a1 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff)
+				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
 				out.A = uint16(da)
 
 				dst.Set(x, y, &out)
@@ -22997,12 +23421,20 @@ func (d luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 					continue
 				}
 
-				if sa > 0 {
+				if sa == 0x0000 {
+					sr = 0
+					sg = 0
+					sb = 0
+				} else if sa < 0xffff {
 					sr = sr * 0xffff / sa
 					sg = sg * 0xffff / sa
 					sb = sb * 0xffff / sa
 				}
-				if da > 0 {
+				if da == 0x0000 {
+					dr = 0
+					dg = 0
+					db = 0
+				} else if da < 0xffff {
 					dr = dr * 0xffff / da
 					dg = dg * 0xffff / da
 					db = db * 0xffff / da

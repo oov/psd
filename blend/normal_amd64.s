@@ -149,6 +149,10 @@ TEXT	·drawNormalNRGBAToNRGBAProtectAlphaFast(SB),0,$0-128
    MOVQ syDelta+88(FP), R13
    MOVQ sxDelta+80(FP), R14
 
+   MOVQ $0x8081, AX
+   MOVQ AX, X14
+   PUNPCKLQDQ X14, X14
+
    PXOR X15, X15
 
 LOOPY:
@@ -200,28 +204,22 @@ LOOPY:
 
       MOVQ $0xffff, AX
       MOVQ AX, X5
-      INCL AX
-      MOVQ AX, X4
       PAND X5, X1
       MOVL X1, DX
       CMPL DX, $2
       JB DIVEND
-      LEAQ ·divTable(SB), AX
-      MOVL (AX)(DX*4), X0
 
-      PUNPCKLQDQ X0, X0
-      PUNPCKLQDQ X4, X4
       PUNPCKLQDQ X5, X5
 
       PAND X5, X2
-      PMULDQ X0, X2
-      PADDQ X4, X2
-      PSRLDQ $4, X2
+      PMULDQ X14, X2
+      PSRLDQ $2, X2
+      PSRLW $7, X2
 
       PAND X5, X3
-      PMULDQ X0, X3
-      PADDQ X4, X3
-      PSRLDQ $4, X3
+      PMULDQ X14, X3
+      PSRLDQ $2, X3
+      PSRLW $7, X3
 
       DIVEND:
       MOVOA X2, X4
