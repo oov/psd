@@ -292,7 +292,7 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 	if ok {
 		typ = int(readUint32(b, 0))
 		if len(b) < 12 {
-			return typ, BlendModeNormal, 0, nil
+			return typ, BlendModePassThrough, 0, nil
 		}
 		if string(b[4:8]) != "8BIM" {
 			return 0, "", 0, errors.New("psd: unexpected signature in section divider setting")
@@ -308,7 +308,7 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 	if ok {
 		typ = int(readUint32(b, 0))
 		if len(b) < 12 {
-			return typ, BlendModeNormal, 0, nil
+			return typ, BlendModePassThrough, 0, nil
 		}
 		if string(b[4:8]) != "8BIM" {
 			return 0, "", 0, errors.New("psd: unexpected signature in section divider setting 2")
