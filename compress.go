@@ -23,12 +23,12 @@ const (
 // Decode decodes the compressed image data from r.
 //
 // You can pass 0 to sizeHint if unknown, but in this case may read more data than necessary from r.
-func (cm CompressionMethod) Decode(dest []byte, r io.Reader, sizeHint int64, rect image.Rectangle, depth int, channels int) (read int, err error) {
+func (cm CompressionMethod) Decode(dest []byte, r io.Reader, sizeHint int64, rect image.Rectangle, depth int, channels int, large bool) (read int, err error) {
 	switch cm {
 	case CompressionMethodRaw:
 		return io.ReadFull(r, dest)
 	case CompressionMethodRLE:
-		return decodePackBits(dest, r, rect.Dy()*channels)
+		return decodePackBits(dest, r, rect.Dy()*channels, large)
 	case CompressionMethodZIPWithoutPrediction:
 		return decodeZLIB(dest, r, sizeHint)
 	case CompressionMethodZIPWithPrediction:
@@ -41,8 +41,9 @@ func (cm CompressionMethod) Decode(dest []byte, r io.Reader, sizeHint int64, rec
 	return 0, errors.New("psd: compression method " + itoa(int(cm)) + " is not implemented")
 }
 
-func decodePackBits(dest []byte, r io.Reader, lines int) (read int, err error) {
-	b := make([]byte, lines*2)
+func decodePackBits(dest []byte, r io.Reader, lines int, large bool) (read int, err error) {
+	intSize := get4or8(large) >> 1
+	b := make([]byte, lines*intSize)
 	var l int
 	if l, err = io.ReadFull(r, b); err != nil {
 		return
@@ -51,12 +52,14 @@ func decodePackBits(dest []byte, r io.Reader, lines int) (read int, err error) {
 
 	max := len(b)
 	lens := make([]int, lines)
+	ofs := 0
 	for i := range lens {
-		l = int(readUint16(b, i<<1))
+		l = int(readUint(b, ofs, intSize))
 		lens[i] = l
 		if max < l {
 			max = l
 		}
+		ofs += intSize
 	}
 
 	if max > len(b) {

@@ -45,6 +45,27 @@ func readUint64(b []byte, offset int) uint64 {
 		uint64(b[offset+4])<<24 | uint64(b[offset+5])<<16 | uint64(b[offset+6])<<8 | uint64(b[offset+7])
 }
 
+func get4or8(is64 bool) int {
+	if is64 {
+		return 8
+	}
+	return 4
+}
+
+func readUint(b []byte, offset int, size int) uint64 {
+	switch size {
+	case 8:
+		return readUint64(b, offset)
+	case 4:
+		return uint64(readUint32(b, offset))
+	case 2:
+		return uint64(readUint16(b, offset))
+	case 1:
+		return uint64(b[offset])
+	}
+	panic("psd: unexpected size")
+}
+
 func readFloat32(b []byte, offset int) float32 {
 	return math.Float32frombits(readUint32(b, offset))
 }

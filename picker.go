@@ -7,6 +7,7 @@ import (
 	psdColor "github.com/oov/psd/color"
 )
 
+// Picker is color picker.
 type Picker interface {
 	SetSource(rect image.Rectangle, src ...[]byte)
 	// ColorModel returns the Image's color model.

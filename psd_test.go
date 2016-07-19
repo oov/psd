@@ -260,8 +260,8 @@ func testOne(tImg testImage, t *testing.T) {
 	for id, ch := range psdImg.Channel {
 		func() {
 			filename := fmt.Sprintf("output/%s_!merged_Ch%d.png", fnBase, id)
-			o, err := os.Create(filename)
-			if err != nil {
+			var o *os.File
+			if o, err = os.Create(filename); err != nil {
 				t.Errorf("%s: cannot create file %q\n%v", tImg.Name, filename, err)
 			}
 			defer o.Close()

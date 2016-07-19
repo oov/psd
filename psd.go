@@ -19,6 +19,11 @@ type logger interface {
 // 	psd.Debug = log.New(os.Stdout, "psd: ", log.Lshortfile)
 var Debug logger
 
+const (
+	headerSignature  = "8BPS"
+	sectionSignature = "8BIM"
+)
+
 // AdditionalInfoKey represents the key of the additional layer information.
 type AdditionalInfoKey string
 
@@ -37,12 +42,18 @@ const (
 
 // Config represents Photoshop image file configuration.
 type Config struct {
+	Version   int
 	Rect      image.Rectangle
 	Channels  int
 	Depth     int // 1 or 8 or 16 or 32
 	ColorMode ColorMode
 	Picker    Picker
 	Res       map[int]ImageResource
+}
+
+// PSB returns whether image is large document format.
+func (cfg *Config) PSB() bool {
+	return cfg.Version == 2
 }
 
 // PSD represents Photoshop image file.
@@ -83,12 +94,14 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 	}
 	read += l
 
-	if string(b[:4]) != "8BPS" { // Signature
+	if string(b[:4]) != headerSignature { // Signature
 		return Config{}, read, errors.New("psd: invalid format")
 	}
-	if v := readUint16(b, 4); v != 1 { // Version
-		return Config{}, read, errors.New("psd: unexpected file version: " + itoa(int(v)))
+	cfg.Version = int(readUint16(b, 4))
+	if cfg.Version != 1 && cfg.Version != 2 { // Version
+		return Config{}, read, errors.New("psd: unexpected file version: " + itoa(cfg.Version))
 	}
+
 	// b[6:12] Reserved
 
 	cfg.Channels = int(readUint16(b, 12))
@@ -97,10 +110,10 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 	}
 
 	width, height := int(readUint32(b, 18)), int(readUint32(b, 14))
-	if height < 1 || height > 30000 {
+	if height < 1 || (cfg.Version == 1 && height > 30000) || (cfg.Version == 2 && height > 300000) {
 		return Config{}, read, errors.New("psd: unexpected the height of the image")
 	}
-	if width < 1 || width > 30000 {
+	if width < 1 || (cfg.Version == 1 && width > 30000) || (cfg.Version == 2 && width > 300000) {
 		return Config{}, read, errors.New("psd: unexpected the width of the image")
 	}
 	cfg.Rect = image.Rect(0, 0, width, height)
@@ -188,16 +201,16 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 	if o == nil {
 		o = &DecodeOptions{}
 	}
-	psd = &PSD{}
-	var l int
-	if psd.Config, l, err = DecodeConfig(r); err != nil {
+	cfg, l, err := DecodeConfig(r)
+	if err != nil {
 		return nil, 0, err
 	}
 	read += l
 
 	b := make([]byte, 4)
 
-	if l, err = readLayerAndMaskInfo(r, psd, o); err != nil {
+	psd, l, err = readLayerAndMaskInfo(r, &cfg, o)
+	if err != nil {
 		return nil, read, err
 	}
 	read += l
@@ -231,6 +244,7 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 			psd.Config.Rect,
 			psd.Config.Depth,
 			psd.Config.Channels,
+			psd.Config.PSB(),
 		)
 		if err != nil {
 			return nil, read, err
@@ -240,24 +254,24 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 	return psd, read, nil
 }
 
+func decode(r io.Reader) (image.Image, error) {
+	psd, _, err := Decode(r, &DecodeOptions{SkipLayerImage: true})
+	return psd, err
+}
+
+func decodeConfig(r io.Reader) (image.Config, error) {
+	cfg, _, err := DecodeConfig(r)
+	if err != nil {
+		return image.Config{}, err
+	}
+	return image.Config{
+		Width:      cfg.Rect.Dx(),
+		Height:     cfg.Rect.Dy(),
+		ColorModel: cfg.Picker.ColorModel(),
+	}, nil
+}
+
 func init() {
-	image.RegisterFormat(
-		"psd",
-		"8BPS\x00\x01",
-		func(r io.Reader) (image.Image, error) {
-			psd, _, err := Decode(r, &DecodeOptions{SkipLayerImage: true})
-			return psd, err
-		},
-		func(r io.Reader) (image.Config, error) {
-			cfg, _, err := DecodeConfig(r)
-			if err != nil {
-				return image.Config{}, err
-			}
-			return image.Config{
-				Width:      cfg.Rect.Dx(),
-				Height:     cfg.Rect.Dy(),
-				ColorModel: cfg.Picker.ColorModel(),
-			}, nil
-		},
-	)
+	image.RegisterFormat("psd", headerSignature+"\x00\x01", decode, decodeConfig)
+	image.RegisterFormat("psb", headerSignature+"\x00\x02", decode, decodeConfig)
 }

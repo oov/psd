@@ -172,21 +172,27 @@ func (c *Channel) At(x, y int) color.Color {
 	return c.Picker.At(x, y)
 }
 
-func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, err error) {
+func readLayerAndMaskInfo(r io.Reader, cfg *Config, o *DecodeOptions) (psd *PSD, read int, err error) {
 	if Debug != nil {
 		Debug.Println("start - layer and mask information section")
 	}
+
+	psd = &PSD{
+		Config: *cfg,
+	}
+
 	// Layer and Mask Information Section
 	// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_75067
-	b := make([]byte, 4)
+	intSize := get4or8(cfg.PSB())
+	b := make([]byte, intSize)
 	var l int
-	if l, err = io.ReadFull(r, b); err != nil {
-		return 0, err
+	if l, err = io.ReadFull(r, b[:intSize]); err != nil {
+		return nil, 0, err
 	}
 	read += l
-	layerAndMaskInfoLen := int(readUint32(b, 0))
+	layerAndMaskInfoLen := int(readUint(b, 0, intSize))
 	if layerAndMaskInfoLen == 0 {
-		return read, nil
+		return nil, read, nil
 	}
 	if Debug != nil {
 		Debug.Println("  layerAndMaskInfoLen:", layerAndMaskInfoLen)
@@ -194,18 +200,18 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 	}
 
 	var layer []Layer
-	if read < layerAndMaskInfoLen+4 {
-		if layer, l, err = readLayerInfo(r, psd.Config.ColorMode, psd.Config.Depth, o); err != nil {
-			return read, err
+	if read < layerAndMaskInfoLen+intSize {
+		if layer, l, err = readLayerInfo(r, cfg, o); err != nil {
+			return nil, read, err
 		}
 		read += l
 	}
 
-	if layerAndMaskInfoLen+4-read >= 4 {
+	if layerAndMaskInfoLen+intSize-read >= 4 {
 		// Global layer mask info
 		// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_17115
-		if l, err = io.ReadFull(r, b); err != nil {
-			return read, err
+		if l, err = io.ReadFull(r, b[:4]); err != nil {
+			return nil, read, err
 		}
 		read += l
 		if globalLayerMaskInfoLen := int(readUint32(b, 0)); globalLayerMaskInfoLen > 0 {
@@ -215,20 +221,20 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 			}
 			// TODO(oov): implement
 			if l, err = io.ReadFull(r, make([]byte, globalLayerMaskInfoLen)); err != nil {
-				return read, err
+				return nil, read, err
 			}
 			read += l
 		}
 	}
 
-	if layerAndMaskInfoLen+4-read >= 8 {
+	if layerAndMaskInfoLen+intSize-read >= 8 {
 		var layer2 []Layer
-		if psd.AdditinalLayerInfo, layer2, l, err = readAdditionalLayerInfo(r, layerAndMaskInfoLen+4-read, psd.Config.ColorMode, psd.Config.Depth, o); err != nil {
-			return read, err
+		if psd.AdditinalLayerInfo, layer2, l, err = readAdditionalLayerInfo(r, layerAndMaskInfoLen+intSize-read, cfg, o); err != nil {
+			return nil, read, err
 		}
 		read += l
 		if layer != nil && layer2 != nil {
-			return read, errors.New("psd: unexpected layer structure")
+			return nil, read, errors.New("psd: unexpected layer structure")
 		}
 		if layer2 != nil {
 			layer = layer2
@@ -236,23 +242,23 @@ func readLayerAndMaskInfo(r io.Reader, psd *PSD, o *DecodeOptions) (read int, er
 	}
 
 	if psd.Layer, err = buildTree(layer); err != nil {
-		return read, err
+		return nil, read, err
 	}
 
-	if remain := layerAndMaskInfoLen + 4 - read; remain != 0 && remain < 4 {
+	if remain := layerAndMaskInfoLen + intSize - read; remain != 0 && remain < intSize {
 		if l, err = discard(r, remain); err != nil {
-			return read, err
+			return nil, read, err
 		}
 		read += l
 	}
 
-	if read != layerAndMaskInfoLen+4 {
-		return read, errors.New("psd: layer and mask info read size mismatched. expected " + itoa(layerAndMaskInfoLen+4) + " actual " + itoa(read))
+	if read != layerAndMaskInfoLen+intSize {
+		return nil, read, errors.New("psd: layer and mask info read size mismatched. expected " + itoa(layerAndMaskInfoLen+4) + " actual " + itoa(read))
 	}
 	if Debug != nil {
 		Debug.Println("end - layer and mask information section")
 	}
-	return read, nil
+	return psd, read, nil
 }
 
 func buildTree(layer []Layer) ([]Layer, error) {
@@ -294,7 +300,7 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 		if len(b) < 12 {
 			return typ, BlendModePassThrough, 0, nil
 		}
-		if string(b[4:8]) != "8BIM" {
+		if string(b[4:8]) != sectionSignature {
 			return 0, "", 0, errors.New("psd: unexpected signature in section divider setting")
 		}
 		blendMode = BlendMode(b[8:12])
@@ -310,7 +316,7 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 		if len(b) < 12 {
 			return typ, BlendModePassThrough, 0, nil
 		}
-		if string(b[4:8]) != "8BIM" {
+		if string(b[4:8]) != sectionSignature {
 			return 0, "", 0, errors.New("psd: unexpected signature in section divider setting 2")
 		}
 		blendMode = BlendMode(b[8:12])
@@ -323,17 +329,18 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 	return 0, BlendModeNormal, 0, nil
 }
 
-func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions) (layer []Layer, read int, err error) {
+func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, read int, err error) {
+	intSize := get4or8(cfg.PSB())
 	if Debug != nil {
 		Debug.Println("start - layer info section")
 	}
 	b := make([]byte, 16)
 	var l int
-	if l, err = io.ReadFull(r, b[:4]); err != nil {
+	if l, err = io.ReadFull(r, b[:intSize]); err != nil {
 		return nil, 0, err
 	}
 	read += l
-	layerInfoLen := int(readUint32(b, 0))
+	layerInfoLen := int(readUint(b, 0, intSize))
 	if Debug != nil {
 		Debug.Println("  layerInfoLen:", layerInfoLen)
 	}
@@ -384,23 +391,23 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions
 		layer.Channel = map[int]Channel{}
 		chLen[i] = make([][2]int, numChannels)
 		for j := 0; j < numChannels; j++ {
-			if l, err = io.ReadFull(r, b[:6]); err != nil {
+			if l, err = io.ReadFull(r, b[:2+intSize]); err != nil {
 				return nil, read, err
 			}
 			read += l
 			id := int(int16(readUint16(b, 0)))
 			layer.Channel[id] = Channel{
-				Picker: findGrayPicker(depth, false),
+				Picker: findGrayPicker(cfg.Depth, false),
 			}
 			layer.Channel[id].Picker.SetSource(layer.Rect, layer.Channel[id].Data)
-			chLen[i][j] = [2]int{id, int(readUint32(b, 2))}
+			chLen[i][j] = [2]int{id, int(readUint(b, 2, intSize))}
 		}
 
 		if l, err = io.ReadFull(r, b[:12]); err != nil {
 			return nil, read, err
 		}
 		read += l
-		if string(b[:4]) != "8BIM" {
+		if string(b[:4]) != sectionSignature {
 			return nil, read, errors.New("psd: unexpected the blend mode signature")
 		}
 		layer.BlendMode = BlendMode(b[4:8])
@@ -408,7 +415,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions
 		layer.Clipping = b[9] != 0
 		layer.Flags = b[10]
 		// b[11] - Filler(zero)
-		if l, err = readLayerExtraData(r, layer, colorMode, depth, o); err != nil {
+		if l, err = readLayerExtraData(r, layer, cfg, o); err != nil {
 			return nil, read, err
 		}
 		read += l
@@ -504,10 +511,10 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions
 				default:
 					rect = layer.Rect
 				}
-				ch.Data = make([]byte, (rect.Dx()*depth+7)>>3*rect.Dy())
+				ch.Data = make([]byte, (rect.Dx()*cfg.Depth+7)>>3*rect.Dy())
 				ch.Picker.SetSource(rect, ch.Data)
 
-				if l, err = cmpMethod.Decode(ch.Data, r, int64(j[1]-2), rect, depth, 1); err != nil {
+				if l, err = cmpMethod.Decode(ch.Data, r, int64(j[1]-2), rect, cfg.Depth, 1, cfg.PSB()); err != nil {
 					return nil, read, err
 				}
 				readCh += l
@@ -520,14 +527,14 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions
 				layer.Channel[j[0]] = ch
 			}
 
-			chs := make([][]byte, colorMode.Channels(), 8)
+			chs := make([][]byte, cfg.ColorMode.Channels(), 8)
 			for j := range chs {
 				chs[j] = layer.Channel[j].Data
 			}
 			if ch, ok := layer.Channel[-1]; ok {
 				chs = append(chs, ch.Data)
 			}
-			layer.Picker = findPicker(depth, colorMode, colorMode.Channels() < len(chs))
+			layer.Picker = findPicker(cfg.Depth, cfg.ColorMode, cfg.ColorMode.Channels() < len(chs))
 			layer.Picker.SetSource(layer.Rect, chs...)
 			layerSlice[i] = layer
 			if o.LayerImageLoaded != nil {
@@ -545,7 +552,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions
 		read += l
 	}
 
-	if layerInfoLen+4 != read {
+	if layerInfoLen+intSize != read {
 		return nil, read, errors.New("psd: layer info read size mismatched. expected " + itoa(layerInfoLen+4) + " actual " + itoa(read))
 	}
 	if Debug != nil {
@@ -554,7 +561,7 @@ func readLayerInfo(r io.Reader, colorMode ColorMode, depth int, o *DecodeOptions
 	return layerSlice, read, nil
 }
 
-func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth int, o *DecodeOptions) (read int, err error) {
+func readLayerExtraData(r io.Reader, layer *Layer, cfg *Config, o *DecodeOptions) (read int, err error) {
 	// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_22582
 	// Layer mask / adjustment layer data
 	if Debug != nil {
@@ -583,7 +590,7 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 		// Layer mask / adjustment layer data
 		// Can be 40 bytes, 24 bytes, or 4 bytes if no layer mask.
 		// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_22582
-		if l, err = io.ReadFull(r, b); err != nil {
+		if l, err = io.ReadFull(r, b[:16]); err != nil {
 			return read, err
 		}
 		read += l
@@ -718,7 +725,7 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 
 	if read < extraDataLen+4 {
 		var layers []Layer
-		if layer.AdditionalLayerInfo, layers, l, err = readAdditionalLayerInfo(r, extraDataLen+4-read, colorMode, depth, o); err != nil {
+		if layer.AdditionalLayerInfo, layers, l, err = readAdditionalLayerInfo(r, extraDataLen+4-read, cfg, o); err != nil {
 			return read, err
 		}
 		read += l
@@ -738,7 +745,20 @@ func readLayerExtraData(r io.Reader, layer *Layer, colorMode ColorMode, depth in
 	return read, nil
 }
 
-func readAdditionalLayerInfo(r io.Reader, infoLen int, colorMode ColorMode, depth int, o *DecodeOptions) (infos map[AdditionalInfoKey][]byte, layers []Layer, read int, err error) {
+var longKeys = map[AdditionalInfoKey]struct{}{
+	AdditionalInfoKey("LMsk"): struct{}{},
+	AdditionalInfoKey("Mt16"): struct{}{},
+	AdditionalInfoKey("Mt32"): struct{}{},
+	AdditionalInfoKey("Mtrn"): struct{}{},
+	AdditionalInfoKey("Alph"): struct{}{},
+	AdditionalInfoKey("FMsk"): struct{}{},
+	AdditionalInfoKey("lnk2"): struct{}{},
+	AdditionalInfoKey("FEid"): struct{}{},
+	AdditionalInfoKey("FXid"): struct{}{},
+	AdditionalInfoKey("PxSD"): struct{}{},
+}
+
+func readAdditionalLayerInfo(r io.Reader, infoLen int, cfg *Config, o *DecodeOptions) (infos map[AdditionalInfoKey][]byte, layers []Layer, read int, err error) {
 	if Debug != nil {
 		Debug.Println("start - additional layer info section")
 		Debug.Println("  infoLen:", infoLen)
@@ -764,7 +784,7 @@ func readAdditionalLayerInfo(r io.Reader, infoLen int, colorMode ColorMode, dept
 		}
 		read += l
 
-		if sig := string(b[:4]); sig != "8BIM" && sig != "8B64" {
+		if sig := string(b[:4]); sig != sectionSignature && sig != "8B64" {
 			return nil, nil, read, errors.New("psd: unexpected the signature found in the additional layer information block")
 		}
 
@@ -777,18 +797,20 @@ func readAdditionalLayerInfo(r io.Reader, infoLen int, colorMode ColorMode, dept
 				Debug.Println("  key:", key)
 			}
 			var layrs []Layer
-			if layrs, l, err = readLayerInfo(r, colorMode, depth, o); err != nil {
+			if layrs, l, err = readLayerInfo(r, cfg, o); err != nil {
 				return nil, nil, read, err
 			}
 			read += l
 			layers = append(layers, layrs...)
 		default:
-			if l, err = io.ReadFull(r, b[:4]); err != nil {
+			_, isLongKey := longKeys[key]
+			intSize := get4or8(cfg.PSB() && isLongKey)
+			if l, err = io.ReadFull(r, b[:intSize]); err != nil {
 				return nil, nil, read, err
 			}
 			read += l
 			var data []byte
-			if ln := int(readUint32(b, 0)); ln > 0 {
+			if ln := int(readUint(b, 0, intSize)); ln > 0 {
 				data = make([]byte, ln)
 				if l, err = io.ReadFull(r, data); err != nil {
 					return nil, nil, read, err
