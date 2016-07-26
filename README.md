@@ -1,4 +1,4 @@
-# PSD(Photoshop) file reader for Go programming language
+# PSD/PSB(Photoshop) file reader for Go programming language
 
 It works almost well but it is still in development.
 
