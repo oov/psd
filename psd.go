@@ -197,8 +197,6 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 	}
 	read += l
 
-	b := make([]byte, 4)
-
 	psd, l, err = readLayerAndMaskInfo(r, &cfg, o)
 	if err != nil {
 		return nil, read, err
@@ -229,6 +227,7 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 		pk.setSource(psd.Config.Rect, chs...)
 		psd.Picker = pk
 
+		b := make([]byte, 2)
 		if l, err = io.ReadFull(r, b[:2]); err != nil {
 			return nil, read, err
 		}
