@@ -70,6 +70,7 @@ type NGrayA struct {
 	A uint8
 }
 
+// RGBA implements color.Color interface's method.
 func (c NGrayA) RGBA() (uint32, uint32, uint32, uint32) {
 	y := uint32(c.Y) * 0x101
 	if c.A == 0xff {
@@ -104,6 +105,7 @@ type NGrayA32 struct {
 	A uint16
 }
 
+// RGBA implements color.Color interface's method.
 func (c NGrayA32) RGBA() (uint32, uint32, uint32, uint32) {
 	y := uint32(c.Y)
 	if c.A == 0xffff {
@@ -138,6 +140,7 @@ type NGrayA64 struct {
 	A float32
 }
 
+// RGBA implements color.Color interface's method.
 func (c NGrayA64) RGBA() (uint32, uint32, uint32, uint32) {
 	y := fromFloat(float64(c.Y), 1.0/2.2)
 	switch {
