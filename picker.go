@@ -71,6 +71,11 @@ func findNRGBAPicker(depth int, hasAlpha bool) picker {
 			return &pickerNRGBA16{}
 		}
 		return &pickerNRGB16{}
+	case 32:
+		if hasAlpha {
+			return &pickerNRGBA32{}
+		}
+		return &pickerNRGB32{}
 	}
 	return nil
 }
@@ -323,6 +328,46 @@ func (p *pickerNRGBA16) At(x, y int) color.Color {
 		readUint16(p.G, pos),
 		readUint16(p.B, pos),
 		readUint16(p.A, pos),
+	}
+}
+
+type pickerNRGB32 struct {
+	Rect    image.Rectangle
+	R, G, B []byte
+}
+
+func (p *pickerNRGB32) setSource(rect image.Rectangle, src ...[]byte) {
+	p.Rect, p.R, p.G, p.B = rect, src[0], src[1], src[2]
+}
+func (p *pickerNRGB32) ColorModel() color.Model { return psdColor.NRGBA128Model }
+func (p *pickerNRGB32) Bounds() image.Rectangle { return p.Rect }
+func (p *pickerNRGB32) At(x, y int) color.Color {
+	pos := ((y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X) << 2
+	return psdColor.NRGBA128{
+		readFloat32(p.R, pos),
+		readFloat32(p.G, pos),
+		readFloat32(p.B, pos),
+		1.0,
+	}
+}
+
+type pickerNRGBA32 struct {
+	Rect       image.Rectangle
+	R, G, B, A []byte
+}
+
+func (p *pickerNRGBA32) setSource(rect image.Rectangle, src ...[]byte) {
+	p.Rect, p.R, p.G, p.B, p.A = rect, src[0], src[1], src[2], src[3]
+}
+func (p *pickerNRGBA32) ColorModel() color.Model { return psdColor.NRGBA128Model }
+func (p *pickerNRGBA32) Bounds() image.Rectangle { return p.Rect }
+func (p *pickerNRGBA32) At(x, y int) color.Color {
+	pos := ((y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X) << 2
+	return psdColor.NRGBA128{
+		readFloat32(p.R, pos),
+		readFloat32(p.G, pos),
+		readFloat32(p.B, pos),
+		readFloat32(p.A, pos),
 	}
 }
 

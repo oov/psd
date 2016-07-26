@@ -1,6 +1,25 @@
 package color
 
-import "image/color"
+import (
+	"image/color"
+	"math"
+)
+
+func fromFloat(v, gamma float64) uint32 {
+	x := math.Pow(v, gamma)
+	switch {
+	case x >= 1:
+		return 0xffff
+	case x <= 0:
+		return 0
+	default:
+		return uint32(x * 0xffff)
+	}
+}
+
+func toFloat(v uint32, gamma float64) float64 {
+	return math.Pow(float64(v)/0xffff, gamma)
+}
 
 // Gray1 represents an 1-bit monochrome bitmap color.
 type Gray1 struct {
@@ -31,16 +50,8 @@ type Gray32 struct {
 
 // RGBA implements color.Color interface's method.
 func (c Gray32) RGBA() (r, g, b, a uint32) {
-	// FIXME: How should I convert to RGBA?
-	var y uint32
-	switch {
-	case c.Y >= 0x10001:
-		y = 0xffffffff
-	case c.Y <= 0:
-		y = 0
-	default:
-		y = uint32(c.Y * 0xffff)
-	}
+	const gamma = 1.0 / 2.2
+	y := fromFloat(float64(c.Y), gamma)
 	return y, y, y, 0xffff
 }
 
@@ -50,7 +61,8 @@ func gray32Model(c color.Color) color.Color {
 	}
 	r, g, b, _ := c.RGBA()
 	y := (299*r + 587*g + 114*b + 500) / 1000
-	return Gray32{float32(y) / 0xffff}
+	const gamma = 2.2
+	return Gray32{float32(toFloat(y, gamma))}
 }
 
 type NGrayA struct {
@@ -127,15 +139,7 @@ type NGrayA64 struct {
 }
 
 func (c NGrayA64) RGBA() (uint32, uint32, uint32, uint32) {
-	var y uint32
-	switch {
-	case c.Y >= 0x10001:
-		y = 0xffffffff
-	case c.Y <= 0:
-		y = 0
-	default:
-		y = uint32(c.Y * 0xffff)
-	}
+	y := fromFloat(float64(c.Y), 1.0/2.2)
 	switch {
 	case c.A >= 1:
 		return y, y, y, 0xffff
@@ -156,11 +160,57 @@ func nGrayA64Model(c color.Color) color.Color {
 		return NGrayA64{0, 0}
 	}
 	y := (299*r + 587*g + 114*b + 500) / 1000
+	x := float32(toFloat(y, 2.2))
 	if a == 0xffff {
-		return NGrayA64{float32(y) / 0xffff, 1}
+		return NGrayA64{x, 1}
 	}
-	y = (y * 0xffff) / a
-	return NGrayA64{float32(y) / 0xffff, float32(a) / 0xffff}
+	xa := float32(a) / 0xffff
+	return NGrayA64{x / xa, xa}
+}
+
+type NRGBA128 struct {
+	R, G, B, A float32
+}
+
+// RGBA implements color.Color interface's method.
+func (c NRGBA128) RGBA() (uint32, uint32, uint32, uint32) {
+	const gamma = 1.0 / 2.2
+	r := fromFloat(float64(c.R), gamma)
+	g := fromFloat(float64(c.G), gamma)
+	b := fromFloat(float64(c.B), gamma)
+	switch {
+	case c.A >= 1:
+		return r, g, b, 0xffff
+	case c.A <= 0:
+		return 0, 0, 0, 0
+	}
+	a := uint32(c.A * 0xffff)
+	r = r * a / 0xffff
+	g = g * a / 0xffff
+	b = b * a / 0xffff
+	return r, g, b, a
+}
+
+func nRGBA128Model(c color.Color) color.Color {
+	if _, ok := c.(NRGBA128); ok {
+		return c
+	}
+	r, g, b, a := c.RGBA()
+	const gamma = 2.2
+	fr := float32(toFloat(r, gamma))
+	fg := float32(toFloat(g, gamma))
+	fb := float32(toFloat(b, gamma))
+	switch {
+	case a >= 0xffff:
+		return NRGBA128{fr, fg, fb, 1}
+	case a == 0:
+		return NRGBA128{}
+	}
+	fa := 0xffff / float32(a)
+	fr *= fa
+	fg *= fa
+	fb *= fa
+	return NRGBA128{fr, fg, fb, float32(a) / 0xffff}
 }
 
 // NCMYKA represents a non-alpha-premultiplied CMYK color, having 8 bits for each of cyan,
@@ -268,6 +318,7 @@ var (
 	Gray32Model   = color.ModelFunc(gray32Model)
 	NGrayA32Model = color.ModelFunc(nGrayA32Model)
 	NGrayA64Model = color.ModelFunc(nGrayA64Model)
+	NRGBA128Model = color.ModelFunc(nRGBA128Model)
 	NCMYKAModel   = color.ModelFunc(nCMYKAModel)
 	NCMYKA80Model = color.ModelFunc(nCMYKA80Model)
 )

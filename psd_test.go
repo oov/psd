@@ -40,10 +40,10 @@ var testImages = []testImage{
 		Name: "Grayscale Depth 16bit without Background layer(partially transparent)",
 		PSD:  "grayscale16bit_transparent.psd",
 	},
-	// { // We can read already it but cannot convert to RGBA correctly at present.
-	// 	Name: "Grayscale Depth 32bit",
-	// 	PSD:  "grayscale32bit.psd",
-	// },
+	{
+		Name: "Grayscale Depth 32bit",
+		PSD:  "grayscale32bit.psd",
+	},
 	{
 		Name: "Indexed",
 		PSD:  "indexed.psd",
@@ -80,10 +80,10 @@ var testImages = []testImage{
 		Name: "RGB Depth 16bit with Background layer",
 		PSD:  "rgb16bit.psd",
 	},
-	// {
-	// 	Name: "RGB Depth 32bit",
-	// 	PSD:  "rgb32bit.psd",
-	// },
+	{
+		Name: "RGB Depth 32bit",
+		PSD:  "rgb32bit.psd",
+	},
 	{
 		Name: "CMYK Depth 8bit Min Max",
 		PSD:  "cmyk8bit_minmax.psd",
