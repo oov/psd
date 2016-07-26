@@ -112,21 +112,6 @@ type PSD struct {
 	Picker image.Image
 }
 
-// ColorModel returns the Image's color model.
-func (p *PSD) ColorModel() color.Model {
-	return p.Picker.ColorModel()
-}
-
-// Bounds returns the domain for which At can return non-zero color.
-func (p *PSD) Bounds() image.Rectangle {
-	return p.Picker.Bounds()
-}
-
-// At returns the color of the pixel at (x, y).
-func (p *PSD) At(x, y int) color.Color {
-	return p.Picker.At(x, y)
-}
-
 // DecodeConfig returns the color model and dimensions of a image without decoding the entire image.
 func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 	const (
@@ -268,7 +253,7 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 
 func decode(r io.Reader) (image.Image, error) {
 	psd, _, err := Decode(r, &DecodeOptions{SkipLayerImage: true})
-	return psd, err
+	return psd.Picker, err
 }
 
 func decodeConfig(r io.Reader) (image.Config, error) {

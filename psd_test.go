@@ -293,7 +293,7 @@ func testOne(tImg testImage, t *testing.T) {
 			t.Errorf("%s: cannot create file %q\n%v", tImg.Name, filename, err)
 		}
 		defer o.Close()
-		if err = png.Encode(o, psdImg); err != nil {
+		if err = png.Encode(o, psdImg.Picker); err != nil {
 			t.Errorf("%s: cannot encode to %q\n%v", tImg.Name, filename, err)
 		}
 	}()
@@ -301,7 +301,7 @@ func testOne(tImg testImage, t *testing.T) {
 		t,
 		tImg.Name,
 		fmt.Sprintf("png/%s_!merged.png", fnBase),
-		psdImg,
+		psdImg.Picker,
 	)
 }
 

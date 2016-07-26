@@ -88,7 +88,7 @@ func processLayer(filename string, layerName string, l *psd.Layer) error {
 		return err
 	}
 	defer out.Close()
-	return png.Encode(out, l)
+	return png.Encode(out, l.Picker)
 }
 
 func main() {
