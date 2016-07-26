@@ -7,18 +7,12 @@ import (
 	psdColor "github.com/oov/psd/color"
 )
 
-// Picker is color picker.
-type Picker interface {
-	SetSource(rect image.Rectangle, src ...[]byte)
-	// ColorModel returns the Image's color model.
-	ColorModel() color.Model
-	// Bounds returns the domain for which At can return non-zero color.
-	Bounds() image.Rectangle
-	// At returns the color of the pixel at (x, y).
-	At(x, y int) color.Color
+type picker interface {
+	image.Image
+	setSource(rect image.Rectangle, src ...[]byte)
 }
 
-func findPicker(depth int, colorMode ColorMode, hasAlpha bool) Picker {
+func findPicker(depth int, colorMode ColorMode, hasAlpha bool) picker {
 	switch colorMode {
 	case ColorModeBitmap, ColorModeGrayscale:
 		return findNGrayPicker(depth, hasAlpha)
@@ -30,7 +24,7 @@ func findPicker(depth int, colorMode ColorMode, hasAlpha bool) Picker {
 	return nil
 }
 
-func findGrayPicker(depth int, hasAlpha bool) Picker {
+func findGrayPicker(depth int) picker {
 	switch depth {
 	case 1:
 		return &pickerGray1{}
@@ -44,7 +38,7 @@ func findGrayPicker(depth int, hasAlpha bool) Picker {
 	return nil
 }
 
-func findNGrayPicker(depth int, hasAlpha bool) Picker {
+func findNGrayPicker(depth int, hasAlpha bool) picker {
 	switch depth {
 	case 8:
 		if hasAlpha {
@@ -65,7 +59,7 @@ func findNGrayPicker(depth int, hasAlpha bool) Picker {
 	return nil
 }
 
-func findNRGBAPicker(depth int, hasAlpha bool) Picker {
+func findNRGBAPicker(depth int, hasAlpha bool) picker {
 	switch depth {
 	case 8:
 		if hasAlpha {
@@ -81,7 +75,7 @@ func findNRGBAPicker(depth int, hasAlpha bool) Picker {
 	return nil
 }
 
-func findNCMYKAPicker(depth int, hasAlpha bool) Picker {
+func findNCMYKAPicker(depth int, hasAlpha bool) picker {
 	switch depth {
 	case 8:
 		if hasAlpha {
@@ -103,7 +97,7 @@ type pickerPalette struct {
 	Palette color.Palette
 }
 
-func (p *pickerPalette) SetSource(rect image.Rectangle, src ...[]byte) { p.Rect, p.Src = rect, src[0] }
+func (p *pickerPalette) setSource(rect image.Rectangle, src ...[]byte) { p.Rect, p.Src = rect, src[0] }
 func (p *pickerPalette) ColorModel() color.Model                       { return p.Palette }
 func (p *pickerPalette) Bounds() image.Rectangle                       { return p.Rect }
 func (p *pickerPalette) At(x, y int) color.Color {
@@ -116,7 +110,7 @@ type pickerGray1 struct {
 	Y    []byte
 }
 
-func (p *pickerGray1) SetSource(rect image.Rectangle, src ...[]byte) { p.Rect, p.Y = rect, src[0] }
+func (p *pickerGray1) setSource(rect image.Rectangle, src ...[]byte) { p.Rect, p.Y = rect, src[0] }
 func (p *pickerGray1) ColorModel() color.Model                       { return psdColor.Gray1Model }
 func (p *pickerGray1) Bounds() image.Rectangle                       { return p.Rect }
 func (p *pickerGray1) At(x, y int) color.Color {
@@ -130,7 +124,7 @@ type pickerGray8 struct {
 	Y    []byte
 }
 
-func (p *pickerGray8) SetSource(rect image.Rectangle, src ...[]byte) { p.Rect, p.Y = rect, src[0] }
+func (p *pickerGray8) setSource(rect image.Rectangle, src ...[]byte) { p.Rect, p.Y = rect, src[0] }
 func (p *pickerGray8) ColorModel() color.Model                       { return color.GrayModel }
 func (p *pickerGray8) Bounds() image.Rectangle                       { return p.Rect }
 func (p *pickerGray8) At(x, y int) color.Color {
@@ -143,7 +137,7 @@ type pickerNGray8 struct {
 	Y    []byte
 }
 
-func (p *pickerNGray8) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNGray8) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.Y = rect, src[0]
 }
 func (p *pickerNGray8) ColorModel() color.Model { return psdColor.NGrayAModel }
@@ -158,7 +152,7 @@ type pickerNGrayA8 struct {
 	Y, A []byte
 }
 
-func (p *pickerNGrayA8) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNGrayA8) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.Y, p.A = rect, src[0], src[1]
 }
 func (p *pickerNGrayA8) ColorModel() color.Model { return psdColor.NGrayAModel }
@@ -173,7 +167,7 @@ type pickerGray16 struct {
 	Y    []byte
 }
 
-func (p *pickerGray16) SetSource(rect image.Rectangle, src ...[]byte) { p.Rect, p.Y = rect, src[0] }
+func (p *pickerGray16) setSource(rect image.Rectangle, src ...[]byte) { p.Rect, p.Y = rect, src[0] }
 func (p *pickerGray16) ColorModel() color.Model                       { return color.Gray16Model }
 func (p *pickerGray16) Bounds() image.Rectangle                       { return p.Rect }
 func (p *pickerGray16) At(x, y int) color.Color {
@@ -186,7 +180,7 @@ type pickerNGray16 struct {
 	Y    []byte
 }
 
-func (p *pickerNGray16) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNGray16) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.Y = rect, src[0]
 }
 func (p *pickerNGray16) ColorModel() color.Model { return psdColor.NGrayA32Model }
@@ -201,7 +195,7 @@ type pickerNGrayA16 struct {
 	Y, A []byte
 }
 
-func (p *pickerNGrayA16) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNGrayA16) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.Y, p.A = rect, src[0], src[1]
 }
 func (p *pickerNGrayA16) ColorModel() color.Model { return psdColor.NGrayA32Model }
@@ -216,7 +210,7 @@ type pickerGray32 struct {
 	Y    []byte
 }
 
-func (p *pickerGray32) SetSource(rect image.Rectangle, src ...[]byte) { p.Rect, p.Y = rect, src[0] }
+func (p *pickerGray32) setSource(rect image.Rectangle, src ...[]byte) { p.Rect, p.Y = rect, src[0] }
 func (p *pickerGray32) ColorModel() color.Model                       { return psdColor.Gray32Model }
 func (p *pickerGray32) Bounds() image.Rectangle                       { return p.Rect }
 func (p *pickerGray32) At(x, y int) color.Color {
@@ -229,7 +223,7 @@ type pickerNGray32 struct {
 	Y    []byte
 }
 
-func (p *pickerNGray32) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNGray32) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.Y = rect, src[0]
 }
 func (p *pickerNGray32) ColorModel() color.Model { return psdColor.NGrayA64Model }
@@ -244,7 +238,7 @@ type pickerNGrayA32 struct {
 	Y, A []byte
 }
 
-func (p *pickerNGrayA32) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNGrayA32) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.Y, p.A = rect, src[0], src[1]
 }
 func (p *pickerNGrayA32) ColorModel() color.Model { return psdColor.NGrayA64Model }
@@ -262,7 +256,7 @@ type pickerNRGB8 struct {
 	R, G, B []byte
 }
 
-func (p *pickerNRGB8) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNRGB8) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.R, p.G, p.B = rect, src[0], src[1], src[2]
 }
 func (p *pickerNRGB8) ColorModel() color.Model { return color.NRGBAModel }
@@ -282,7 +276,7 @@ type pickerNRGBA8 struct {
 	R, G, B, A []byte
 }
 
-func (p *pickerNRGBA8) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNRGBA8) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.R, p.G, p.B, p.A = rect, src[0], src[1], src[2], src[3]
 }
 func (p *pickerNRGBA8) ColorModel() color.Model { return color.NRGBAModel }
@@ -297,7 +291,7 @@ type pickerNRGB16 struct {
 	R, G, B []byte
 }
 
-func (p *pickerNRGB16) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNRGB16) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.R, p.G, p.B = rect, src[0], src[1], src[2]
 }
 func (p *pickerNRGB16) ColorModel() color.Model { return color.NRGBA64Model }
@@ -317,7 +311,7 @@ type pickerNRGBA16 struct {
 	R, G, B, A []byte
 }
 
-func (p *pickerNRGBA16) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNRGBA16) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.R, p.G, p.B, p.A = rect, src[0], src[1], src[2], src[3]
 }
 func (p *pickerNRGBA16) ColorModel() color.Model { return color.NRGBA64Model }
@@ -337,7 +331,7 @@ type pickerNCMYK8 struct {
 	C, M, Y, K []byte
 }
 
-func (p *pickerNCMYK8) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNCMYK8) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.C, p.M, p.Y, p.K = rect, src[0], src[1], src[2], src[3]
 }
 func (p *pickerNCMYK8) ColorModel() color.Model { return psdColor.NCMYKAModel }
@@ -358,7 +352,7 @@ type pickerNCMYKA8 struct {
 	C, M, Y, K, A []byte
 }
 
-func (p *pickerNCMYKA8) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNCMYKA8) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.C, p.M, p.Y, p.K, p.A = rect, src[0], src[1], src[2], src[3], src[4]
 }
 func (p *pickerNCMYKA8) ColorModel() color.Model { return psdColor.NCMYKAModel }
@@ -379,7 +373,7 @@ type pickerNCMYK16 struct {
 	C, M, Y, K []byte
 }
 
-func (p *pickerNCMYK16) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNCMYK16) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.C, p.M, p.Y, p.K = rect, src[0], src[1], src[2], src[3]
 }
 func (p *pickerNCMYK16) ColorModel() color.Model { return psdColor.NCMYKA80Model }
@@ -400,7 +394,7 @@ type pickerNCMYKA16 struct {
 	C, M, Y, K, A []byte
 }
 
-func (p *pickerNCMYKA16) SetSource(rect image.Rectangle, src ...[]byte) {
+func (p *pickerNCMYKA16) setSource(rect image.Rectangle, src ...[]byte) {
 	p.Rect, p.C, p.M, p.Y, p.K, p.A = rect, src[0], src[1], src[2], src[3], src[4]
 }
 func (p *pickerNCMYKA16) ColorModel() color.Model { return psdColor.NCMYKA80Model }

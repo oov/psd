@@ -3,7 +3,6 @@ package psd
 import (
 	"errors"
 	"image"
-	"image/color"
 	"io"
 )
 
@@ -29,7 +28,7 @@ type Layer struct {
 	BlendClippedElements  bool
 	Flags                 uint8
 	Mask                  Mask
-	Picker                Picker
+	Picker                image.Image
 	AdditionalLayerInfo   map[AdditionalInfoKey][]byte
 	SectionDividerSetting struct {
 		Type      int
@@ -38,46 +37,6 @@ type Layer struct {
 	}
 
 	Layer []Layer
-}
-
-// ExperimentalExportImage creates image.Image.
-func (l *Layer) ExperimentalExportImage() (image.Image, error) {
-	w, h := l.Rect.Dx(), l.Rect.Dy()
-	if l.Picker.ColorModel() == color.NRGBAModel {
-		r, g, b := l.Channel[0], l.Channel[1], l.Channel[2]
-		img := image.NewNRGBA(l.Rect)
-		if a, ok := l.Channel[-1]; ok {
-			rp, gp, bp, ap := r.Data, g.Data, b.Data, a.Data
-			var ofsd, ofss, x, y, sx, dx int
-			for y = 0; y < h; y++ {
-				ofss = y * w
-				ofsd = ofss << 2
-				for x = 0; x < w; x++ {
-					sx, dx = ofss+x, ofsd+x<<2
-					img.Pix[dx+0] = rp[sx]
-					img.Pix[dx+1] = gp[sx]
-					img.Pix[dx+2] = bp[sx]
-					img.Pix[dx+3] = ap[sx]
-				}
-			}
-		} else {
-			rp, gp, bp := r.Data, g.Data, b.Data
-			var ofsd, ofss, x, y, sx, dx int
-			for y = 0; y < h; y++ {
-				ofss = y * w
-				ofsd = ofss << 2
-				for x = 0; x < w; x++ {
-					sx, dx = ofss+x, ofsd+x<<2
-					img.Pix[dx+0] = rp[sx]
-					img.Pix[dx+1] = gp[sx]
-					img.Pix[dx+2] = bp[sx]
-					img.Pix[dx+3] = 0xff
-				}
-			}
-		}
-		return img, nil
-	}
-	return nil, errors.New("psd: unsupported color mode")
 }
 
 // TransparencyProtected returns whether the layer's transparency being protected.
@@ -103,21 +62,6 @@ func (l *Layer) Folder() bool {
 // FolderIsOpen returns whether the folder is opened when layer is folder.
 func (l *Layer) FolderIsOpen() bool {
 	return l.SectionDividerSetting.Type == 1
-}
-
-// ColorModel returns the Image's color model.
-func (l *Layer) ColorModel() color.Model {
-	return l.Picker.ColorModel()
-}
-
-// Bounds returns the domain for which At can return non-zero color.
-func (l *Layer) Bounds() image.Rectangle {
-	return l.Picker.Bounds()
-}
-
-// At returns the color of the pixel at (x, y).
-func (l *Layer) At(x, y int) color.Color {
-	return l.Picker.At(x, y)
 }
 
 func (l *Layer) String() string {
@@ -154,22 +98,7 @@ func (m *Mask) RealEnabled() bool {
 type Channel struct {
 	// Data is uncompressed channel image data.
 	Data   []byte
-	Picker Picker
-}
-
-// ColorModel returns the color model.
-func (c *Channel) ColorModel() color.Model {
-	return c.Picker.ColorModel()
-}
-
-// Bounds returns the domain for which At can return non-zero color.
-func (c *Channel) Bounds() image.Rectangle {
-	return c.Picker.Bounds()
-}
-
-// At returns the color of the pixel at (x, y).
-func (c *Channel) At(x, y int) color.Color {
-	return c.Picker.At(x, y)
+	Picker image.Image
 }
 
 func readLayerAndMaskInfo(r io.Reader, cfg *Config, o *DecodeOptions) (psd *PSD, read int, err error) {
@@ -329,6 +258,11 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 	return 0, BlendModeNormal, 0, nil
 }
 
+type channelData struct {
+	ChIndex int
+	DataLen int
+}
+
 func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, read int, err error) {
 	intSize := get4or8(cfg.PSB())
 	if Debug != nil {
@@ -366,7 +300,7 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 	}
 
 	layerSlice := make([]Layer, numLayers)
-	chLen := make([][][2]int, numLayers)
+	chData := make([][]channelData, numLayers)
 	for i := range layerSlice {
 		if Debug != nil {
 			Debug.Printf("start - layer #%d structure", i)
@@ -389,18 +323,17 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 		read += l
 		numChannels := int(readUint16(b, 0))
 		layer.Channel = map[int]Channel{}
-		chLen[i] = make([][2]int, numChannels)
+		chData[i] = make([]channelData, numChannels)
 		for j := 0; j < numChannels; j++ {
 			if l, err = io.ReadFull(r, b[:2+intSize]); err != nil {
 				return nil, read, err
 			}
 			read += l
 			id := int(int16(readUint16(b, 0)))
-			layer.Channel[id] = Channel{
-				Picker: findGrayPicker(cfg.Depth, false),
+			chData[i][j] = channelData{
+				ChIndex: id,
+				DataLen: int(readUint(b, 2, intSize)),
 			}
-			layer.Channel[id].Picker.SetSource(layer.Rect, layer.Channel[id].Data)
-			chLen[i][j] = [2]int{id, int(readUint(b, 2, intSize))}
 		}
 
 		if l, err = io.ReadFull(r, b[:12]); err != nil {
@@ -486,8 +419,8 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 	}
 	if !o.SkipLayerImage {
 		for i, layer := range layerSlice {
-			for _, j := range chLen[i] {
-				ch := layer.Channel[j[0]]
+			for _, j := range chData[i] {
+				ch := layer.Channel[j.ChIndex]
 				var readCh int
 				if l, err = io.ReadFull(r, b[:2]); err != nil {
 					return nil, read, err
@@ -497,13 +430,13 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 
 				cmpMethod := CompressionMethod(readUint16(b, 0))
 				if Debug != nil {
-					Debug.Printf("  layer #%d %q channel #%d image data", i, layer.Name, j[0])
-					Debug.Println("    length:", j[1], "compression method:", cmpMethod)
+					Debug.Printf("  layer #%d %q channel #%d image data", i, layer.Name, j.ChIndex)
+					Debug.Println("    length:", j.DataLen, "compression method:", cmpMethod)
 					reportReaderPosition("    file offset: 0x%08x", r)
 				}
 
 				var rect image.Rectangle
-				switch j[0] {
+				switch j.ChIndex {
 				case -3:
 					rect = layer.Mask.RealRect
 				case -2:
@@ -512,19 +445,21 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 					rect = layer.Rect
 				}
 				ch.Data = make([]byte, (rect.Dx()*cfg.Depth+7)>>3*rect.Dy())
-				ch.Picker.SetSource(rect, ch.Data)
+				pk := findGrayPicker(cfg.Depth)
+				pk.setSource(rect, ch.Data)
+				ch.Picker = pk
 
-				if l, err = cmpMethod.Decode(ch.Data, r, int64(j[1]-2), rect, cfg.Depth, 1, cfg.PSB()); err != nil {
+				if l, err = cmpMethod.Decode(ch.Data, r, int64(j.DataLen-2), rect, cfg.Depth, 1, cfg.PSB()); err != nil {
 					return nil, read, err
 				}
 				readCh += l
 				read += l
 
-				if readCh != j[1] {
-					return nil, read, errors.New("psd: layer: " + itoa(i) + " channel: " + itoa(j[0]) + " read size mismatched. expected " + itoa(j[1]) + " actual " + itoa(readCh))
+				if readCh != j.DataLen {
+					return nil, read, errors.New("psd: layer: " + itoa(i) + " channel: " + itoa(j.ChIndex) + " read size mismatched. expected " + itoa(j.DataLen) + " actual " + itoa(readCh))
 				}
 
-				layer.Channel[j[0]] = ch
+				layer.Channel[j.ChIndex] = ch
 			}
 
 			chs := make([][]byte, cfg.ColorMode.Channels(), 8)
@@ -534,8 +469,9 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 			if ch, ok := layer.Channel[-1]; ok {
 				chs = append(chs, ch.Data)
 			}
-			layer.Picker = findPicker(cfg.Depth, cfg.ColorMode, cfg.ColorMode.Channels() < len(chs))
-			layer.Picker.SetSource(layer.Rect, chs...)
+			pk := findPicker(cfg.Depth, cfg.ColorMode, cfg.ColorMode.Channels() < len(chs))
+			pk.setSource(layer.Rect, chs...)
+			layer.Picker = pk
 			layerSlice[i] = layer
 			if o.LayerImageLoaded != nil {
 				o.LayerImageLoaded(&layerSlice[i], i, len(layerSlice))

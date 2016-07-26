@@ -204,7 +204,7 @@ func processLayer(t *testing.T, f string, l *Layer) error {
 				return err
 			}
 			defer o.Close()
-			return png.Encode(o, &ch)
+			return png.Encode(o, ch.Picker)
 		}(); err != nil {
 			return err
 		}
@@ -215,7 +215,7 @@ func processLayer(t *testing.T, f string, l *Layer) error {
 			t,
 			fmt.Sprintf("%s Ch:%d", f, id),
 			fmt.Sprintf("png/%s_Ch%d.png", f, id),
-			&ch,
+			ch.Picker,
 		)
 	}
 
@@ -225,12 +225,12 @@ func processLayer(t *testing.T, f string, l *Layer) error {
 		return err
 	}
 	defer o.Close()
-	err = png.Encode(o, l)
+	err = png.Encode(o, l.Picker)
 	if err != nil {
 		return err
 	}
 
-	verifyImage(t, f, fmt.Sprintf("png/%s.png", f), l)
+	verifyImage(t, f, fmt.Sprintf("png/%s.png", f), l.Picker)
 	return nil
 }
 
@@ -265,7 +265,7 @@ func testOne(tImg testImage, t *testing.T) {
 				t.Errorf("%s: cannot create file %q\n%v", tImg.Name, filename, err)
 			}
 			defer o.Close()
-			if err = png.Encode(o, &ch); err != nil {
+			if err = png.Encode(o, ch.Picker); err != nil {
 				t.Errorf("%s: cannot encode to %q\n%v", tImg.Name, filename, err)
 			}
 		}()
@@ -275,7 +275,7 @@ func testOne(tImg testImage, t *testing.T) {
 			t,
 			fmt.Sprintf("%s !merged Ch:%d", tImg.Name, id),
 			fmt.Sprintf("png/%s_!merged_Ch%d.png", fnBase, id),
-			&ch,
+			ch.Picker,
 		)
 	}
 

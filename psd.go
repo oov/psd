@@ -42,18 +42,63 @@ const (
 
 // Config represents Photoshop image file configuration.
 type Config struct {
-	Version   int
-	Rect      image.Rectangle
-	Channels  int
-	Depth     int // 1 or 8 or 16 or 32
-	ColorMode ColorMode
-	Picker    Picker
-	Res       map[int]ImageResource
+	Version       int
+	Rect          image.Rectangle
+	Channels      int
+	Depth         int // 1 or 8 or 16 or 32
+	ColorMode     ColorMode
+	ColorModeData []byte
+	Res           map[int]ImageResource
 }
 
 // PSB returns whether image is large document format.
 func (cfg *Config) PSB() bool {
 	return cfg.Version == 2
+}
+
+// Palette returns Palette if any.
+func (cfg *Config) Palette() color.Palette {
+	if cfg.ColorMode != ColorModeIndexed {
+		return nil
+	}
+
+	// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_38034
+	// 0x0417(1046) | (Photoshop 6.0) Transparency Index.
+	//                2 bytes for the index of transparent color, if any.
+	transparentColorIndex := -1
+	if r, ok := cfg.Res[0x0417]; ok {
+		transparentColorIndex = int(readUint16(r.Data, 0))
+	}
+	pal := make(color.Palette, len(cfg.ColorModeData)/3)
+	for i := range pal {
+		c := color.NRGBA{
+			cfg.ColorModeData[i],
+			cfg.ColorModeData[i+256],
+			cfg.ColorModeData[i+512],
+			0xFF,
+		}
+		if i == transparentColorIndex {
+			c.A = 0
+		}
+		pal[i] = c
+	}
+	return pal
+}
+
+func (cfg *Config) makePicker() (picker, error) {
+	var pk picker
+	switch cfg.ColorMode {
+	case ColorModeIndexed:
+		pk = &pickerPalette{Palette: cfg.Palette()}
+	case ColorModeBitmap:
+		pk = &pickerGray1{}
+	default:
+		pk = findPicker(cfg.Depth, cfg.ColorMode, cfg.Channels > cfg.ColorMode.Channels() && hasAlphaID0(cfg.Res))
+	}
+	if pk == nil {
+		return nil, errors.New("psd: color mode " + itoa(int(cfg.ColorMode)) + " depth " + itoa(cfg.Depth) + " is not implemeted")
+	}
+	return pk, nil
 }
 
 // PSD represents Photoshop image file.
@@ -63,22 +108,23 @@ type PSD struct {
 	Layer              []Layer
 	AdditinalLayerInfo map[AdditionalInfoKey][]byte
 	// Data is uncompressed merged image data.
-	Data []byte
+	Data   []byte
+	Picker image.Image
 }
 
 // ColorModel returns the Image's color model.
 func (p *PSD) ColorModel() color.Model {
-	return p.Config.Picker.ColorModel()
+	return p.Picker.ColorModel()
 }
 
 // Bounds returns the domain for which At can return non-zero color.
 func (p *PSD) Bounds() image.Rectangle {
-	return p.Config.Picker.Bounds()
+	return p.Picker.Bounds()
 }
 
 // At returns the color of the pixel at (x, y).
 func (p *PSD) At(x, y int) color.Color {
-	return p.Config.Picker.At(x, y)
+	return p.Picker.At(x, y)
 }
 
 // DecodeConfig returns the color model and dimensions of a image without decoding the entire image.
@@ -125,10 +171,9 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 
 	cfg.ColorMode = ColorMode(readUint16(b, 24))
 
-	var colorModeData []byte
 	if ln := readUint32(b, 26); ln > 0 {
-		colorModeData = make([]byte, ln)
-		if l, err = io.ReadFull(r, colorModeData); err != nil {
+		cfg.ColorModeData = make([]byte, ln)
+		if l, err = io.ReadFull(r, cfg.ColorModeData); err != nil {
 			return Config{}, read, err
 		}
 		read += l
@@ -137,7 +182,7 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 		Debug.Println("start - header")
 		Debug.Printf("  width: %d height: %d", width, height)
 		Debug.Printf("  channels: %d depth: %d colorMode %d", cfg.Channels, cfg.Depth, cfg.ColorMode)
-		Debug.Printf("  colorModeDataLen: %d", len(colorModeData))
+		Debug.Printf("  colorModeDataLen: %d", len(cfg.ColorModeData))
 		Debug.Println("end - header")
 	}
 
@@ -145,46 +190,6 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 		return Config{}, read, err
 	}
 	read += l
-
-	switch cfg.ColorMode {
-	case ColorModeBitmap:
-		cfg.Picker = &pickerGray1{}
-	case ColorModeGrayscale:
-		cfg.Picker = findGrayPicker(cfg.Depth, cfg.Channels > cfg.ColorMode.Channels() && hasAlphaID0(cfg.Res))
-	case ColorModeIndexed:
-		// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_38034
-		// 0x0417(1046) | (Photoshop 6.0) Transparency Index.
-		//                2 bytes for the index of transparent color, if any.
-		transparentColorIndex := -1
-		if r, ok := cfg.Res[0x0417]; ok {
-			transparentColorIndex = int(readUint16(r.Data, 0))
-		}
-		pal := make(color.Palette, len(colorModeData)/3)
-		for i := range pal {
-			c := color.NRGBA{
-				colorModeData[i],
-				colorModeData[i+256],
-				colorModeData[i+512],
-				0xFF,
-			}
-			if i == transparentColorIndex {
-				c.A = 0
-			}
-			pal[i] = c
-		}
-		cfg.Picker = &pickerPalette{Palette: pal}
-	case ColorModeRGB:
-		cfg.Picker = findNRGBAPicker(cfg.Depth, cfg.Channels > cfg.ColorMode.Channels() && hasAlphaID0(cfg.Res))
-	case ColorModeCMYK:
-		cfg.Picker = findNCMYKAPicker(cfg.Depth, cfg.Channels > cfg.ColorMode.Channels() && hasAlphaID0(cfg.Res))
-	case ColorModeMultichannel, ColorModeDuotone, ColorModeLab:
-		return Config{}, read, errors.New("psd: color mode " + itoa(int(cfg.ColorMode)) + " is not implemented")
-	default:
-		return Config{}, read, errors.New("psd: unexpected color mode: " + itoa(int(cfg.ColorMode)))
-	}
-	if cfg.Picker == nil {
-		return Config{}, read, errors.New("psd: unsupported combination of color mode(" + itoa(int(cfg.ColorMode)) + ") and depth(" + itoa(cfg.Depth) + ")")
-	}
 	return cfg, read, nil
 }
 
@@ -223,14 +228,21 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 		chs := make([][]byte, psd.Config.Channels)
 		psd.Channel = make(map[int]Channel)
 		for i := 0; i < psd.Config.Channels; i++ {
+			data := psd.Data[plane*i : plane*(i+1) : plane*(i+1)]
+			chs[i] = data
+			pk := findGrayPicker(psd.Config.Depth)
+			pk.setSource(psd.Config.Rect, data)
 			psd.Channel[i] = Channel{
-				Data:   psd.Data[plane*i : plane*(i+1) : plane*(i+1)],
-				Picker: findGrayPicker(psd.Config.Depth, false),
+				Data:   data,
+				Picker: pk,
 			}
-			psd.Channel[i].Picker.SetSource(psd.Config.Rect, psd.Channel[i].Data)
-			chs[i] = psd.Channel[i].Data
 		}
-		psd.Config.Picker.SetSource(psd.Config.Rect, chs...)
+		var pk picker
+		if pk, err = cfg.makePicker(); err != nil {
+			return nil, read, err
+		}
+		pk.setSource(psd.Config.Rect, chs...)
+		psd.Picker = pk
 
 		if l, err = io.ReadFull(r, b[:2]); err != nil {
 			return nil, read, err
@@ -264,10 +276,14 @@ func decodeConfig(r io.Reader) (image.Config, error) {
 	if err != nil {
 		return image.Config{}, err
 	}
+	var pk picker
+	if pk, err = cfg.makePicker(); err != nil {
+		return image.Config{}, err
+	}
 	return image.Config{
 		Width:      cfg.Rect.Dx(),
 		Height:     cfg.Rect.Dy(),
-		ColorModel: cfg.Picker.ColorModel(),
+		ColorModel: pk.ColorModel(),
 	}, nil
 }
 
