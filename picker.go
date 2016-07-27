@@ -269,10 +269,10 @@ func (p *pickerNRGB8) Bounds() image.Rectangle { return p.Rect }
 func (p *pickerNRGB8) At(x, y int) color.Color {
 	pos := (y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X
 	return color.NRGBA{
-		p.R[pos],
-		p.G[pos],
-		p.B[pos],
-		0xff,
+		R: p.R[pos],
+		G: p.G[pos],
+		B: p.B[pos],
+		A: 0xff,
 	}
 }
 
@@ -304,10 +304,10 @@ func (p *pickerNRGB16) Bounds() image.Rectangle { return p.Rect }
 func (p *pickerNRGB16) At(x, y int) color.Color {
 	pos := ((y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X) << 1
 	return color.NRGBA64{
-		readUint16(p.R, pos),
-		readUint16(p.G, pos),
-		readUint16(p.B, pos),
-		0xffff,
+		R: readUint16(p.R, pos),
+		G: readUint16(p.G, pos),
+		B: readUint16(p.B, pos),
+		A: 0xffff,
 	}
 }
 
@@ -324,10 +324,10 @@ func (p *pickerNRGBA16) Bounds() image.Rectangle { return p.Rect }
 func (p *pickerNRGBA16) At(x, y int) color.Color {
 	pos := ((y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X) << 1
 	return color.NRGBA64{
-		readUint16(p.R, pos),
-		readUint16(p.G, pos),
-		readUint16(p.B, pos),
-		readUint16(p.A, pos),
+		R: readUint16(p.R, pos),
+		G: readUint16(p.G, pos),
+		B: readUint16(p.B, pos),
+		A: readUint16(p.A, pos),
 	}
 }
 
@@ -344,10 +344,10 @@ func (p *pickerNRGB32) Bounds() image.Rectangle { return p.Rect }
 func (p *pickerNRGB32) At(x, y int) color.Color {
 	pos := ((y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X) << 2
 	return psdColor.NRGBA128{
-		readFloat32(p.R, pos),
-		readFloat32(p.G, pos),
-		readFloat32(p.B, pos),
-		1.0,
+		R: readFloat32(p.R, pos),
+		G: readFloat32(p.G, pos),
+		B: readFloat32(p.B, pos),
+		A: 1.0,
 	}
 }
 
@@ -364,10 +364,10 @@ func (p *pickerNRGBA32) Bounds() image.Rectangle { return p.Rect }
 func (p *pickerNRGBA32) At(x, y int) color.Color {
 	pos := ((y-p.Rect.Min.Y)*p.Rect.Dx() + x - p.Rect.Min.X) << 2
 	return psdColor.NRGBA128{
-		readFloat32(p.R, pos),
-		readFloat32(p.G, pos),
-		readFloat32(p.B, pos),
-		readFloat32(p.A, pos),
+		R: readFloat32(p.R, pos),
+		G: readFloat32(p.G, pos),
+		B: readFloat32(p.B, pos),
+		A: readFloat32(p.A, pos),
 	}
 }
 
