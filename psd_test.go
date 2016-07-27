@@ -108,6 +108,22 @@ var testImages = []testImage{
 		Name: "Layer Mask & Vector Mask",
 		PSD:  "mask.psd",
 	},
+	{
+		Name: "Normal Format(maximize compatibility on)",
+		PSD:  "psd_compat.psd",
+	},
+	{
+		Name: "Normal Format(maximize compatibility off)",
+		PSD:  "psd_nocompat.psd",
+	},
+	{
+		Name: "Big Document Format(maximize compatibility on)",
+		PSD:  "psb_compat.psb",
+	},
+	{
+		Name: "Big Document Format(maximize compatibility off)",
+		PSD:  "psb_nocompat.psb",
+	},
 }
 
 func verifyChannel(t *testing.T, name string, filename string, ch image.Image) {
