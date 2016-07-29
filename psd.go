@@ -27,6 +27,32 @@ const (
 // AdditionalInfoKey represents the key of the additional layer information.
 type AdditionalInfoKey string
 
+// LenSize returns bytes of the length for this key.
+func (a AdditionalInfoKey) LenSize(largeDocument bool) int {
+	if largeDocument {
+		// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_71546
+		// (**PSB**, the following keys have a length count of 8 bytes:
+		// LMsk, Lr16, Lr32, Layr, Mt16, Mt32, Mtrn, Alph, FMsk, lnk2, FEid, FXid, PxSD.
+		switch a {
+		case "LMsk",
+			"Lr16",
+			"Lr32",
+			"Layr",
+			"Mt16",
+			"Mt32",
+			"Mtrn",
+			"Alph",
+			"FMsk",
+			"lnk2",
+			"FEid",
+			"FXid",
+			"PxSD":
+			return 8
+		}
+	}
+	return 4
+}
+
 // These keys are defined in this document.
 //
 // http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_71546

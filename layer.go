@@ -699,19 +699,6 @@ func readLayerExtraData(r io.Reader, layer *Layer, cfg *Config, o *DecodeOptions
 	return read, nil
 }
 
-var longKeys = map[AdditionalInfoKey]struct{}{
-	AdditionalInfoKey("LMsk"): struct{}{},
-	AdditionalInfoKey("Mt16"): struct{}{},
-	AdditionalInfoKey("Mt32"): struct{}{},
-	AdditionalInfoKey("Mtrn"): struct{}{},
-	AdditionalInfoKey("Alph"): struct{}{},
-	AdditionalInfoKey("FMsk"): struct{}{},
-	AdditionalInfoKey("lnk2"): struct{}{},
-	AdditionalInfoKey("FEid"): struct{}{},
-	AdditionalInfoKey("FXid"): struct{}{},
-	AdditionalInfoKey("PxSD"): struct{}{},
-}
-
 func readAdditionalLayerInfo(r io.Reader, infoLen int, cfg *Config, o *DecodeOptions) (infos map[AdditionalInfoKey][]byte, layers []Layer, read int, err error) {
 	if Debug != nil {
 		Debug.Println("start - additional layer info section")
@@ -757,8 +744,7 @@ func readAdditionalLayerInfo(r io.Reader, infoLen int, cfg *Config, o *DecodeOpt
 			read += l
 			layers = append(layers, layrs...)
 		default:
-			_, isLongKey := longKeys[key]
-			intSize := get4or8(cfg.PSB() && isLongKey)
+			intSize := key.LenSize(cfg.PSB())
 			if l, err = io.ReadFull(r, b[:intSize]); err != nil {
 				return nil, nil, read, err
 			}
