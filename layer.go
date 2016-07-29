@@ -263,6 +263,11 @@ type channelData struct {
 	DataLen int
 }
 
+type layerChannelInfo struct {
+	Layer       *Layer
+	ChannelData []channelData
+}
+
 func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, read int, err error) {
 	intSize := get4or8(cfg.PSB())
 	if Debug != nil {
@@ -300,7 +305,7 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 	}
 
 	layerSlice := make([]Layer, numLayers)
-	chData := make([][]channelData, numLayers)
+	lcis := make([]layerChannelInfo, numLayers)
 	for i := range layerSlice {
 		if Debug != nil {
 			Debug.Printf("start - layer #%d structure", i)
@@ -322,19 +327,22 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 		}
 		read += l
 		numChannels := int(readUint16(b, 0))
-		layer.Channel = map[int]Channel{}
-		chData[i] = make([]channelData, numChannels)
+
+		lci := layerChannelInfo{
+			Layer:       layer,
+			ChannelData: make([]channelData, numChannels),
+		}
 		for j := 0; j < numChannels; j++ {
 			if l, err = io.ReadFull(r, b[:2+intSize]); err != nil {
 				return nil, read, err
 			}
 			read += l
-			id := int(int16(readUint16(b, 0)))
-			chData[i][j] = channelData{
-				ChIndex: id,
+			lci.ChannelData[j] = channelData{
+				ChIndex: int(int16(readUint16(b, 0))),
 				DataLen: int(readUint(b, 2, intSize)),
 			}
 		}
+		lcis[i] = lci
 
 		if l, err = io.ReadFull(r, b[:12]); err != nil {
 			return nil, read, err
@@ -418,65 +426,10 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 		}
 	}
 	if !o.SkipLayerImage {
-		for i, layer := range layerSlice {
-			for _, j := range chData[i] {
-				ch := layer.Channel[j.ChIndex]
-				var readCh int
-				if l, err = io.ReadFull(r, b[:2]); err != nil {
-					return nil, read, err
-				}
-				readCh += l
-				read += l
-
-				cmpMethod := CompressionMethod(readUint16(b, 0))
-				if Debug != nil {
-					Debug.Printf("  layer #%d %q channel #%d image data", i, layer.Name, j.ChIndex)
-					Debug.Println("    length:", j.DataLen, "compression method:", cmpMethod)
-					reportReaderPosition("    file offset: 0x%08x", r)
-				}
-
-				var rect image.Rectangle
-				switch j.ChIndex {
-				case -3:
-					rect = layer.Mask.RealRect
-				case -2:
-					rect = layer.Mask.Rect
-				default:
-					rect = layer.Rect
-				}
-				ch.Data = make([]byte, (rect.Dx()*cfg.Depth+7)>>3*rect.Dy())
-				pk := findGrayPicker(cfg.Depth)
-				pk.setSource(rect, ch.Data)
-				ch.Picker = pk
-
-				if l, err = cmpMethod.Decode(ch.Data, r, int64(j.DataLen-2), rect, cfg.Depth, 1, cfg.PSB()); err != nil {
-					return nil, read, err
-				}
-				readCh += l
-				read += l
-
-				if readCh != j.DataLen {
-					return nil, read, errors.New("psd: layer: " + itoa(i) + " channel: " + itoa(j.ChIndex) + " read size mismatched. expected " + itoa(j.DataLen) + " actual " + itoa(readCh))
-				}
-
-				layer.Channel[j.ChIndex] = ch
-			}
-
-			chs := make([][]byte, cfg.ColorMode.Channels(), 8)
-			for j := range chs {
-				chs[j] = layer.Channel[j].Data
-			}
-			if ch, ok := layer.Channel[-1]; ok {
-				chs = append(chs, ch.Data)
-			}
-			pk := findPicker(cfg.Depth, cfg.ColorMode, cfg.ColorMode.Channels() < len(chs))
-			pk.setSource(layer.Rect, chs...)
-			layer.Picker = pk
-			layerSlice[i] = layer
-			if o.LayerImageLoaded != nil {
-				o.LayerImageLoaded(&layerSlice[i], i, len(layerSlice))
-			}
+		if l, err = readLayerImage(lcis, r, cfg, o); err != nil {
+			return nil, read, err
 		}
+		read += l
 		if l, err = adjustAlign4(r, read+4-layerInfoLen); err != nil {
 			return nil, read, err
 		}
@@ -495,6 +448,71 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 		Debug.Println("end - layer info section")
 	}
 	return layerSlice, read, nil
+}
+
+func readLayerImage(lcis []layerChannelInfo, r io.Reader, cfg *Config, o *DecodeOptions) (read int, err error) {
+	var l int
+	b := make([]byte, 2)
+	for i, lci := range lcis {
+		chMap := map[int]Channel{}
+		pickerChs := make([][]byte, cfg.ColorMode.Channels(), 8)
+		for _, j := range lci.ChannelData {
+			var readCh int
+			if l, err = io.ReadFull(r, b[:2]); err != nil {
+				return read, err
+			}
+			readCh += l
+			read += l
+
+			cmpMethod := CompressionMethod(readUint16(b, 0))
+			if Debug != nil {
+				Debug.Printf("  layer #%d %q channel #%d image data", i, lci.Layer.Name, j.ChIndex)
+				Debug.Println("    length:", j.DataLen, "compression method:", cmpMethod)
+				reportReaderPosition("    file offset: 0x%08x", r)
+			}
+
+			var rect image.Rectangle
+			switch j.ChIndex {
+			case -3:
+				rect = lci.Layer.Mask.RealRect
+			case -2:
+				rect = lci.Layer.Mask.Rect
+			default:
+				rect = lci.Layer.Rect
+			}
+			data := make([]byte, (rect.Dx()*cfg.Depth+7)>>3*rect.Dy())
+			pk := findGrayPicker(cfg.Depth)
+			pk.setSource(rect, data)
+
+			if l, err = cmpMethod.Decode(data, r, int64(j.DataLen-2), rect, cfg.Depth, 1, cfg.PSB()); err != nil {
+				return read, err
+			}
+			readCh += l
+			read += l
+			if readCh != j.DataLen {
+				return read, errors.New("psd: layer: " + itoa(i) + " channel: " + itoa(j.ChIndex) + " read size mismatched. expected " + itoa(j.DataLen) + " actual " + itoa(readCh))
+			}
+
+			chMap[j.ChIndex] = Channel{
+				Data:   data,
+				Picker: pk,
+			}
+			switch {
+			case j.ChIndex >= 0:
+				pickerChs[j.ChIndex] = data
+			case j.ChIndex == -1:
+				pickerChs = append(pickerChs, data)
+			}
+		}
+		pk := findPicker(cfg.Depth, cfg.ColorMode, cfg.ColorMode.Channels() < len(pickerChs))
+		pk.setSource(lci.Layer.Rect, pickerChs...)
+		lci.Layer.Picker = pk
+		lci.Layer.Channel = chMap
+		if o.LayerImageLoaded != nil {
+			o.LayerImageLoaded(lci.Layer, i, len(lcis))
+		}
+	}
+	return read, nil
 }
 
 func readLayerExtraData(r io.Reader, layer *Layer, cfg *Config, o *DecodeOptions) (read int, err error) {
