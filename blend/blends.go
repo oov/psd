@@ -771,18 +771,19 @@ func (d normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawNormalFallbackProtectAlpha
 	} else {
 		f = drawNormalFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // darken implements the darken blend mode.
@@ -1636,18 +1637,19 @@ func (d darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawDarkenFallbackProtectAlpha
 	} else {
 		f = drawDarkenFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // multiply implements the multiply blend mode.
@@ -2381,18 +2383,19 @@ func (d multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawMultiplyFallbackProtectAlpha
 	} else {
 		f = drawMultiplyFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // colorBurn implements the colorBurn blend mode.
@@ -3306,18 +3309,19 @@ func (d colorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawColorBurnFallbackProtectAlpha
 	} else {
 		f = drawColorBurnFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // linearBurn implements the linearBurn blend mode.
@@ -4201,18 +4205,19 @@ func (d linearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawLinearBurnFallbackProtectAlpha
 	} else {
 		f = drawLinearBurnFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // darkerColor implements the darkerColor blend mode.
@@ -4986,18 +4991,19 @@ func (d darkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawDarkerColorFallbackProtectAlpha
 	} else {
 		f = drawDarkerColorFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // lighten implements the lighten blend mode.
@@ -5851,18 +5857,19 @@ func (d lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawLightenFallbackProtectAlpha
 	} else {
 		f = drawLightenFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // screen implements the screen blend mode.
@@ -6596,18 +6603,19 @@ func (d screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawScreenFallbackProtectAlpha
 	} else {
 		f = drawScreenFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // colorDodge implements the colorDodge blend mode.
@@ -7521,18 +7529,19 @@ func (d colorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawColorDodgeFallbackProtectAlpha
 	} else {
 		f = drawColorDodgeFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // linearDodge implements the linearDodge blend mode.
@@ -8266,18 +8275,19 @@ func (d linearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawLinearDodgeFallbackProtectAlpha
 	} else {
 		f = drawLinearDodgeFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // lighterColor implements the lighterColor blend mode.
@@ -9051,18 +9061,19 @@ func (d lighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawLighterColorFallbackProtectAlpha
 	} else {
 		f = drawLighterColorFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // add implements the add blend mode.
@@ -9796,18 +9807,19 @@ func (d add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawAddFallbackProtectAlpha
 	} else {
 		f = drawAddFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // overlay implements the overlay blend mode.
@@ -10661,18 +10673,19 @@ func (d overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawOverlayFallbackProtectAlpha
 	} else {
 		f = drawOverlayFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // softLight implements the softLight blend mode.
@@ -11676,18 +11689,19 @@ func (d softLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawSoftLightFallbackProtectAlpha
 	} else {
 		f = drawSoftLightFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // hardLight implements the hardLight blend mode.
@@ -12571,18 +12585,19 @@ func (d hardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawHardLightFallbackProtectAlpha
 	} else {
 		f = drawHardLightFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // linearLight implements the linearLight blend mode.
@@ -13436,18 +13451,19 @@ func (d linearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.I
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawLinearLightFallbackProtectAlpha
 	} else {
 		f = drawLinearLightFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // vividLight implements the vividLight blend mode.
@@ -14601,18 +14617,19 @@ func (d vividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawVividLightFallbackProtectAlpha
 	} else {
 		f = drawVividLightFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // pinLight implements the pinLight blend mode.
@@ -15766,18 +15783,19 @@ func (d pinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawPinLightFallbackProtectAlpha
 	} else {
 		f = drawPinLightFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // hardMix implements the hardMix blend mode.
@@ -17201,18 +17219,19 @@ func (d hardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawHardMixFallbackProtectAlpha
 	} else {
 		f = drawHardMixFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // difference implements the difference blend mode.
@@ -18066,18 +18085,19 @@ func (d difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawDifferenceFallbackProtectAlpha
 	} else {
 		f = drawDifferenceFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // exclusion implements the exclusion blend mode.
@@ -18811,18 +18831,19 @@ func (d exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Ima
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawExclusionFallbackProtectAlpha
 	} else {
 		f = drawExclusionFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // subtract implements the subtract blend mode.
@@ -19676,18 +19697,19 @@ func (d subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Imag
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawSubtractFallbackProtectAlpha
 	} else {
 		f = drawSubtractFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // divide implements the divide blend mode.
@@ -20601,18 +20623,19 @@ func (d divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image,
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawDivideFallbackProtectAlpha
 	} else {
 		f = drawDivideFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // hue implements the hue blend mode.
@@ -21316,18 +21339,19 @@ func (d hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawHueFallbackProtectAlpha
 	} else {
 		f = drawHueFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // saturation implements the saturation blend mode.
@@ -22031,18 +22055,19 @@ func (d saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawSaturationFallbackProtectAlpha
 	} else {
 		f = drawSaturationFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // color implements the color blend mode.
@@ -22736,18 +22761,19 @@ func (d color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, 
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawColorFallbackProtectAlpha
 	} else {
 		f = drawColorFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }
 
 // luminosity implements the luminosity blend mode.
@@ -23441,16 +23467,17 @@ func (d luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Im
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = drawLuminosityFallbackProtectAlpha
 	} else {
 		f = drawLuminosityFallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X+ofsX, sp.Y+ofsY,
+		mask, mp.X+ofsX, mp.Y+ofsY,
+		endX, endY, delta, delta,
+	)
 }

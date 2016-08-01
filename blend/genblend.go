@@ -887,18 +887,19 @@ func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src ima
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	ofsX, ofsY := pX - r.Min.X, pY - r.Min.Y
-	sp.X += ofsX
-	sp.Y += ofsY
-	mp.Y += ofsX
-	mp.Y += ofsY
 	var f drawFallbackFunc
 	if protectAlpha {
 		f = draw{{.Name}}FallbackProtectAlpha
 	} else {
 		f = draw{{.Name}}Fallback
 	}
-	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
+	ofsX, ofsY := pX - r.Min.X, pY - r.Min.Y
+	f.Parallel(
+		dst, pX, pY,
+		src, sp.X + ofsX, sp.Y + ofsY,
+		mask, mp.X + ofsX, mp.Y + ofsY,
+		endX, endY, delta, delta,
+	)
 }
 `
 
