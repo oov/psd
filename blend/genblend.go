@@ -508,7 +508,8 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -517,15 +518,13 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 {{end}}
 {{define "drawMain1_SrcRGBAToNRGBA"}}
 			if sa < 0xff {
