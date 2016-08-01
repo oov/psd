@@ -227,7 +227,8 @@ var drawNormalNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -236,15 +237,13 @@ var drawNormalNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -278,7 +277,8 @@ var drawNormalRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -287,15 +287,13 @@ var drawNormalRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -335,7 +333,8 @@ var drawNormalNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -344,15 +343,13 @@ var drawNormalNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -392,7 +389,8 @@ var drawNormalRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -401,15 +399,13 @@ var drawNormalRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -651,138 +647,142 @@ var drawNormalRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 
 }
 
+var drawNormalFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			r = sr
+
+			g = sg
+
+			b = sb
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawNormalFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			r = sr
+
+			g = sg
+
+			b = sb
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d normal) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				r = sr
-
-				g = sg
-
-				b = sb
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawNormalFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				r = sr
-
-				g = sg
-
-				b = sb
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawNormalFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // darken implements the darken blend mode.
@@ -972,7 +972,8 @@ var drawDarkenNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -981,15 +982,13 @@ var drawDarkenNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -1035,7 +1034,8 @@ var drawDarkenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -1044,15 +1044,13 @@ var drawDarkenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -1104,7 +1102,8 @@ var drawDarkenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -1113,15 +1112,13 @@ var drawDarkenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -1173,7 +1170,8 @@ var drawDarkenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -1182,15 +1180,13 @@ var drawDarkenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -1492,162 +1488,166 @@ var drawDarkenRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 
 }
 
+var drawDarkenFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if sr < dr {
+				r = sr
+			} else {
+				r = dr
+			}
+
+			if sg < dg {
+				g = sg
+			} else {
+				g = dg
+			}
+
+			if sb < db {
+				b = sb
+			} else {
+				b = db
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawDarkenFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if sr < dr {
+				r = sr
+			} else {
+				r = dr
+			}
+
+			if sg < dg {
+				g = sg
+			} else {
+				g = dg
+			}
+
+			if sb < db {
+				b = sb
+			} else {
+				b = db
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d darken) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if sr < dr {
-					r = sr
-				} else {
-					r = dr
-				}
-
-				if sg < dg {
-					g = sg
-				} else {
-					g = dg
-				}
-
-				if sb < db {
-					b = sb
-				} else {
-					b = db
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawDarkenFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if sr < dr {
-					r = sr
-				} else {
-					r = dr
-				}
-
-				if sg < dg {
-					g = sg
-				} else {
-					g = dg
-				}
-
-				if sb < db {
-					b = sb
-				} else {
-					b = db
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawDarkenFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // multiply implements the multiply blend mode.
@@ -1837,7 +1837,8 @@ var drawMultiplyNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -1846,15 +1847,13 @@ var drawMultiplyNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -1888,7 +1887,8 @@ var drawMultiplyRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -1897,15 +1897,13 @@ var drawMultiplyRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -1945,7 +1943,8 @@ var drawMultiplyNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -1954,15 +1953,13 @@ var drawMultiplyNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -2002,7 +1999,8 @@ var drawMultiplyRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -2011,15 +2009,13 @@ var drawMultiplyRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -2261,138 +2257,142 @@ var drawMultiplyRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 
 }
 
+var drawMultiplyFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			r = sr * dr / 0xffff
+
+			g = sg * dg / 0xffff
+
+			b = sb * db / 0xffff
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawMultiplyFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			r = sr * dr / 0xffff
+
+			g = sg * dg / 0xffff
+
+			b = sb * db / 0xffff
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d multiply) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				r = sr * dr / 0xffff
-
-				g = sg * dg / 0xffff
-
-				b = sb * db / 0xffff
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawMultiplyFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				r = sr * dr / 0xffff
-
-				g = sg * dg / 0xffff
-
-				b = sb * db / 0xffff
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawMultiplyFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // colorBurn implements the colorBurn blend mode.
@@ -2582,7 +2582,8 @@ var drawColorBurnNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -2591,15 +2592,13 @@ var drawColorBurnNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -2651,7 +2650,8 @@ var drawColorBurnRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -2660,15 +2660,13 @@ var drawColorBurnRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -2726,7 +2724,8 @@ var drawColorBurnNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -2735,15 +2734,13 @@ var drawColorBurnNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -2801,7 +2798,8 @@ var drawColorBurnRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -2810,15 +2808,13 @@ var drawColorBurnRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -3150,174 +3146,178 @@ var drawColorBurnRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 
 }
 
+var drawColorBurnFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if dr == 0xffff {
+				r = 0xffff
+			} else if sr == 0 {
+				r = 0
+			} else {
+				r = 0xffff - clip16((0xffff-dr)*0xffff/sr)
+			}
+
+			if dg == 0xffff {
+				g = 0xffff
+			} else if sg == 0 {
+				g = 0
+			} else {
+				g = 0xffff - clip16((0xffff-dg)*0xffff/sg)
+			}
+
+			if db == 0xffff {
+				b = 0xffff
+			} else if sb == 0 {
+				b = 0
+			} else {
+				b = 0xffff - clip16((0xffff-db)*0xffff/sb)
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawColorBurnFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if dr == 0xffff {
+				r = 0xffff
+			} else if sr == 0 {
+				r = 0
+			} else {
+				r = 0xffff - clip16((0xffff-dr)*0xffff/sr)
+			}
+
+			if dg == 0xffff {
+				g = 0xffff
+			} else if sg == 0 {
+				g = 0
+			} else {
+				g = 0xffff - clip16((0xffff-dg)*0xffff/sg)
+			}
+
+			if db == 0xffff {
+				b = 0xffff
+			} else if sb == 0 {
+				b = 0
+			} else {
+				b = 0xffff - clip16((0xffff-db)*0xffff/sb)
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d colorBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if dr == 0xffff {
-					r = 0xffff
-				} else if sr == 0 {
-					r = 0
-				} else {
-					r = 0xffff - clip16((0xffff-dr)*0xffff/sr)
-				}
-
-				if dg == 0xffff {
-					g = 0xffff
-				} else if sg == 0 {
-					g = 0
-				} else {
-					g = 0xffff - clip16((0xffff-dg)*0xffff/sg)
-				}
-
-				if db == 0xffff {
-					b = 0xffff
-				} else if sb == 0 {
-					b = 0
-				} else {
-					b = 0xffff - clip16((0xffff-db)*0xffff/sb)
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawColorBurnFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if dr == 0xffff {
-					r = 0xffff
-				} else if sr == 0 {
-					r = 0
-				} else {
-					r = 0xffff - clip16((0xffff-dr)*0xffff/sr)
-				}
-
-				if dg == 0xffff {
-					g = 0xffff
-				} else if sg == 0 {
-					g = 0
-				} else {
-					g = 0xffff - clip16((0xffff-dg)*0xffff/sg)
-				}
-
-				if db == 0xffff {
-					b = 0xffff
-				} else if sb == 0 {
-					b = 0
-				} else {
-					b = 0xffff - clip16((0xffff-db)*0xffff/sb)
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawColorBurnFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // linearBurn implements the linearBurn blend mode.
@@ -3507,7 +3507,8 @@ var drawLinearBurnNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -3516,15 +3517,13 @@ var drawLinearBurnNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -3573,7 +3572,8 @@ var drawLinearBurnRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -3582,15 +3582,13 @@ var drawLinearBurnRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -3645,7 +3643,8 @@ var drawLinearBurnNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -3654,15 +3653,13 @@ var drawLinearBurnNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -3717,7 +3714,8 @@ var drawLinearBurnRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -3726,15 +3724,13 @@ var drawLinearBurnRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -4051,168 +4047,172 @@ var drawLinearBurnRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 
 }
 
+var drawLinearBurnFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			tmp = dr + sr
+			if tmp > 0xffff {
+				r = tmp - 0xffff
+			} else {
+				r = 0
+			}
+
+			tmp = dg + sg
+			if tmp > 0xffff {
+				g = tmp - 0xffff
+			} else {
+				g = 0
+			}
+
+			tmp = db + sb
+			if tmp > 0xffff {
+				b = tmp - 0xffff
+			} else {
+				b = 0
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawLinearBurnFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			tmp = dr + sr
+			if tmp > 0xffff {
+				r = tmp - 0xffff
+			} else {
+				r = 0
+			}
+
+			tmp = dg + sg
+			if tmp > 0xffff {
+				g = tmp - 0xffff
+			} else {
+				g = 0
+			}
+
+			tmp = db + sb
+			if tmp > 0xffff {
+				b = tmp - 0xffff
+			} else {
+				b = 0
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d linearBurn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				tmp = dr + sr
-				if tmp > 0xffff {
-					r = tmp - 0xffff
-				} else {
-					r = 0
-				}
-
-				tmp = dg + sg
-				if tmp > 0xffff {
-					g = tmp - 0xffff
-				} else {
-					g = 0
-				}
-
-				tmp = db + sb
-				if tmp > 0xffff {
-					b = tmp - 0xffff
-				} else {
-					b = 0
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLinearBurnFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				tmp = dr + sr
-				if tmp > 0xffff {
-					r = tmp - 0xffff
-				} else {
-					r = 0
-				}
-
-				tmp = dg + sg
-				if tmp > 0xffff {
-					g = tmp - 0xffff
-				} else {
-					g = 0
-				}
-
-				tmp = db + sb
-				if tmp > 0xffff {
-					b = tmp - 0xffff
-				} else {
-					b = 0
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLinearBurnFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // darkerColor implements the darkerColor blend mode.
@@ -4402,7 +4402,8 @@ var drawDarkerColorNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -4411,15 +4412,13 @@ var drawDarkerColorNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -4457,7 +4456,8 @@ var drawDarkerColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -4466,15 +4466,13 @@ var drawDarkerColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -4518,7 +4516,8 @@ var drawDarkerColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -4527,15 +4526,13 @@ var drawDarkerColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -4579,7 +4576,8 @@ var drawDarkerColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -4588,15 +4586,13 @@ var drawDarkerColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -4858,146 +4854,150 @@ var drawDarkerColorRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 
 }
 
+var drawDarkerColorFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if lum16(sr, sg, sb) < lum16(dr, dg, db) {
+				r = sr
+				g = sg
+				b = sb
+			} else {
+				r = dr
+				g = dg
+				b = db
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawDarkerColorFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if lum16(sr, sg, sb) < lum16(dr, dg, db) {
+				r = sr
+				g = sg
+				b = sb
+			} else {
+				r = dr
+				g = dg
+				b = db
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d darkerColor) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if lum16(sr, sg, sb) < lum16(dr, dg, db) {
-					r = sr
-					g = sg
-					b = sb
-				} else {
-					r = dr
-					g = dg
-					b = db
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawDarkerColorFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if lum16(sr, sg, sb) < lum16(dr, dg, db) {
-					r = sr
-					g = sg
-					b = sb
-				} else {
-					r = dr
-					g = dg
-					b = db
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawDarkerColorFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // lighten implements the lighten blend mode.
@@ -5187,7 +5187,8 @@ var drawLightenNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -5196,15 +5197,13 @@ var drawLightenNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -5250,7 +5249,8 @@ var drawLightenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -5259,15 +5259,13 @@ var drawLightenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -5319,7 +5317,8 @@ var drawLightenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -5328,15 +5327,13 @@ var drawLightenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -5388,7 +5385,8 @@ var drawLightenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -5397,15 +5395,13 @@ var drawLightenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -5707,162 +5703,166 @@ var drawLightenRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 
 }
 
+var drawLightenFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if sr > dr {
+				r = sr
+			} else {
+				r = dr
+			}
+
+			if sg > dg {
+				g = sg
+			} else {
+				g = dg
+			}
+
+			if sb > db {
+				b = sb
+			} else {
+				b = db
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawLightenFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if sr > dr {
+				r = sr
+			} else {
+				r = dr
+			}
+
+			if sg > dg {
+				g = sg
+			} else {
+				g = dg
+			}
+
+			if sb > db {
+				b = sb
+			} else {
+				b = db
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d lighten) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if sr > dr {
-					r = sr
-				} else {
-					r = dr
-				}
-
-				if sg > dg {
-					g = sg
-				} else {
-					g = dg
-				}
-
-				if sb > db {
-					b = sb
-				} else {
-					b = db
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLightenFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if sr > dr {
-					r = sr
-				} else {
-					r = dr
-				}
-
-				if sg > dg {
-					g = sg
-				} else {
-					g = dg
-				}
-
-				if sb > db {
-					b = sb
-				} else {
-					b = db
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLightenFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // screen implements the screen blend mode.
@@ -6052,7 +6052,8 @@ var drawScreenNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -6061,15 +6062,13 @@ var drawScreenNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -6103,7 +6102,8 @@ var drawScreenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -6112,15 +6112,13 @@ var drawScreenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -6160,7 +6158,8 @@ var drawScreenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -6169,15 +6168,13 @@ var drawScreenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -6217,7 +6214,8 @@ var drawScreenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -6226,15 +6224,13 @@ var drawScreenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -6476,138 +6472,142 @@ var drawScreenRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 
 }
 
+var drawScreenFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			r = sr + dr - (sr * dr / 0xffff)
+
+			g = sg + dg - (sg * dg / 0xffff)
+
+			b = sb + db - (sb * db / 0xffff)
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawScreenFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			r = sr + dr - (sr * dr / 0xffff)
+
+			g = sg + dg - (sg * dg / 0xffff)
+
+			b = sb + db - (sb * db / 0xffff)
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d screen) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				r = sr + dr - (sr * dr / 0xffff)
-
-				g = sg + dg - (sg * dg / 0xffff)
-
-				b = sb + db - (sb * db / 0xffff)
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawScreenFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				r = sr + dr - (sr * dr / 0xffff)
-
-				g = sg + dg - (sg * dg / 0xffff)
-
-				b = sb + db - (sb * db / 0xffff)
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawScreenFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // colorDodge implements the colorDodge blend mode.
@@ -6797,7 +6797,8 @@ var drawColorDodgeNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -6806,15 +6807,13 @@ var drawColorDodgeNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -6866,7 +6865,8 @@ var drawColorDodgeRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -6875,15 +6875,13 @@ var drawColorDodgeRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -6941,7 +6939,8 @@ var drawColorDodgeNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -6950,15 +6949,13 @@ var drawColorDodgeNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -7016,7 +7013,8 @@ var drawColorDodgeRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -7025,15 +7023,13 @@ var drawColorDodgeRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -7365,174 +7361,178 @@ var drawColorDodgeRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 
 }
 
+var drawColorDodgeFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if dr == 0 {
+				r = 0
+			} else if sr == 0xffff {
+				r = 0xffff
+			} else {
+				r = clip16(dr * 0xffff / (0xffff - sr))
+			}
+
+			if dg == 0 {
+				g = 0
+			} else if sg == 0xffff {
+				g = 0xffff
+			} else {
+				g = clip16(dg * 0xffff / (0xffff - sg))
+			}
+
+			if db == 0 {
+				b = 0
+			} else if sb == 0xffff {
+				b = 0xffff
+			} else {
+				b = clip16(db * 0xffff / (0xffff - sb))
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawColorDodgeFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if dr == 0 {
+				r = 0
+			} else if sr == 0xffff {
+				r = 0xffff
+			} else {
+				r = clip16(dr * 0xffff / (0xffff - sr))
+			}
+
+			if dg == 0 {
+				g = 0
+			} else if sg == 0xffff {
+				g = 0xffff
+			} else {
+				g = clip16(dg * 0xffff / (0xffff - sg))
+			}
+
+			if db == 0 {
+				b = 0
+			} else if sb == 0xffff {
+				b = 0xffff
+			} else {
+				b = clip16(db * 0xffff / (0xffff - sb))
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d colorDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if dr == 0 {
-					r = 0
-				} else if sr == 0xffff {
-					r = 0xffff
-				} else {
-					r = clip16(dr * 0xffff / (0xffff - sr))
-				}
-
-				if dg == 0 {
-					g = 0
-				} else if sg == 0xffff {
-					g = 0xffff
-				} else {
-					g = clip16(dg * 0xffff / (0xffff - sg))
-				}
-
-				if db == 0 {
-					b = 0
-				} else if sb == 0xffff {
-					b = 0xffff
-				} else {
-					b = clip16(db * 0xffff / (0xffff - sb))
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawColorDodgeFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if dr == 0 {
-					r = 0
-				} else if sr == 0xffff {
-					r = 0xffff
-				} else {
-					r = clip16(dr * 0xffff / (0xffff - sr))
-				}
-
-				if dg == 0 {
-					g = 0
-				} else if sg == 0xffff {
-					g = 0xffff
-				} else {
-					g = clip16(dg * 0xffff / (0xffff - sg))
-				}
-
-				if db == 0 {
-					b = 0
-				} else if sb == 0xffff {
-					b = 0xffff
-				} else {
-					b = clip16(db * 0xffff / (0xffff - sb))
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawColorDodgeFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // linearDodge implements the linearDodge blend mode.
@@ -7722,7 +7722,8 @@ var drawLinearDodgeNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -7731,15 +7732,13 @@ var drawLinearDodgeNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -7773,7 +7772,8 @@ var drawLinearDodgeRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -7782,15 +7782,13 @@ var drawLinearDodgeRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -7830,7 +7828,8 @@ var drawLinearDodgeNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -7839,15 +7838,13 @@ var drawLinearDodgeNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -7887,7 +7884,8 @@ var drawLinearDodgeRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -7896,15 +7894,13 @@ var drawLinearDodgeRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -8146,138 +8142,142 @@ var drawLinearDodgeRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 
 }
 
+var drawLinearDodgeFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			r = clip16(sr + dr)
+
+			g = clip16(sg + dg)
+
+			b = clip16(sb + db)
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawLinearDodgeFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			r = clip16(sr + dr)
+
+			g = clip16(sg + dg)
+
+			b = clip16(sb + db)
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d linearDodge) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				r = clip16(sr + dr)
-
-				g = clip16(sg + dg)
-
-				b = clip16(sb + db)
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLinearDodgeFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				r = clip16(sr + dr)
-
-				g = clip16(sg + dg)
-
-				b = clip16(sb + db)
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLinearDodgeFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // lighterColor implements the lighterColor blend mode.
@@ -8467,7 +8467,8 @@ var drawLighterColorNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -8476,15 +8477,13 @@ var drawLighterColorNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -8522,7 +8521,8 @@ var drawLighterColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -8531,15 +8531,13 @@ var drawLighterColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -8583,7 +8581,8 @@ var drawLighterColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -8592,15 +8591,13 @@ var drawLighterColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -8644,7 +8641,8 @@ var drawLighterColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -8653,15 +8651,13 @@ var drawLighterColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -8923,146 +8919,150 @@ var drawLighterColorRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []by
 
 }
 
+var drawLighterColorFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if lum16(sr, sg, sb) > lum16(dr, dg, db) {
+				r = sr
+				g = sg
+				b = sb
+			} else {
+				r = dr
+				g = dg
+				b = db
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawLighterColorFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if lum16(sr, sg, sb) > lum16(dr, dg, db) {
+				r = sr
+				g = sg
+				b = sb
+			} else {
+				r = dr
+				g = dg
+				b = db
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d lighterColor) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if lum16(sr, sg, sb) > lum16(dr, dg, db) {
-					r = sr
-					g = sg
-					b = sb
-				} else {
-					r = dr
-					g = dg
-					b = db
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLighterColorFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if lum16(sr, sg, sb) > lum16(dr, dg, db) {
-					r = sr
-					g = sg
-					b = sb
-				} else {
-					r = dr
-					g = dg
-					b = db
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLighterColorFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // add implements the add blend mode.
@@ -9252,7 +9252,8 @@ var drawAddNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -9261,15 +9262,13 @@ var drawAddNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -9303,7 +9302,8 @@ var drawAddRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -9312,15 +9312,13 @@ var drawAddRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -9360,7 +9358,8 @@ var drawAddNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -9369,15 +9368,13 @@ var drawAddNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -9417,7 +9414,8 @@ var drawAddRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y i
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -9426,15 +9424,13 @@ var drawAddRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y i
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -9676,138 +9672,142 @@ var drawAddRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha
 
 }
 
+var drawAddFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			r = sr + dr
+
+			g = sg + dg
+
+			b = sb + db
+
+			out.R = uint16(clip6416(uint64(sr*a2+dr*a3)/0xffff+uint64(r)*uint64(a1)/uint64(a)) * a / 0xffff)
+			out.G = uint16(clip6416(uint64(sg*a2+dg*a3)/0xffff+uint64(g)*uint64(a1)/uint64(a)) * a / 0xffff)
+			out.B = uint16(clip6416(uint64(sb*a2+db*a3)/0xffff+uint64(b)*uint64(a1)/uint64(a)) * a / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawAddFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			r = sr + dr
+
+			g = sg + dg
+
+			b = sb + db
+
+			out.R = uint16(clip6416((uint64(dr*a3)+uint64(r)*uint64(a1))/uint64(a1+a3)) * (a1 + a3) / 0xffff * da / 0xffff)
+			out.G = uint16(clip6416((uint64(dg*a3)+uint64(g)*uint64(a1))/uint64(a1+a3)) * (a1 + a3) / 0xffff * da / 0xffff)
+			out.B = uint16(clip6416((uint64(db*a3)+uint64(b)*uint64(a1))/uint64(a1+a3)) * (a1 + a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d add) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				r = sr + dr
-
-				g = sg + dg
-
-				b = sb + db
-
-				out.R = uint16(clip6416((uint64(dr*a3)+uint64(r)*uint64(a1))/uint64(a1+a3)) * (a1 + a3) / 0xffff * da / 0xffff)
-				out.G = uint16(clip6416((uint64(dg*a3)+uint64(g)*uint64(a1))/uint64(a1+a3)) * (a1 + a3) / 0xffff * da / 0xffff)
-				out.B = uint16(clip6416((uint64(db*a3)+uint64(b)*uint64(a1))/uint64(a1+a3)) * (a1 + a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawAddFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				r = sr + dr
-
-				g = sg + dg
-
-				b = sb + db
-
-				out.R = uint16(clip6416(uint64(sr*a2+dr*a3)/0xffff+uint64(r)*uint64(a1)/uint64(a)) * a / 0xffff)
-				out.G = uint16(clip6416(uint64(sg*a2+dg*a3)/0xffff+uint64(g)*uint64(a1)/uint64(a)) * a / 0xffff)
-				out.B = uint16(clip6416(uint64(sb*a2+db*a3)/0xffff+uint64(b)*uint64(a1)/uint64(a)) * a / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawAddFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // overlay implements the overlay blend mode.
@@ -9997,7 +9997,8 @@ var drawOverlayNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -10006,15 +10007,13 @@ var drawOverlayNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -10060,7 +10059,8 @@ var drawOverlayRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -10069,15 +10069,13 @@ var drawOverlayRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -10129,7 +10127,8 @@ var drawOverlayNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -10138,15 +10137,13 @@ var drawOverlayNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -10198,7 +10195,8 @@ var drawOverlayRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -10207,15 +10205,13 @@ var drawOverlayRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -10517,162 +10513,166 @@ var drawOverlayRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 
 }
 
+var drawOverlayFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if dr < 0x8000 {
+				r = sr * dr / 0x8000
+			} else {
+				r = 0xffff - ((0xffff - ((dr - 0x8000) << 1)) * (0xffff - sr) / 0xffff)
+			}
+
+			if dg < 0x8000 {
+				g = sg * dg / 0x8000
+			} else {
+				g = 0xffff - ((0xffff - ((dg - 0x8000) << 1)) * (0xffff - sg) / 0xffff)
+			}
+
+			if db < 0x8000 {
+				b = sb * db / 0x8000
+			} else {
+				b = 0xffff - ((0xffff - ((db - 0x8000) << 1)) * (0xffff - sb) / 0xffff)
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawOverlayFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if dr < 0x8000 {
+				r = sr * dr / 0x8000
+			} else {
+				r = 0xffff - ((0xffff - ((dr - 0x8000) << 1)) * (0xffff - sr) / 0xffff)
+			}
+
+			if dg < 0x8000 {
+				g = sg * dg / 0x8000
+			} else {
+				g = 0xffff - ((0xffff - ((dg - 0x8000) << 1)) * (0xffff - sg) / 0xffff)
+			}
+
+			if db < 0x8000 {
+				b = sb * db / 0x8000
+			} else {
+				b = 0xffff - ((0xffff - ((db - 0x8000) << 1)) * (0xffff - sb) / 0xffff)
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d overlay) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if dr < 0x8000 {
-					r = sr * dr / 0x8000
-				} else {
-					r = 0xffff - ((0xffff - ((dr - 0x8000) << 1)) * (0xffff - sr) / 0xffff)
-				}
-
-				if dg < 0x8000 {
-					g = sg * dg / 0x8000
-				} else {
-					g = 0xffff - ((0xffff - ((dg - 0x8000) << 1)) * (0xffff - sg) / 0xffff)
-				}
-
-				if db < 0x8000 {
-					b = sb * db / 0x8000
-				} else {
-					b = 0xffff - ((0xffff - ((db - 0x8000) << 1)) * (0xffff - sb) / 0xffff)
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawOverlayFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if dr < 0x8000 {
-					r = sr * dr / 0x8000
-				} else {
-					r = 0xffff - ((0xffff - ((dr - 0x8000) << 1)) * (0xffff - sr) / 0xffff)
-				}
-
-				if dg < 0x8000 {
-					g = sg * dg / 0x8000
-				} else {
-					g = 0xffff - ((0xffff - ((dg - 0x8000) << 1)) * (0xffff - sg) / 0xffff)
-				}
-
-				if db < 0x8000 {
-					b = sb * db / 0x8000
-				} else {
-					b = 0xffff - ((0xffff - ((db - 0x8000) << 1)) * (0xffff - sb) / 0xffff)
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawOverlayFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // softLight implements the softLight blend mode.
@@ -10862,7 +10862,8 @@ var drawSoftLightNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -10871,15 +10872,13 @@ var drawSoftLightNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -10940,7 +10939,8 @@ var drawSoftLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -10949,15 +10949,13 @@ var drawSoftLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -11024,7 +11022,8 @@ var drawSoftLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -11033,15 +11032,13 @@ var drawSoftLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -11108,7 +11105,8 @@ var drawSoftLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -11117,15 +11115,13 @@ var drawSoftLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -11502,192 +11498,196 @@ var drawSoftLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 
 }
 
+var drawSoftLightFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if sr < 0x8000 {
+				r = dr - (((0xffff - (sr << 1)) * dr / 0xffff) * (0xffff - dr) / 0xffff)
+			} else {
+				if dr < 0x4000 {
+					tmp = uint32((((int32(dr)<<4-0xffff*12)/0xffff)*int32(dr) + 0xffff*4) * int32(dr) / 0xffff)
+				} else {
+					tmp = sqrt(dr, 0xffff)
+				}
+				r = dr + (((sr << 1) - 0xffff) * (tmp - dr) / 0xffff)
+			}
+
+			if sg < 0x8000 {
+				g = dg - (((0xffff - (sg << 1)) * dg / 0xffff) * (0xffff - dg) / 0xffff)
+			} else {
+				if dg < 0x4000 {
+					tmp = uint32((((int32(dg)<<4-0xffff*12)/0xffff)*int32(dg) + 0xffff*4) * int32(dg) / 0xffff)
+				} else {
+					tmp = sqrt(dg, 0xffff)
+				}
+				g = dg + (((sg << 1) - 0xffff) * (tmp - dg) / 0xffff)
+			}
+
+			if sb < 0x8000 {
+				b = db - (((0xffff - (sb << 1)) * db / 0xffff) * (0xffff - db) / 0xffff)
+			} else {
+				if db < 0x4000 {
+					tmp = uint32((((int32(db)<<4-0xffff*12)/0xffff)*int32(db) + 0xffff*4) * int32(db) / 0xffff)
+				} else {
+					tmp = sqrt(db, 0xffff)
+				}
+				b = db + (((sb << 1) - 0xffff) * (tmp - db) / 0xffff)
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawSoftLightFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if sr < 0x8000 {
+				r = dr - (((0xffff - (sr << 1)) * dr / 0xffff) * (0xffff - dr) / 0xffff)
+			} else {
+				if dr < 0x4000 {
+					tmp = uint32((((int32(dr)<<4-0xffff*12)/0xffff)*int32(dr) + 0xffff*4) * int32(dr) / 0xffff)
+				} else {
+					tmp = sqrt(dr, 0xffff)
+				}
+				r = dr + (((sr << 1) - 0xffff) * (tmp - dr) / 0xffff)
+			}
+
+			if sg < 0x8000 {
+				g = dg - (((0xffff - (sg << 1)) * dg / 0xffff) * (0xffff - dg) / 0xffff)
+			} else {
+				if dg < 0x4000 {
+					tmp = uint32((((int32(dg)<<4-0xffff*12)/0xffff)*int32(dg) + 0xffff*4) * int32(dg) / 0xffff)
+				} else {
+					tmp = sqrt(dg, 0xffff)
+				}
+				g = dg + (((sg << 1) - 0xffff) * (tmp - dg) / 0xffff)
+			}
+
+			if sb < 0x8000 {
+				b = db - (((0xffff - (sb << 1)) * db / 0xffff) * (0xffff - db) / 0xffff)
+			} else {
+				if db < 0x4000 {
+					tmp = uint32((((int32(db)<<4-0xffff*12)/0xffff)*int32(db) + 0xffff*4) * int32(db) / 0xffff)
+				} else {
+					tmp = sqrt(db, 0xffff)
+				}
+				b = db + (((sb << 1) - 0xffff) * (tmp - db) / 0xffff)
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d softLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if sr < 0x8000 {
-					r = dr - (((0xffff - (sr << 1)) * dr / 0xffff) * (0xffff - dr) / 0xffff)
-				} else {
-					if dr < 0x4000 {
-						tmp = uint32((((int32(dr)<<4-0xffff*12)/0xffff)*int32(dr) + 0xffff*4) * int32(dr) / 0xffff)
-					} else {
-						tmp = sqrt(dr, 0xffff)
-					}
-					r = dr + (((sr << 1) - 0xffff) * (tmp - dr) / 0xffff)
-				}
-
-				if sg < 0x8000 {
-					g = dg - (((0xffff - (sg << 1)) * dg / 0xffff) * (0xffff - dg) / 0xffff)
-				} else {
-					if dg < 0x4000 {
-						tmp = uint32((((int32(dg)<<4-0xffff*12)/0xffff)*int32(dg) + 0xffff*4) * int32(dg) / 0xffff)
-					} else {
-						tmp = sqrt(dg, 0xffff)
-					}
-					g = dg + (((sg << 1) - 0xffff) * (tmp - dg) / 0xffff)
-				}
-
-				if sb < 0x8000 {
-					b = db - (((0xffff - (sb << 1)) * db / 0xffff) * (0xffff - db) / 0xffff)
-				} else {
-					if db < 0x4000 {
-						tmp = uint32((((int32(db)<<4-0xffff*12)/0xffff)*int32(db) + 0xffff*4) * int32(db) / 0xffff)
-					} else {
-						tmp = sqrt(db, 0xffff)
-					}
-					b = db + (((sb << 1) - 0xffff) * (tmp - db) / 0xffff)
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawSoftLightFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if sr < 0x8000 {
-					r = dr - (((0xffff - (sr << 1)) * dr / 0xffff) * (0xffff - dr) / 0xffff)
-				} else {
-					if dr < 0x4000 {
-						tmp = uint32((((int32(dr)<<4-0xffff*12)/0xffff)*int32(dr) + 0xffff*4) * int32(dr) / 0xffff)
-					} else {
-						tmp = sqrt(dr, 0xffff)
-					}
-					r = dr + (((sr << 1) - 0xffff) * (tmp - dr) / 0xffff)
-				}
-
-				if sg < 0x8000 {
-					g = dg - (((0xffff - (sg << 1)) * dg / 0xffff) * (0xffff - dg) / 0xffff)
-				} else {
-					if dg < 0x4000 {
-						tmp = uint32((((int32(dg)<<4-0xffff*12)/0xffff)*int32(dg) + 0xffff*4) * int32(dg) / 0xffff)
-					} else {
-						tmp = sqrt(dg, 0xffff)
-					}
-					g = dg + (((sg << 1) - 0xffff) * (tmp - dg) / 0xffff)
-				}
-
-				if sb < 0x8000 {
-					b = db - (((0xffff - (sb << 1)) * db / 0xffff) * (0xffff - db) / 0xffff)
-				} else {
-					if db < 0x4000 {
-						tmp = uint32((((int32(db)<<4-0xffff*12)/0xffff)*int32(db) + 0xffff*4) * int32(db) / 0xffff)
-					} else {
-						tmp = sqrt(db, 0xffff)
-					}
-					b = db + (((sb << 1) - 0xffff) * (tmp - db) / 0xffff)
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawSoftLightFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // hardLight implements the hardLight blend mode.
@@ -11877,7 +11877,8 @@ var drawHardLightNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -11886,15 +11887,13 @@ var drawHardLightNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -11943,7 +11942,8 @@ var drawHardLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -11952,15 +11952,13 @@ var drawHardLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -12015,7 +12013,8 @@ var drawHardLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -12024,15 +12023,13 @@ var drawHardLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -12087,7 +12084,8 @@ var drawHardLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -12096,15 +12094,13 @@ var drawHardLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -12421,168 +12417,172 @@ var drawHardLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 
 }
 
+var drawHardLightFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if sr < 0x8000 {
+				r = dr * sr / 0x8000
+			} else {
+				tmp = (sr << 1) - 0xffff
+				r = dr + tmp - (dr * tmp / 0xffff)
+			}
+
+			if sg < 0x8000 {
+				g = dg * sg / 0x8000
+			} else {
+				tmp = (sg << 1) - 0xffff
+				g = dg + tmp - (dg * tmp / 0xffff)
+			}
+
+			if sb < 0x8000 {
+				b = db * sb / 0x8000
+			} else {
+				tmp = (sb << 1) - 0xffff
+				b = db + tmp - (db * tmp / 0xffff)
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawHardLightFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if sr < 0x8000 {
+				r = dr * sr / 0x8000
+			} else {
+				tmp = (sr << 1) - 0xffff
+				r = dr + tmp - (dr * tmp / 0xffff)
+			}
+
+			if sg < 0x8000 {
+				g = dg * sg / 0x8000
+			} else {
+				tmp = (sg << 1) - 0xffff
+				g = dg + tmp - (dg * tmp / 0xffff)
+			}
+
+			if sb < 0x8000 {
+				b = db * sb / 0x8000
+			} else {
+				tmp = (sb << 1) - 0xffff
+				b = db + tmp - (db * tmp / 0xffff)
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d hardLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if sr < 0x8000 {
-					r = dr * sr / 0x8000
-				} else {
-					tmp = (sr << 1) - 0xffff
-					r = dr + tmp - (dr * tmp / 0xffff)
-				}
-
-				if sg < 0x8000 {
-					g = dg * sg / 0x8000
-				} else {
-					tmp = (sg << 1) - 0xffff
-					g = dg + tmp - (dg * tmp / 0xffff)
-				}
-
-				if sb < 0x8000 {
-					b = db * sb / 0x8000
-				} else {
-					tmp = (sb << 1) - 0xffff
-					b = db + tmp - (db * tmp / 0xffff)
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawHardLightFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if sr < 0x8000 {
-					r = dr * sr / 0x8000
-				} else {
-					tmp = (sr << 1) - 0xffff
-					r = dr + tmp - (dr * tmp / 0xffff)
-				}
-
-				if sg < 0x8000 {
-					g = dg * sg / 0x8000
-				} else {
-					tmp = (sg << 1) - 0xffff
-					g = dg + tmp - (dg * tmp / 0xffff)
-				}
-
-				if sb < 0x8000 {
-					b = db * sb / 0x8000
-				} else {
-					tmp = (sb << 1) - 0xffff
-					b = db + tmp - (db * tmp / 0xffff)
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawHardLightFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // linearLight implements the linearLight blend mode.
@@ -12772,7 +12772,8 @@ var drawLinearLightNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -12781,15 +12782,13 @@ var drawLinearLightNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -12835,7 +12834,8 @@ var drawLinearLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -12844,15 +12844,13 @@ var drawLinearLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -12904,7 +12902,8 @@ var drawLinearLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -12913,15 +12912,13 @@ var drawLinearLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -12973,7 +12970,8 @@ var drawLinearLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -12982,15 +12980,13 @@ var drawLinearLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -13292,162 +13288,166 @@ var drawLinearLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byt
 
 }
 
+var drawLinearLightFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if sr < 0x8000 {
+				r = clip0(dr + (sr << 1) - 0xffff)
+			} else {
+				r = clip16(dr + ((sr - 0x8000) << 1))
+			}
+
+			if sg < 0x8000 {
+				g = clip0(dg + (sg << 1) - 0xffff)
+			} else {
+				g = clip16(dg + ((sg - 0x8000) << 1))
+			}
+
+			if sb < 0x8000 {
+				b = clip0(db + (sb << 1) - 0xffff)
+			} else {
+				b = clip16(db + ((sb - 0x8000) << 1))
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawLinearLightFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if sr < 0x8000 {
+				r = clip0(dr + (sr << 1) - 0xffff)
+			} else {
+				r = clip16(dr + ((sr - 0x8000) << 1))
+			}
+
+			if sg < 0x8000 {
+				g = clip0(dg + (sg << 1) - 0xffff)
+			} else {
+				g = clip16(dg + ((sg - 0x8000) << 1))
+			}
+
+			if sb < 0x8000 {
+				b = clip0(db + (sb << 1) - 0xffff)
+			} else {
+				b = clip16(db + ((sb - 0x8000) << 1))
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d linearLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if sr < 0x8000 {
-					r = clip0(dr + (sr << 1) - 0xffff)
-				} else {
-					r = clip16(dr + ((sr - 0x8000) << 1))
-				}
-
-				if sg < 0x8000 {
-					g = clip0(dg + (sg << 1) - 0xffff)
-				} else {
-					g = clip16(dg + ((sg - 0x8000) << 1))
-				}
-
-				if sb < 0x8000 {
-					b = clip0(db + (sb << 1) - 0xffff)
-				} else {
-					b = clip16(db + ((sb - 0x8000) << 1))
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLinearLightFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if sr < 0x8000 {
-					r = clip0(dr + (sr << 1) - 0xffff)
-				} else {
-					r = clip16(dr + ((sr - 0x8000) << 1))
-				}
-
-				if sg < 0x8000 {
-					g = clip0(dg + (sg << 1) - 0xffff)
-				} else {
-					g = clip16(dg + ((sg - 0x8000) << 1))
-				}
-
-				if sb < 0x8000 {
-					b = clip0(db + (sb << 1) - 0xffff)
-				} else {
-					b = clip16(db + ((sb - 0x8000) << 1))
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLinearLightFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // vividLight implements the vividLight blend mode.
@@ -13637,7 +13637,8 @@ var drawVividLightNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -13646,15 +13647,13 @@ var drawVividLightNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -13730,7 +13729,8 @@ var drawVividLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -13739,15 +13739,13 @@ var drawVividLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -13829,7 +13827,8 @@ var drawVividLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -13838,15 +13837,13 @@ var drawVividLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -13928,7 +13925,8 @@ var drawVividLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -13937,15 +13935,13 @@ var drawVividLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -14397,222 +14393,226 @@ var drawVividLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 
 }
 
+var drawVividLightFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if sr < 0x8000 {
+				tmp = sr << 1
+				if tmp == 0 {
+					r = 0
+				} else {
+					r = 0xffff - clip16((0xffff-dr)*0xffff/tmp)
+				}
+			} else {
+				tmp = (sr << 1) - 0xffff
+				if tmp == 0xffff {
+					r = 0xffff
+				} else {
+					r = clip16((dr * 0xffff) / (0xffff - tmp))
+				}
+			}
+
+			if sg < 0x8000 {
+				tmp = sg << 1
+				if tmp == 0 {
+					g = 0
+				} else {
+					g = 0xffff - clip16((0xffff-dg)*0xffff/tmp)
+				}
+			} else {
+				tmp = (sg << 1) - 0xffff
+				if tmp == 0xffff {
+					g = 0xffff
+				} else {
+					g = clip16((dg * 0xffff) / (0xffff - tmp))
+				}
+			}
+
+			if sb < 0x8000 {
+				tmp = sb << 1
+				if tmp == 0 {
+					b = 0
+				} else {
+					b = 0xffff - clip16((0xffff-db)*0xffff/tmp)
+				}
+			} else {
+				tmp = (sb << 1) - 0xffff
+				if tmp == 0xffff {
+					b = 0xffff
+				} else {
+					b = clip16((db * 0xffff) / (0xffff - tmp))
+				}
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawVividLightFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if sr < 0x8000 {
+				tmp = sr << 1
+				if tmp == 0 {
+					r = 0
+				} else {
+					r = 0xffff - clip16((0xffff-dr)*0xffff/tmp)
+				}
+			} else {
+				tmp = (sr << 1) - 0xffff
+				if tmp == 0xffff {
+					r = 0xffff
+				} else {
+					r = clip16((dr * 0xffff) / (0xffff - tmp))
+				}
+			}
+
+			if sg < 0x8000 {
+				tmp = sg << 1
+				if tmp == 0 {
+					g = 0
+				} else {
+					g = 0xffff - clip16((0xffff-dg)*0xffff/tmp)
+				}
+			} else {
+				tmp = (sg << 1) - 0xffff
+				if tmp == 0xffff {
+					g = 0xffff
+				} else {
+					g = clip16((dg * 0xffff) / (0xffff - tmp))
+				}
+			}
+
+			if sb < 0x8000 {
+				tmp = sb << 1
+				if tmp == 0 {
+					b = 0
+				} else {
+					b = 0xffff - clip16((0xffff-db)*0xffff/tmp)
+				}
+			} else {
+				tmp = (sb << 1) - 0xffff
+				if tmp == 0xffff {
+					b = 0xffff
+				} else {
+					b = clip16((db * 0xffff) / (0xffff - tmp))
+				}
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d vividLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if sr < 0x8000 {
-					tmp = sr << 1
-					if tmp == 0 {
-						r = 0
-					} else {
-						r = 0xffff - clip16((0xffff-dr)*0xffff/tmp)
-					}
-				} else {
-					tmp = (sr << 1) - 0xffff
-					if tmp == 0xffff {
-						r = 0xffff
-					} else {
-						r = clip16((dr * 0xffff) / (0xffff - tmp))
-					}
-				}
-
-				if sg < 0x8000 {
-					tmp = sg << 1
-					if tmp == 0 {
-						g = 0
-					} else {
-						g = 0xffff - clip16((0xffff-dg)*0xffff/tmp)
-					}
-				} else {
-					tmp = (sg << 1) - 0xffff
-					if tmp == 0xffff {
-						g = 0xffff
-					} else {
-						g = clip16((dg * 0xffff) / (0xffff - tmp))
-					}
-				}
-
-				if sb < 0x8000 {
-					tmp = sb << 1
-					if tmp == 0 {
-						b = 0
-					} else {
-						b = 0xffff - clip16((0xffff-db)*0xffff/tmp)
-					}
-				} else {
-					tmp = (sb << 1) - 0xffff
-					if tmp == 0xffff {
-						b = 0xffff
-					} else {
-						b = clip16((db * 0xffff) / (0xffff - tmp))
-					}
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawVividLightFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if sr < 0x8000 {
-					tmp = sr << 1
-					if tmp == 0 {
-						r = 0
-					} else {
-						r = 0xffff - clip16((0xffff-dr)*0xffff/tmp)
-					}
-				} else {
-					tmp = (sr << 1) - 0xffff
-					if tmp == 0xffff {
-						r = 0xffff
-					} else {
-						r = clip16((dr * 0xffff) / (0xffff - tmp))
-					}
-				}
-
-				if sg < 0x8000 {
-					tmp = sg << 1
-					if tmp == 0 {
-						g = 0
-					} else {
-						g = 0xffff - clip16((0xffff-dg)*0xffff/tmp)
-					}
-				} else {
-					tmp = (sg << 1) - 0xffff
-					if tmp == 0xffff {
-						g = 0xffff
-					} else {
-						g = clip16((dg * 0xffff) / (0xffff - tmp))
-					}
-				}
-
-				if sb < 0x8000 {
-					tmp = sb << 1
-					if tmp == 0 {
-						b = 0
-					} else {
-						b = 0xffff - clip16((0xffff-db)*0xffff/tmp)
-					}
-				} else {
-					tmp = (sb << 1) - 0xffff
-					if tmp == 0xffff {
-						b = 0xffff
-					} else {
-						b = clip16((db * 0xffff) / (0xffff - tmp))
-					}
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawVividLightFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // pinLight implements the pinLight blend mode.
@@ -14802,7 +14802,8 @@ var drawPinLightNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -14811,15 +14812,13 @@ var drawPinLightNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -14895,7 +14894,8 @@ var drawPinLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -14904,15 +14904,13 @@ var drawPinLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -14994,7 +14992,8 @@ var drawPinLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -15003,15 +15002,13 @@ var drawPinLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -15093,7 +15090,8 @@ var drawPinLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -15102,15 +15100,13 @@ var drawPinLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -15562,222 +15558,226 @@ var drawPinLightRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 
 }
 
+var drawPinLightFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if sr < 0x8000 {
+				tmp = sr << 1
+				if tmp < dr {
+					r = tmp
+				} else {
+					r = dr
+				}
+			} else {
+				tmp = (sr - 0x8000) << 1
+				if tmp > dr {
+					r = tmp
+				} else {
+					r = dr
+				}
+			}
+
+			if sg < 0x8000 {
+				tmp = sg << 1
+				if tmp < dg {
+					g = tmp
+				} else {
+					g = dg
+				}
+			} else {
+				tmp = (sg - 0x8000) << 1
+				if tmp > dg {
+					g = tmp
+				} else {
+					g = dg
+				}
+			}
+
+			if sb < 0x8000 {
+				tmp = sb << 1
+				if tmp < db {
+					b = tmp
+				} else {
+					b = db
+				}
+			} else {
+				tmp = (sb - 0x8000) << 1
+				if tmp > db {
+					b = tmp
+				} else {
+					b = db
+				}
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawPinLightFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if sr < 0x8000 {
+				tmp = sr << 1
+				if tmp < dr {
+					r = tmp
+				} else {
+					r = dr
+				}
+			} else {
+				tmp = (sr - 0x8000) << 1
+				if tmp > dr {
+					r = tmp
+				} else {
+					r = dr
+				}
+			}
+
+			if sg < 0x8000 {
+				tmp = sg << 1
+				if tmp < dg {
+					g = tmp
+				} else {
+					g = dg
+				}
+			} else {
+				tmp = (sg - 0x8000) << 1
+				if tmp > dg {
+					g = tmp
+				} else {
+					g = dg
+				}
+			}
+
+			if sb < 0x8000 {
+				tmp = sb << 1
+				if tmp < db {
+					b = tmp
+				} else {
+					b = db
+				}
+			} else {
+				tmp = (sb - 0x8000) << 1
+				if tmp > db {
+					b = tmp
+				} else {
+					b = db
+				}
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d pinLight) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if sr < 0x8000 {
-					tmp = sr << 1
-					if tmp < dr {
-						r = tmp
-					} else {
-						r = dr
-					}
-				} else {
-					tmp = (sr - 0x8000) << 1
-					if tmp > dr {
-						r = tmp
-					} else {
-						r = dr
-					}
-				}
-
-				if sg < 0x8000 {
-					tmp = sg << 1
-					if tmp < dg {
-						g = tmp
-					} else {
-						g = dg
-					}
-				} else {
-					tmp = (sg - 0x8000) << 1
-					if tmp > dg {
-						g = tmp
-					} else {
-						g = dg
-					}
-				}
-
-				if sb < 0x8000 {
-					tmp = sb << 1
-					if tmp < db {
-						b = tmp
-					} else {
-						b = db
-					}
-				} else {
-					tmp = (sb - 0x8000) << 1
-					if tmp > db {
-						b = tmp
-					} else {
-						b = db
-					}
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawPinLightFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if sr < 0x8000 {
-					tmp = sr << 1
-					if tmp < dr {
-						r = tmp
-					} else {
-						r = dr
-					}
-				} else {
-					tmp = (sr - 0x8000) << 1
-					if tmp > dr {
-						r = tmp
-					} else {
-						r = dr
-					}
-				}
-
-				if sg < 0x8000 {
-					tmp = sg << 1
-					if tmp < dg {
-						g = tmp
-					} else {
-						g = dg
-					}
-				} else {
-					tmp = (sg - 0x8000) << 1
-					if tmp > dg {
-						g = tmp
-					} else {
-						g = dg
-					}
-				}
-
-				if sb < 0x8000 {
-					tmp = sb << 1
-					if tmp < db {
-						b = tmp
-					} else {
-						b = db
-					}
-				} else {
-					tmp = (sb - 0x8000) << 1
-					if tmp > db {
-						b = tmp
-					} else {
-						b = db
-					}
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawPinLightFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // hardMix implements the hardMix blend mode.
@@ -15967,7 +15967,8 @@ var drawHardMixNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -15976,15 +15977,13 @@ var drawHardMixNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -16087,7 +16086,8 @@ var drawHardMixRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -16096,15 +16096,13 @@ var drawHardMixRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -16213,7 +16211,8 @@ var drawHardMixNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -16222,15 +16221,13 @@ var drawHardMixNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -16339,7 +16336,8 @@ var drawHardMixRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -16348,15 +16346,13 @@ var drawHardMixRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -16943,276 +16939,280 @@ var drawHardMixRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, a
 
 }
 
+var drawHardMixFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if sr < 0x8000 {
+				tmp = sr << 1
+				if dr == 0xffff {
+					tmp = 0xffff
+				} else if tmp == 0 {
+					tmp = 0
+				} else {
+					tmp = 0xffff - clip16((0xffff-dr)*0xffff/tmp)
+				}
+			} else {
+				tmp = ((sr - 0x8000) << 1)
+				if dr == 0 {
+					tmp = 0
+				} else if tmp == 0xffff {
+					tmp = 0xffff
+				} else {
+					tmp = clip16(dr * 0xffff / (0xffff - tmp))
+				}
+			}
+			if tmp <= 0x8000 {
+				r = 0
+			} else {
+				r = 0xffff
+			}
+
+			if sg < 0x8000 {
+				tmp = sg << 1
+				if dg == 0xffff {
+					tmp = 0xffff
+				} else if tmp == 0 {
+					tmp = 0
+				} else {
+					tmp = 0xffff - clip16((0xffff-dg)*0xffff/tmp)
+				}
+			} else {
+				tmp = ((sg - 0x8000) << 1)
+				if dg == 0 {
+					tmp = 0
+				} else if tmp == 0xffff {
+					tmp = 0xffff
+				} else {
+					tmp = clip16(dg * 0xffff / (0xffff - tmp))
+				}
+			}
+			if tmp <= 0x8000 {
+				g = 0
+			} else {
+				g = 0xffff
+			}
+
+			if sb < 0x8000 {
+				tmp = sb << 1
+				if db == 0xffff {
+					tmp = 0xffff
+				} else if tmp == 0 {
+					tmp = 0
+				} else {
+					tmp = 0xffff - clip16((0xffff-db)*0xffff/tmp)
+				}
+			} else {
+				tmp = ((sb - 0x8000) << 1)
+				if db == 0 {
+					tmp = 0
+				} else if tmp == 0xffff {
+					tmp = 0xffff
+				} else {
+					tmp = clip16(db * 0xffff / (0xffff - tmp))
+				}
+			}
+			if tmp <= 0x8000 {
+				b = 0
+			} else {
+				b = 0xffff
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawHardMixFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if sr < 0x8000 {
+				tmp = sr << 1
+				if dr == 0xffff {
+					tmp = 0xffff
+				} else if tmp == 0 {
+					tmp = 0
+				} else {
+					tmp = 0xffff - clip16((0xffff-dr)*0xffff/tmp)
+				}
+			} else {
+				tmp = ((sr - 0x8000) << 1)
+				if dr == 0 {
+					tmp = 0
+				} else if tmp == 0xffff {
+					tmp = 0xffff
+				} else {
+					tmp = clip16(dr * 0xffff / (0xffff - tmp))
+				}
+			}
+			if tmp <= 0x8000 {
+				r = 0
+			} else {
+				r = 0xffff
+			}
+
+			if sg < 0x8000 {
+				tmp = sg << 1
+				if dg == 0xffff {
+					tmp = 0xffff
+				} else if tmp == 0 {
+					tmp = 0
+				} else {
+					tmp = 0xffff - clip16((0xffff-dg)*0xffff/tmp)
+				}
+			} else {
+				tmp = ((sg - 0x8000) << 1)
+				if dg == 0 {
+					tmp = 0
+				} else if tmp == 0xffff {
+					tmp = 0xffff
+				} else {
+					tmp = clip16(dg * 0xffff / (0xffff - tmp))
+				}
+			}
+			if tmp <= 0x8000 {
+				g = 0
+			} else {
+				g = 0xffff
+			}
+
+			if sb < 0x8000 {
+				tmp = sb << 1
+				if db == 0xffff {
+					tmp = 0xffff
+				} else if tmp == 0 {
+					tmp = 0
+				} else {
+					tmp = 0xffff - clip16((0xffff-db)*0xffff/tmp)
+				}
+			} else {
+				tmp = ((sb - 0x8000) << 1)
+				if db == 0 {
+					tmp = 0
+				} else if tmp == 0xffff {
+					tmp = 0xffff
+				} else {
+					tmp = clip16(db * 0xffff / (0xffff - tmp))
+				}
+			}
+			if tmp <= 0x8000 {
+				b = 0
+			} else {
+				b = 0xffff
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d hardMix) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if sr < 0x8000 {
-					tmp = sr << 1
-					if dr == 0xffff {
-						tmp = 0xffff
-					} else if tmp == 0 {
-						tmp = 0
-					} else {
-						tmp = 0xffff - clip16((0xffff-dr)*0xffff/tmp)
-					}
-				} else {
-					tmp = ((sr - 0x8000) << 1)
-					if dr == 0 {
-						tmp = 0
-					} else if tmp == 0xffff {
-						tmp = 0xffff
-					} else {
-						tmp = clip16(dr * 0xffff / (0xffff - tmp))
-					}
-				}
-				if tmp <= 0x8000 {
-					r = 0
-				} else {
-					r = 0xffff
-				}
-
-				if sg < 0x8000 {
-					tmp = sg << 1
-					if dg == 0xffff {
-						tmp = 0xffff
-					} else if tmp == 0 {
-						tmp = 0
-					} else {
-						tmp = 0xffff - clip16((0xffff-dg)*0xffff/tmp)
-					}
-				} else {
-					tmp = ((sg - 0x8000) << 1)
-					if dg == 0 {
-						tmp = 0
-					} else if tmp == 0xffff {
-						tmp = 0xffff
-					} else {
-						tmp = clip16(dg * 0xffff / (0xffff - tmp))
-					}
-				}
-				if tmp <= 0x8000 {
-					g = 0
-				} else {
-					g = 0xffff
-				}
-
-				if sb < 0x8000 {
-					tmp = sb << 1
-					if db == 0xffff {
-						tmp = 0xffff
-					} else if tmp == 0 {
-						tmp = 0
-					} else {
-						tmp = 0xffff - clip16((0xffff-db)*0xffff/tmp)
-					}
-				} else {
-					tmp = ((sb - 0x8000) << 1)
-					if db == 0 {
-						tmp = 0
-					} else if tmp == 0xffff {
-						tmp = 0xffff
-					} else {
-						tmp = clip16(db * 0xffff / (0xffff - tmp))
-					}
-				}
-				if tmp <= 0x8000 {
-					b = 0
-				} else {
-					b = 0xffff
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawHardMixFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if sr < 0x8000 {
-					tmp = sr << 1
-					if dr == 0xffff {
-						tmp = 0xffff
-					} else if tmp == 0 {
-						tmp = 0
-					} else {
-						tmp = 0xffff - clip16((0xffff-dr)*0xffff/tmp)
-					}
-				} else {
-					tmp = ((sr - 0x8000) << 1)
-					if dr == 0 {
-						tmp = 0
-					} else if tmp == 0xffff {
-						tmp = 0xffff
-					} else {
-						tmp = clip16(dr * 0xffff / (0xffff - tmp))
-					}
-				}
-				if tmp <= 0x8000 {
-					r = 0
-				} else {
-					r = 0xffff
-				}
-
-				if sg < 0x8000 {
-					tmp = sg << 1
-					if dg == 0xffff {
-						tmp = 0xffff
-					} else if tmp == 0 {
-						tmp = 0
-					} else {
-						tmp = 0xffff - clip16((0xffff-dg)*0xffff/tmp)
-					}
-				} else {
-					tmp = ((sg - 0x8000) << 1)
-					if dg == 0 {
-						tmp = 0
-					} else if tmp == 0xffff {
-						tmp = 0xffff
-					} else {
-						tmp = clip16(dg * 0xffff / (0xffff - tmp))
-					}
-				}
-				if tmp <= 0x8000 {
-					g = 0
-				} else {
-					g = 0xffff
-				}
-
-				if sb < 0x8000 {
-					tmp = sb << 1
-					if db == 0xffff {
-						tmp = 0xffff
-					} else if tmp == 0 {
-						tmp = 0
-					} else {
-						tmp = 0xffff - clip16((0xffff-db)*0xffff/tmp)
-					}
-				} else {
-					tmp = ((sb - 0x8000) << 1)
-					if db == 0 {
-						tmp = 0
-					} else if tmp == 0xffff {
-						tmp = 0xffff
-					} else {
-						tmp = clip16(db * 0xffff / (0xffff - tmp))
-					}
-				}
-				if tmp <= 0x8000 {
-					b = 0
-				} else {
-					b = 0xffff
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawHardMixFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // difference implements the difference blend mode.
@@ -17402,7 +17402,8 @@ var drawDifferenceNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -17411,15 +17412,13 @@ var drawDifferenceNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -17465,7 +17464,8 @@ var drawDifferenceRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -17474,15 +17474,13 @@ var drawDifferenceRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -17534,7 +17532,8 @@ var drawDifferenceNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -17543,15 +17542,13 @@ var drawDifferenceNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -17603,7 +17600,8 @@ var drawDifferenceRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -17612,15 +17610,13 @@ var drawDifferenceRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -17922,162 +17918,166 @@ var drawDifferenceRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 
 }
 
+var drawDifferenceFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if dr < sr {
+				r = sr - dr
+			} else {
+				r = dr - sr
+			}
+
+			if dg < sg {
+				g = sg - dg
+			} else {
+				g = dg - sg
+			}
+
+			if db < sb {
+				b = sb - db
+			} else {
+				b = db - sb
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawDifferenceFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if dr < sr {
+				r = sr - dr
+			} else {
+				r = dr - sr
+			}
+
+			if dg < sg {
+				g = sg - dg
+			} else {
+				g = dg - sg
+			}
+
+			if db < sb {
+				b = sb - db
+			} else {
+				b = db - sb
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d difference) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if dr < sr {
-					r = sr - dr
-				} else {
-					r = dr - sr
-				}
-
-				if dg < sg {
-					g = sg - dg
-				} else {
-					g = dg - sg
-				}
-
-				if db < sb {
-					b = sb - db
-				} else {
-					b = db - sb
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawDifferenceFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if dr < sr {
-					r = sr - dr
-				} else {
-					r = dr - sr
-				}
-
-				if dg < sg {
-					g = sg - dg
-				} else {
-					g = dg - sg
-				}
-
-				if db < sb {
-					b = sb - db
-				} else {
-					b = db - sb
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawDifferenceFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // exclusion implements the exclusion blend mode.
@@ -18267,7 +18267,8 @@ var drawExclusionNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -18276,15 +18277,13 @@ var drawExclusionNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -18318,7 +18317,8 @@ var drawExclusionRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -18327,15 +18327,13 @@ var drawExclusionRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -18375,7 +18373,8 @@ var drawExclusionNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -18384,15 +18383,13 @@ var drawExclusionNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -18432,7 +18429,8 @@ var drawExclusionRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -18441,15 +18439,13 @@ var drawExclusionRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -18691,138 +18687,142 @@ var drawExclusionRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 
 }
 
+var drawExclusionFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			r = dr + sr - (dr * sr / 0x8000)
+
+			g = dg + sg - (dg * sg / 0x8000)
+
+			b = db + sb - (db * sb / 0x8000)
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawExclusionFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			r = dr + sr - (dr * sr / 0x8000)
+
+			g = dg + sg - (dg * sg / 0x8000)
+
+			b = db + sb - (db * sb / 0x8000)
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d exclusion) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				r = dr + sr - (dr * sr / 0x8000)
-
-				g = dg + sg - (dg * sg / 0x8000)
-
-				b = db + sb - (db * sb / 0x8000)
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawExclusionFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				r = dr + sr - (dr * sr / 0x8000)
-
-				g = dg + sg - (dg * sg / 0x8000)
-
-				b = db + sb - (db * sb / 0x8000)
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawExclusionFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // subtract implements the subtract blend mode.
@@ -19012,7 +19012,8 @@ var drawSubtractNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -19021,15 +19022,13 @@ var drawSubtractNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -19075,7 +19074,8 @@ var drawSubtractRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -19084,15 +19084,13 @@ var drawSubtractRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -19144,7 +19142,8 @@ var drawSubtractNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -19153,15 +19152,13 @@ var drawSubtractNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -19213,7 +19210,8 @@ var drawSubtractRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -19222,15 +19220,13 @@ var drawSubtractRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -19532,162 +19528,166 @@ var drawSubtractRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, 
 
 }
 
+var drawSubtractFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if dr < sr {
+				r = 0
+			} else {
+				r = dr - sr
+			}
+
+			if dg < sg {
+				g = 0
+			} else {
+				g = dg - sg
+			}
+
+			if db < sb {
+				b = 0
+			} else {
+				b = db - sb
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawSubtractFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if dr < sr {
+				r = 0
+			} else {
+				r = dr - sr
+			}
+
+			if dg < sg {
+				g = 0
+			} else {
+				g = dg - sg
+			}
+
+			if db < sb {
+				b = 0
+			} else {
+				b = db - sb
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d subtract) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if dr < sr {
-					r = 0
-				} else {
-					r = dr - sr
-				}
-
-				if dg < sg {
-					g = 0
-				} else {
-					g = dg - sg
-				}
-
-				if db < sb {
-					b = 0
-				} else {
-					b = db - sb
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawSubtractFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if dr < sr {
-					r = 0
-				} else {
-					r = dr - sr
-				}
-
-				if dg < sg {
-					g = 0
-				} else {
-					g = dg - sg
-				}
-
-				if db < sb {
-					b = 0
-				} else {
-					b = db - sb
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawSubtractFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // divide implements the divide blend mode.
@@ -19877,7 +19877,8 @@ var drawDivideNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -19886,15 +19887,13 @@ var drawDivideNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -19946,7 +19945,8 @@ var drawDivideRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -19955,15 +19955,13 @@ var drawDivideRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -20021,7 +20019,8 @@ var drawDivideNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -20030,15 +20029,13 @@ var drawDivideNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -20096,7 +20093,8 @@ var drawDivideRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -20105,15 +20103,13 @@ var drawDivideRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -20445,174 +20441,178 @@ var drawDivideRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, al
 
 }
 
+var drawDivideFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			if dr == 0 {
+				r = 0
+			} else if sr == 0 {
+				r = 0xffff
+			} else {
+				r = clip16(dr * 0xffff / sr)
+			}
+
+			if dg == 0 {
+				g = 0
+			} else if sg == 0 {
+				g = 0xffff
+			} else {
+				g = clip16(dg * 0xffff / sg)
+			}
+
+			if db == 0 {
+				b = 0
+			} else if sb == 0 {
+				b = 0xffff
+			} else {
+				b = clip16(db * 0xffff / sb)
+			}
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawDivideFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			if dr == 0 {
+				r = 0
+			} else if sr == 0 {
+				r = 0xffff
+			} else {
+				r = clip16(dr * 0xffff / sr)
+			}
+
+			if dg == 0 {
+				g = 0
+			} else if sg == 0 {
+				g = 0xffff
+			} else {
+				g = clip16(dg * 0xffff / sg)
+			}
+
+			if db == 0 {
+				b = 0
+			} else if sb == 0 {
+				b = 0xffff
+			} else {
+				b = clip16(db * 0xffff / sb)
+			}
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d divide) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				if dr == 0 {
-					r = 0
-				} else if sr == 0 {
-					r = 0xffff
-				} else {
-					r = clip16(dr * 0xffff / sr)
-				}
-
-				if dg == 0 {
-					g = 0
-				} else if sg == 0 {
-					g = 0xffff
-				} else {
-					g = clip16(dg * 0xffff / sg)
-				}
-
-				if db == 0 {
-					b = 0
-				} else if sb == 0 {
-					b = 0xffff
-				} else {
-					b = clip16(db * 0xffff / sb)
-				}
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawDivideFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				if dr == 0 {
-					r = 0
-				} else if sr == 0 {
-					r = 0xffff
-				} else {
-					r = clip16(dr * 0xffff / sr)
-				}
-
-				if dg == 0 {
-					g = 0
-				} else if sg == 0 {
-					g = 0xffff
-				} else {
-					g = clip16(dg * 0xffff / sg)
-				}
-
-				if db == 0 {
-					b = 0
-				} else if sb == 0 {
-					b = 0xffff
-				} else {
-					b = clip16(db * 0xffff / sb)
-				}
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawDivideFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // hue implements the hue blend mode.
@@ -20802,7 +20802,8 @@ var drawHueNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -20811,15 +20812,13 @@ var drawHueNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -20850,7 +20849,8 @@ var drawHueRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -20859,15 +20859,13 @@ var drawHueRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -20904,7 +20902,8 @@ var drawHueNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -20913,15 +20912,13 @@ var drawHueNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -20958,7 +20955,8 @@ var drawHueRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y i
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -20967,15 +20965,13 @@ var drawHueRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y i
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -21202,132 +21198,136 @@ var drawHueRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha
 
 }
 
+var drawHueFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
+			r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawHueFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
+			r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d hue) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
-				r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawHueFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				r, g, b = setSat(sr, sg, sb, sat(dr, dg, db))
-				r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawHueFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // saturation implements the saturation blend mode.
@@ -21517,7 +21517,8 @@ var drawSaturationNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -21526,15 +21527,13 @@ var drawSaturationNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -21565,7 +21564,8 @@ var drawSaturationRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -21574,15 +21574,13 @@ var drawSaturationRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -21619,7 +21617,8 @@ var drawSaturationNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -21628,15 +21627,13 @@ var drawSaturationNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -21673,7 +21670,8 @@ var drawSaturationRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -21682,15 +21680,13 @@ var drawSaturationRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -21917,132 +21913,136 @@ var drawSaturationRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 
 }
 
+var drawSaturationFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
+			r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawSaturationFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
+			r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d saturation) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
-				r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawSaturationFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				r, g, b = setSat(dr, dg, db, sat(sr, sg, sb))
-				r, g, b = setLum16(r, g, b, lum16(dr, dg, db))
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawSaturationFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // color implements the color blend mode.
@@ -22232,7 +22232,8 @@ var drawColorNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -22241,15 +22242,13 @@ var drawColorNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -22279,7 +22278,8 @@ var drawColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -22288,15 +22288,13 @@ var drawColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -22332,7 +22330,8 @@ var drawColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -22341,15 +22340,13 @@ var drawColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -22385,7 +22382,8 @@ var drawColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -22394,15 +22392,13 @@ var drawColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -22624,130 +22620,134 @@ var drawColorRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alp
 
 }
 
+var drawColorFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			r, g, b = setLum16(sr, sg, sb, lum16(dr, dg, db))
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawColorFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			r, g, b = setLum16(sr, sg, sb, lum16(dr, dg, db))
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d color) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				r, g, b = setLum16(sr, sg, sb, lum16(dr, dg, db))
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawColorFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				r, g, b = setLum16(sr, sg, sb, lum16(dr, dg, db))
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawColorFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 
 // luminosity implements the luminosity blend mode.
@@ -22937,7 +22937,8 @@ var drawLuminosityNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -22946,15 +22947,13 @@ var drawLuminosityNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			var r, g, b uint32
 
@@ -22984,7 +22983,8 @@ var drawLuminosityRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -22993,15 +22993,13 @@ var drawLuminosityRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -23037,7 +23035,8 @@ var drawLuminosityNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -23046,15 +23045,13 @@ var drawLuminosityNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if 0x00 < da && da < 0xff {
 				dr = dr * 0xff / da
@@ -23090,7 +23087,8 @@ var drawLuminosityRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			sb := uint32(spix[i+2])
 			sg := uint32(spix[i+1])
 			sr := uint32(spix[i])
-			if sa == 0 {
+			tmp := (sa * alpha >> 23) * 32897
+			if tmp == 0 {
 				continue
 			}
 
@@ -23099,15 +23097,13 @@ var drawLuminosityRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			dg := uint32(dpix[j+1])
 			dr := uint32(dpix[j])
 
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-
 			a1 := (tmp * da) >> 23
 			a2 := (tmp * (255 - da)) >> 23
 			a3 := ((8388735 - tmp) * da) >> 23
 			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
 
 			if sa < 0xff {
 				sr = sr * 0xff / sa
@@ -23329,128 +23325,132 @@ var drawLuminosityRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte
 
 }
 
+var drawLuminosityFallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var r, g, b uint32
+
+			r, g, b = setLum16(dr, dg, db, lum16(sr, sg, sb))
+
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var drawLuminosityFallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+
+			r, g, b = setLum16(dr, dg, db, lum16(sr, sg, sb))
+
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d luminosity) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX-r.Min.X, pY-r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-
-				r, g, b = setLum16(dr, dg, db, lum16(sr, sg, sb))
-
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLuminosityFallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var r, g, b uint32
-
-				r, g, b = setLum16(dr, dg, db, lum16(sr, sg, sb))
-
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = drawLuminosityFallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }

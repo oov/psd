@@ -55,6 +55,44 @@ func (f drawFunc) Parallel(dest []byte, src []byte, alpha uint32, y int, sx0 int
 	wg.Wait()
 }
 
+type drawFallbackFunc func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int)
+
+func (f drawFallbackFunc) Parallel(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var y int
+	if dy > 0 {
+		y = endY - pY
+	} else {
+		y = pY - endY
+	}
+	n := runtime.GOMAXPROCS(0)
+	for n > 1 && n<<1 > y {
+		n--
+	}
+	if n == 1 {
+		f(dst, pX, pY, src, spX, spY, mask, mpX, mpY, endX, endY, dx, dy)
+		return
+	}
+	var wg sync.WaitGroup
+	wg.Add(n)
+	step := (y / n) * dy
+	endY2 := pY + step
+	for i := 1; i < n; i++ {
+		go func(pY int, spY int, mpY int, endY2 int) {
+			defer wg.Done()
+			f(dst, pX, pY, src, spX, spY, mask, mpX, mpY, endX, endY2, dx, dy)
+		}(pY, spY, mpY, endY2)
+		pY += step
+		spY += step
+		mpY += step
+		endY2 += step
+	}
+	go func() {
+		defer wg.Done()
+		f(dst, pX, pY, src, spX, spY, mask, mpX, mpY, endX, endY, dx, dy)
+	}()
+	wg.Wait()
+}
+
 func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
 	clip(dst, &r, src, &sp, mask, &mp)
 	if r.Empty() {

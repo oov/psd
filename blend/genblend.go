@@ -738,163 +738,167 @@ var draw{{.Name}}RGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte,
 	{{template "drawMainProtectAlpha3" .}}
 }
 
+var draw{{.Name}}Fallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+
+			tmp := sa * ma / 0xffff
+			a1 := tmp * da / 0xffff
+			a2 := tmp * (0xffff - da) / 0xffff
+			a3 := (0xffff - tmp) * da / 0xffff
+			a := a1 + a2 + a3
+			if a == 0 {
+				continue
+			}
+
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+		 var r, g, b uint32
+{{if .CodePerChannel16}}
+{{.CodePerChannel16.To16.Channel "r"}}
+{{.CodePerChannel16.To16.Channel "g"}}
+{{.CodePerChannel16.To16.Channel "b"}}
+{{else if .Code16}}
+{{.Code16.To16}}
+{{else if .CodePerChannel}}
+{{.CodePerChannel.To16.Channel "r"}}
+{{.CodePerChannel.To16.Channel "g"}}
+{{.CodePerChannel.To16.Channel "b"}}
+{{else if .Code}}
+{{.Code.To16}}
+{{end}}
+{{if .OverMax}}
+			out.R = uint16(clip6416(uint64(sr*a2 + dr*a3)/0xffff + uint64(r)*uint64(a1) / uint64(a)) * a / 0xffff)
+			out.G = uint16(clip6416(uint64(sg*a2 + dg*a3)/0xffff + uint64(g)*uint64(a1) / uint64(a)) * a / 0xffff)
+			out.B = uint16(clip6416(uint64(sb*a2 + db*a3)/0xffff + uint64(b)*uint64(a1) / uint64(a)) * a / 0xffff)
+			out.A = uint16(a)
+{{else}}
+			out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
+			out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
+			out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
+			out.A = uint16(a)
+{{end}}
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
+var draw{{.Name}}FallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
+	var out stdcolor.RGBA64
+	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
+		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
+			ma := uint32(0xffff)
+			if mask != nil {
+				_, _, _, ma = mask.At(mx, my).RGBA()
+			}
+			if ma == 0 {
+				continue
+			}
+
+			sr, sg, sb, sa := src.At(sx, sy).RGBA()
+			dr, dg, db, da := dst.At(x, y).RGBA()
+			if da == 0 {
+				continue
+			}
+
+			a1 := sa * ma / 0xffff
+			a3 := 0xffff - a1
+			if sa == 0x0000 {
+				sr = 0
+				sg = 0
+				sb = 0
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
+			}
+			if da == 0x0000 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
+			}
+
+			var tmp, r, g, b uint32
+			_ = tmp
+{{if .CodePerChannel16}}
+{{.CodePerChannel16.To16.Channel "r"}}
+{{.CodePerChannel16.To16.Channel "g"}}
+{{.CodePerChannel16.To16.Channel "b"}}
+{{else if .Code16}}
+{{.Code16.To16}}
+{{else if .CodePerChannel}}
+{{.CodePerChannel.To16.Channel "r"}}
+{{.CodePerChannel.To16.Channel "g"}}
+{{.CodePerChannel.To16.Channel "b"}}
+{{else if .Code}}
+{{.Code.To16}}
+{{end}}
+{{if .OverMax}}
+			out.R = uint16(clip6416((uint64(dr*a3)+uint64(r)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
+			out.G = uint16(clip6416((uint64(dg*a3)+uint64(g)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
+			out.B = uint16(clip6416((uint64(db*a3)+uint64(b)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+{{else}}
+			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
+			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
+			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
+			out.A = uint16(da)
+{{end}}
+
+			dst.Set(x, y, &out)
+		}
+	}
+}
+
 func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	x0, x1, dx := r.Min.X, r.Max.X, 1
-	y0, y1, dy := r.Min.Y, r.Max.Y, 1
+	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
-		x0, x1, dx = x1-1, x0-1, -1
-		y0, y1, dy = y1-1, y0-1, -1
+		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-
+	ofsX, ofsY := pX - r.Min.X, pY - r.Min.Y
+	sp.X += ofsX
+	sp.Y += ofsY
+	mp.Y += ofsX
+	mp.Y += ofsY
+	var f drawFallbackFunc
 	if protectAlpha {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-				if da == 0 {
-					continue
-				}
-
-				a1 := sa * ma / 0xffff
-				a3 := 0xffff - a1
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-				var tmp, r, g, b uint32
-				_ = tmp
-{{if .CodePerChannel16}}
-	{{.CodePerChannel16.To16.Channel "r"}}
-	{{.CodePerChannel16.To16.Channel "g"}}
-	{{.CodePerChannel16.To16.Channel "b"}}
-{{else if .Code16}}
-	{{.Code16.To16}}
-{{else if .CodePerChannel}}
-	{{.CodePerChannel.To16.Channel "r"}}
-	{{.CodePerChannel.To16.Channel "g"}}
-	{{.CodePerChannel.To16.Channel "b"}}
-{{else if .Code}}
-	{{.Code.To16}}
-{{end}}
-{{if .OverMax}}
-				out.R = uint16(clip6416((uint64(dr*a3)+uint64(r)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
-				out.G = uint16(clip6416((uint64(dg*a3)+uint64(g)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
-				out.B = uint16(clip6416((uint64(db*a3)+uint64(b)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-{{else}}
-				out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-				out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-				out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-				out.A = uint16(da)
-{{end}}
-
-				dst.Set(x, y, &out)
-			}
-		}
+		f = draw{{.Name}}FallbackProtectAlpha
 	} else {
-		var out stdcolor.RGBA64
-		sy := sp.Y + y0 - r.Min.Y
-		my := mp.Y + y0 - r.Min.Y
-		for y := y0; y != y1; y, sy, my = y+dy, sy+dy, my+dy {
-			sx := sp.X + x0 - r.Min.X
-			mx := mp.X + x0 - r.Min.X
-			for x := x0; x != x1; x, sx, mx = x+dx, sx+dx, mx+dx {
-				ma := uint32(0xffff)
-				if mask != nil {
-					_, _, _, ma = mask.At(mx, my).RGBA()
-				}
-				if ma == 0 {
-					continue
-				}
-
-				sr, sg, sb, sa := src.At(sx, sy).RGBA()
-				dr, dg, db, da := dst.At(x, y).RGBA()
-
-				tmp := sa * ma / 0xffff
-				a1 := tmp * da / 0xffff
-				a2 := tmp * (0xffff - da) / 0xffff
-				a3 := (0xffff - tmp) * da / 0xffff
-				a := a1 + a2 + a3
-				if a == 0 {
-					continue
-				}
-
-				if sa == 0x0000 {
-					sr = 0
-					sg = 0
-					sb = 0
-				} else if sa < 0xffff {
-					sr = sr * 0xffff / sa
-					sg = sg * 0xffff / sa
-					sb = sb * 0xffff / sa
-				}
-				if da == 0x0000 {
-					dr = 0
-					dg = 0
-					db = 0
-				} else if da < 0xffff {
-					dr = dr * 0xffff / da
-					dg = dg * 0xffff / da
-					db = db * 0xffff / da
-				}
-
-			 var r, g, b uint32
-{{if .CodePerChannel16}}
-	{{.CodePerChannel16.To16.Channel "r"}}
-	{{.CodePerChannel16.To16.Channel "g"}}
-	{{.CodePerChannel16.To16.Channel "b"}}
-{{else if .Code16}}
-	{{.Code16.To16}}
-{{else if .CodePerChannel}}
-	{{.CodePerChannel.To16.Channel "r"}}
-	{{.CodePerChannel.To16.Channel "g"}}
-	{{.CodePerChannel.To16.Channel "b"}}
-{{else if .Code}}
-	{{.Code.To16}}
-{{end}}
-{{if .OverMax}}
-				out.R = uint16(clip6416(uint64(sr*a2 + dr*a3)/0xffff + uint64(r)*uint64(a1) / uint64(a)) * a / 0xffff)
-				out.G = uint16(clip6416(uint64(sg*a2 + dg*a3)/0xffff + uint64(g)*uint64(a1) / uint64(a)) * a / 0xffff)
-				out.B = uint16(clip6416(uint64(sb*a2 + db*a3)/0xffff + uint64(b)*uint64(a1) / uint64(a)) * a / 0xffff)
-				out.A = uint16(a)
-{{else}}
-				out.R = uint16((r*a1 + sr*a2 + dr*a3) / 0xffff)
-				out.G = uint16((g*a1 + sg*a2 + dg*a3) / 0xffff)
-				out.B = uint16((b*a1 + sb*a2 + db*a3) / 0xffff)
-				out.A = uint16(a)
-{{end}}
-				dst.Set(x, y, &out)
-			}
-		}
+		f = draw{{.Name}}Fallback
 	}
+	f.Parallel(dst, pX, pY, src, sp.X, sp.Y, mask, mp.X, mp.Y, endX, endY, delta, delta)
 }
 `
 
