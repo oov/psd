@@ -1,9 +1,11 @@
 package psd
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"image/png"
+	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
@@ -361,11 +363,32 @@ func (l *testLogger) Println(v ...interface{}) {
 func TestOneShot(t *testing.T) {
 	Debug = &testLogger{t}
 	tImg := testImages[20]
+	tImg.PSD = "test.psb"
 	testOne(tImg, t)
 }
 
 func TestAll(t *testing.T) {
 	for _, tImg := range testImages {
 		testOne(tImg, t)
+	}
+}
+
+func Benchmark2MB(b *testing.B) {
+	b.StopTimer()
+	f, err := os.Open("testdata/benchmark.psd")
+	if err != nil {
+		b.Fatal(err)
+	}
+	defer f.Close()
+	buf, err := ioutil.ReadAll(f)
+	if err != nil {
+		b.Fatal(err)
+	}
+	r := bytes.NewReader(buf)
+	for i := 0; i < b.N; i++ {
+		b.StartTimer()
+		Decode(r, nil)
+		b.StopTimer()
+		r.Reset(buf)
 	}
 }
