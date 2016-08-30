@@ -474,11 +474,14 @@ func readLayerImage(lcis []layerChannelInfo, r io.Reader, cfg *Config, o *Decode
 			pk := findGrayPicker(cfg.Depth)
 			pk.setSource(rect, data)
 
-			if l, err = cmpMethod.Decode(data, r, int64(j.DataLen-2), rect, cfg.Depth, 1, cfg.PSB()); err != nil {
-				return read, err
+			if j.DataLen > 2 {
+				if l, err = cmpMethod.Decode(data, r, int64(j.DataLen-2), rect, cfg.Depth, 1, cfg.PSB()); err != nil {
+					return read, err
+				}
+				readCh += l
+				read += l
 			}
-			readCh += l
-			read += l
+
 			if readCh != j.DataLen {
 				return read, errors.New("psd: layer: " + itoa(i) + " channel: " + itoa(j.ChIndex) + " read size mismatched. expected " + itoa(j.DataLen) + " actual " + itoa(readCh))
 			}
