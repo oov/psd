@@ -373,6 +373,41 @@ func TestAll(t *testing.T) {
 	}
 }
 
+func TestDetectFolderBlendMode(t *testing.T) {
+	for _, filename := range []string{
+		"mod.psd",
+		"mod2.psd",
+	} {
+		file, err := os.Open("testdata/" + filename)
+		if err != nil {
+			t.Errorf("cannot open %s: %v", filename, err)
+			return
+		}
+		defer file.Close()
+		psd, _, err := Decode(file, nil)
+		if err != nil {
+			t.Errorf("cannot open %s as psd: %v", filename, err)
+			return
+		}
+		{
+			want := "フォルダー3"
+			got := psd.Layer[2].Layer[0].UnicodeName
+			if want != got {
+				t.Error(filename, "want", want, "but got", got)
+				return
+			}
+		}
+		{
+			want := BlendModeNormal
+			got := psd.Layer[2].Layer[0].SectionDividerSetting.BlendMode
+			if want != got {
+				t.Error(filename, "want", want, "but got", got)
+				return
+			}
+		}
+	}
+}
+
 func Benchmark2MB(b *testing.B) {
 	b.StopTimer()
 	f, err := os.Open("testdata/benchmark.psd")

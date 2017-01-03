@@ -227,7 +227,7 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 	if ok {
 		typ = int(readUint32(b, 0))
 		if len(b) < 12 {
-			return typ, BlendModePassThrough, 0, nil
+			return typ, "", 0, nil
 		}
 		if string(b[4:8]) != sectionSignature {
 			return 0, "", 0, errors.New("psd: unexpected signature in section divider setting")
@@ -243,7 +243,7 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 	if ok {
 		typ = int(readUint32(b, 0))
 		if len(b) < 12 {
-			return typ, BlendModePassThrough, 0, nil
+			return typ, "", 0, nil
 		}
 		if string(b[4:8]) != sectionSignature {
 			return 0, "", 0, errors.New("psd: unexpected signature in section divider setting 2")
@@ -255,7 +255,7 @@ func readSectionDividerSetting(l *Layer) (typ int, blendMode BlendMode, subType 
 		subType = int(readUint32(b, 12))
 		return typ, blendMode, subType, nil
 	}
-	return 0, BlendModeNormal, 0, nil
+	return 0, "", 0, nil
 }
 
 type channelData struct {
@@ -382,6 +382,9 @@ func readLayerInfo(r io.Reader, cfg *Config, o *DecodeOptions) (layer []Layer, r
 			layer.SectionDividerSetting.SubType,
 			err = readSectionDividerSetting(layer); err != nil {
 			return nil, read, err
+		}
+		if layer.SectionDividerSetting.BlendMode == "" {
+			layer.SectionDividerSetting.BlendMode = layer.BlendMode
 		}
 		delete(layer.AdditionalLayerInfo, AdditionalInfoKeySectionDividerSetting)
 
