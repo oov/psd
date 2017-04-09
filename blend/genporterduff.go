@@ -728,7 +728,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	f, err := os.Create("porterduffs.go")
+	f, err := os.Create("zporterduffs.go")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -746,7 +746,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	f2, err := os.Create("porterduffs_test.go")
+	f2, err := os.Create("zporterduffs_test.go")
 	if err != nil {
 		log.Fatal(err)
 	}

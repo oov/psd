@@ -765,7 +765,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	f, err := os.Create("blends.go")
+	f, err := os.Create("zblends.go")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -783,7 +783,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	f2, err := os.Create("blends_test.go")
+	f2, err := os.Create("zblends_test.go")
 	if err != nil {
 		log.Fatal(err)
 	}
