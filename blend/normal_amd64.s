@@ -7,7 +7,7 @@ TEXT	·drawNormalNRGBAToNRGBAFast(SB),0,$0-128
 
    MOVQ src+24(FP), SI
    MOVQ dest+0(FP), DI
-   MOVQ y+56(FP), CX
+   MOVQ y+56(FP), BX
 
    MOVQ dyDelta+120(FP), R12
    MOVQ syDelta+88(FP), R13
@@ -132,6 +132,6 @@ LOOPY:
 
    ADDQ R12, DI
    ADDQ R13, SI
-   DECQ CX
+   DECQ BX
    JNZ LOOPY
    RET
