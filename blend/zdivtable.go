@@ -1,13 +1,8 @@
+// DO NOT EDIT.
+// Generate with: go generate
+
 package blend
 
-// func main() {
-// 	fmt.Println("var divTable = [256]uint32{")
-// 	fmt.Printf("0x%08x, // %d\n", 0, 0)
-// 	for i := int64(1); i < 256; i++ {
-// 		fmt.Printf("0x%08x, // %d\n", 0xffffffff/i, i)
-// 	}
-// 	fmt.Println("}")
-// }
 var divTable = [256]uint32{
 	0x00000000, // 0
 	0xffffffff, // 1
