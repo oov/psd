@@ -268,11 +268,11 @@ func (d {{.Name.Lower}}) String() string {
 
 // Draw implements image.Drawer interface.
 func (d {{.Name.Lower}}) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 {{define "draw"}}
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -306,19 +306,19 @@ func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Recta
 {{template "draw" printf "draw%sNRGBAToNRGBA" .Name}}
 }
 
-func (d {{.Name.Lower}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 {{template "draw" printf "draw%sRGBAToNRGBA" .Name}}
 }
 
-func (d {{.Name.Lower}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 {{template "draw" printf "draw%sNRGBAToRGBA" .Name}}
 }
 
-func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 {{template "draw" printf "draw%sRGBAToRGBA" .Name}}
 }
 
-func (d {{.Name.Lower}}) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 {{define "alpha"}}
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -354,7 +354,7 @@ func (d {{.Name.Lower}}) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Recta
 {{template "alpha" printf "draw%sAlphaToNRGBA" .Name}}
 }
 
-func (d {{.Name.Lower}}) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 {{template "alpha" printf "draw%sAlphaToRGBA" .Name}}
 }
 
@@ -594,7 +594,7 @@ var draw{{.Name}}AlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 	{{template "drawMainAlpha3" .}}
 }
 
-func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -665,51 +665,51 @@ import "testing"
 
 {{range .}}
 	func TestPorterDuffFallback{{.Name}}(t *testing.T) {
-		testDrawFallback(t, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		testDrawFallback(t, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func TestPorterDuffNRGBAToNRGBA{{.Name}}(t *testing.T) {
-		testDrawNRGBAToNRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		testDrawNRGBAToNRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func TestPorterDuffRGBAToNRGBA{{.Name}}(t *testing.T) {
-		testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		testDrawRGBAToNRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func TestPorterDuffAlphaToNRGBA{{.Name}}(t *testing.T) {
-		testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		testDrawAlphaToNRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func TestPorterDuffNRGBAToRGBA{{.Name}}(t *testing.T) {
-		testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		testDrawNRGBAToRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func TestPorterDuffRGBAToRGBA{{.Name}}(t *testing.T) {
-		testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		testDrawRGBAToRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func TestPorterDuffAlphaToRGBA{{.Name}}(t *testing.T) {
-		testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		testDrawAlphaToRGBA(t, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func BenchmarkPorterDuffFallback{{.Name}}(b *testing.B) {
-		benchmarkDrawFallback(b, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		benchmarkDrawFallback(b, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func BenchmarkPorterDuffNRGBAToNRGBA{{.Name}}(b *testing.B) {
-		benchmarkDrawNRGBAToNRGBA(b, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		benchmarkDrawNRGBAToNRGBA(b, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func BenchmarkPorterDuffRGBAToNRGBA{{.Name}}(b *testing.B) {
-		benchmarkDrawRGBAToNRGBA(b, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		benchmarkDrawRGBAToNRGBA(b, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func BenchmarkPorterDuffNRGBAToRGBA{{.Name}}(b *testing.B) {
-		benchmarkDrawNRGBAToRGBA(b, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		benchmarkDrawNRGBAToRGBA(b, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 
 	func BenchmarkPorterDuffRGBAToRGBA{{.Name}}(b *testing.B) {
-		benchmarkDrawRGBAToRGBA(b, "png/a.png", "png/b.png", {{.Name.Lower}}{}, false)
+		benchmarkDrawRGBAToRGBA(b, "png/a.png", "png/b.png", {{.Name.Lower}}{})
 	}
 {{end}}
 `

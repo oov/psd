@@ -190,30 +190,23 @@ func loadAlphaToNRGBAImages(path1 string, path2 string) (*image.NRGBA, *image.Al
 	return img, img2, nil
 }
 
-func testDrawFallback(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
+func testDrawFallback(t *testing.T, path1 string, path2 string, d drawer) {
 	name := "DrawFallback"
-	if protectAlpha {
-		name += "ProtectAlpha"
-	}
 
 	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0), protectAlpha)
+	d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0))
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
-	var prefix string
-	if protectAlpha {
-		prefix = "ProtectAlpha/"
-	}
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%s%v.png", prefix, d),
+		fmt.Sprintf("reference/%v.png", d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -230,30 +223,23 @@ func testDrawFallback(t *testing.T, path1 string, path2 string, d drawer, protec
 	}
 }
 
-func testDrawNRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
+func testDrawNRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer) {
 	name := "DrawNRGBAToNRGBA"
-	if protectAlpha {
-		name += "ProtectAlpha"
-	}
 
 	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+	d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
-	var prefix string
-	if protectAlpha {
-		prefix = "ProtectAlpha/"
-	}
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%s%v.png", prefix, d),
+		fmt.Sprintf("reference/%v.png", d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -270,30 +256,23 @@ func testDrawNRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer, pr
 	}
 }
 
-func testDrawRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
+func testDrawRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer) {
 	name := "DrawRGBAToNRGBA"
-	if protectAlpha {
-		name += "ProtectAlpha"
-	}
 
 	img, img2, err := loadRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+	d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
-	var prefix string
-	if protectAlpha {
-		prefix = "ProtectAlpha/"
-	}
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%s%v.png", prefix, d),
+		fmt.Sprintf("reference/%v.png", d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -310,30 +289,23 @@ func testDrawRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer, pro
 	}
 }
 
-func testDrawNRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
+func testDrawNRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer) {
 	name := "DrawNRGBAToRGBA"
-	if protectAlpha {
-		name += "ProtectAlpha"
-	}
 
 	img, img2, err := loadNRGBAToRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+	d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
-	var prefix string
-	if protectAlpha {
-		prefix = "ProtectAlpha/"
-	}
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%s%v.png", prefix, d),
+		fmt.Sprintf("reference/%v.png", d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -350,30 +322,23 @@ func testDrawNRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, pro
 	}
 }
 
-func testDrawRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, protectAlpha bool) {
+func testDrawRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer) {
 	name := "DrawRGBAToRGBA"
-	if protectAlpha {
-		name += "ProtectAlpha"
-	}
 
 	img, img2, err := loadRGBAToRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+	d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
-	var prefix string
-	if protectAlpha {
-		prefix = "ProtectAlpha/"
-	}
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%s%v.png", prefix, d),
+		fmt.Sprintf("reference/%v.png", d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -390,27 +355,23 @@ func testDrawRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer, prot
 	}
 }
 
-func testDrawAlphaToRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer, protectAlpha bool) {
+func testDrawAlphaToRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer) {
 	name := "DrawAlphaToRGBA"
-	if protectAlpha {
-		name += "ProtectAlpha"
-	}
 
 	img, img2, err := loadAlphaToRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawAlphaToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+	d.drawAlphaToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
-	prefix := "alpha/"
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%s%v.png", prefix, d),
+		fmt.Sprintf("reference/alpha/%v.png", d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -427,27 +388,23 @@ func testDrawAlphaToRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer
 	}
 }
 
-func testDrawAlphaToNRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer, protectAlpha bool) {
+func testDrawAlphaToNRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer) {
 	name := "DrawAlphaToNRGBA"
-	if protectAlpha {
-		name += "ProtectAlpha"
-	}
 
 	img, img2, err := loadAlphaToNRGBAImages(path1, path2)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	d.drawAlphaToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+	d.drawAlphaToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 
 	os.MkdirAll("output/"+name, os.ModePerm)
 	if err = saveImage(fmt.Sprintf("output/%s/%v.png", name, d), img); err != nil {
 		t.Fatalf("Cannot create png: %v", err)
 	}
 
-	prefix := "alpha/"
 	created, ref, err := loadImages(
 		fmt.Sprintf("output/%s/%v.png", name, d),
-		fmt.Sprintf("reference/%s%v.png", prefix, d),
+		fmt.Sprintf("reference/alpha/%v.png", d),
 	)
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -464,57 +421,57 @@ func testDrawAlphaToNRGBA(t *testing.T, path1 string, path2 string, d alphaDrawe
 	}
 }
 
-func benchmarkDrawFallback(b *testing.B, path1 string, path2 string, d drawer, protectAlpha bool) {
+func benchmarkDrawFallback(b *testing.B, path1 string, path2 string, d drawer) {
 	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0), protectAlpha)
+		d.drawFallback(img, img2.Bounds(), img2, image.Pt(0, 0), nil, image.Pt(0, 0))
 	}
 }
 
-func benchmarkDrawNRGBAToNRGBA(b *testing.B, path1 string, path2 string, d drawer, protectAlpha bool) {
+func benchmarkDrawNRGBAToNRGBA(b *testing.B, path1 string, path2 string, d drawer) {
 	img, img2, err := loadNRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+		d.drawNRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 	}
 }
 
-func benchmarkDrawRGBAToNRGBA(b *testing.B, path1 string, path2 string, d drawer, protectAlpha bool) {
+func benchmarkDrawRGBAToNRGBA(b *testing.B, path1 string, path2 string, d drawer) {
 	img, img2, err := loadRGBAToNRGBAImages(path1, path2)
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+		d.drawRGBAToNRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 	}
 }
 
-func benchmarkDrawNRGBAToRGBA(b *testing.B, path1 string, path2 string, d drawer, protectAlpha bool) {
+func benchmarkDrawNRGBAToRGBA(b *testing.B, path1 string, path2 string, d drawer) {
 	img, img2, err := loadNRGBAToRGBAImages(path1, path2)
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+		d.drawNRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 	}
 }
 
-func benchmarkDrawRGBAToRGBA(b *testing.B, path1 string, path2 string, d drawer, protectAlpha bool) {
+func benchmarkDrawRGBAToRGBA(b *testing.B, path1 string, path2 string, d drawer) {
 	img, img2, err := loadRGBAToRGBAImages(path1, path2)
 	if err != nil {
 		b.Fatalf("%v", err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil, protectAlpha)
+		d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 	}
 }

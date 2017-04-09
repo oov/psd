@@ -435,16 +435,16 @@ func (d {{.Name.Lower}}) String() string {
 
 // Draw implements image.Drawer interface.
 func (d {{.Name.Lower}}) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
 // DrawMask aligns r.Min in dst with sp in src and mp in mask and then replaces the rectangle r
 // in dst with the result. A nil mask is treated as opaque.
-func (d {{.Name.Lower}}) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
-	drawMask(d, dst, r, src, sp, mask, mp, protectAlpha)
+func (d {{.Name.Lower}}) DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
+	drawMask(d, dst, r, src, sp, mask, mp)
 }
 
-func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 {{define "draw"}}
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -473,26 +473,20 @@ func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Recta
 		syDelta = -src.Stride
 		x0, x1, xDelta = (dx-1)<<2, -4, -4
 	}
-	var f drawFunc
-	if protectAlpha {
-		f = {{.}}ProtectAlpha
-	} else {
-		f = {{.}}
-	}
-	f.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	{{.}}.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
 {{end}}
 {{template "draw" printf "draw%sNRGBAToNRGBA" .Name}}
 }
 
-func (d {{.Name.Lower}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 {{template "draw" printf "draw%sRGBAToNRGBA" .Name}}
 }
 
-func (d {{.Name.Lower}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 {{template "draw" printf "draw%sNRGBAToRGBA" .Name}}
 }
 
-func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 {{template "draw" printf "draw%sRGBAToRGBA" .Name}}
 }
 
@@ -619,125 +613,6 @@ var draw{{.Name}}RGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 	{{template "drawMain3" .}}
 }
 
-var draw{{.Name}}NRGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-{{define "drawMainProtectAlpha1"}}
-	alpha *= 32897
-	dPos, sPos := 0, 0
-	for ; y > 0; y-- {
-		dpix := dest[dPos:]
-		spix := src[sPos:]
-		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
-			sa := uint32(spix[i+3])
-			sb := uint32(spix[i+2])
-			sg := uint32(spix[i+1])
-			sr := uint32(spix[i])
-
-			da := uint32(dpix[j+3])
-			db := uint32(dpix[j+2])
-			dg := uint32(dpix[j+1])
-			dr := uint32(dpix[j])
-
-			if da == 0 || sa == 0 {
-				continue
-			}
-
-			a1 := sa * alpha >> 23
-			a3 := 255 - a1
-{{end}}
-{{define "drawMainProtectAlpha1_SrcRGBAToNRGBA"}}
-			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
-			}
-{{end}}
-{{define "drawMainProtectAlpha1_DestRGBAToNRGBA"}}
-			if da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
-			}
-{{end}}
-{{define "drawMainProtectAlpha2"}}
-			var tmp, r, g, b uint32
-			_ = tmp
-			{{if .CodePerChannel}}
-				{{.CodePerChannel.To8.Channel "r"}}
-				{{.CodePerChannel.To8.Channel "g"}}
-				{{.CodePerChannel.To8.Channel "b"}}
-			{{else if .Code}}
-				{{.Code.To8}}
-			{{else if .CodePerChannel16}}
-				{{.CodePerChannel16.To8.Channel "r"}}
-				{{.CodePerChannel16.To8.Channel "g"}}
-				{{.CodePerChannel16.To8.Channel "b"}}
-			{{else if .Code16}}
-				{{.Code16.To8}}
-			{{end}}
-{{end}}
-{{define "drawMainProtectAlpha2_SetNRGBA"}}
-{{if .OverMax}}
-			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8(clip8((b*a1 + db*a3) / 255))
-			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) / 255))
-			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) / 255))
-{{else}}
-			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8((b*a1 + db*a3) * 32897 >> 23)
-			dpix[j+1] = uint8((g*a1 + dg*a3) * 32897 >> 23)
-			dpix[j+0] = uint8((r*a1 + dr*a3) * 32897 >> 23)
-{{end}}
-{{end}}
-{{define "drawMainProtectAlpha2_SetRGBA"}}
-{{if .OverMax}}
-			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8(clip8((b*a1 + db*a3) / (a1+a3)) * da * 32897 >> 23)
-			dpix[j+1] = uint8(clip8((g*a1 + dg*a3) / (a1+a3)) * da * 32897 >> 23)
-			dpix[j+0] = uint8(clip8((r*a1 + dr*a3) / (a1+a3)) * da * 32897 >> 23)
-{{else}}
-			dpix[j+3] = uint8(da)
-			dpix[j+2] = uint8(((b*a1 + db*a3) * 32897 >> 23) * da * 32897 >> 23)
-			dpix[j+1] = uint8(((g*a1 + dg*a3) * 32897 >> 23) * da * 32897 >> 23)
-			dpix[j+0] = uint8(((r*a1 + dr*a3) * 32897 >> 23) * da * 32897 >> 23)
-{{end}}
-{{end}}
-{{define "drawMainProtectAlpha3"}}
-		}
-		dPos += dyDelta
-		sPos += syDelta
-	}
-{{end}}
-{{template "drawMainProtectAlpha1" .}}
-{{template "drawMainProtectAlpha2" .}}
-{{template "drawMainProtectAlpha2_SetNRGBA" .}}
-{{template "drawMainProtectAlpha3" .}}
-}
-
-var draw{{.Name}}RGBAToNRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-	{{template "drawMainProtectAlpha1" .}}
-	{{template "drawMainProtectAlpha1_SrcRGBAToNRGBA" .}}
-	{{template "drawMainProtectAlpha2" .}}
-	{{template "drawMainProtectAlpha2_SetNRGBA" .}}
-	{{template "drawMainProtectAlpha3" .}}
-}
-
-var draw{{.Name}}NRGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-	{{template "drawMainProtectAlpha1" .}}
-	{{template "drawMainProtectAlpha1_DestRGBAToNRGBA" .}}
-	{{template "drawMainProtectAlpha2" .}}
-	{{template "drawMainProtectAlpha2_SetRGBA" .}}
-	{{template "drawMainProtectAlpha3" .}}
-}
-
-var draw{{.Name}}RGBAToRGBAProtectAlpha drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-	{{template "drawMainProtectAlpha1" .}}
-	{{template "drawMainProtectAlpha1_SrcRGBAToNRGBA" .}}
-	{{template "drawMainProtectAlpha1_DestRGBAToNRGBA" .}}
-	{{template "drawMainProtectAlpha2" .}}
-	{{template "drawMainProtectAlpha2_SetRGBA" .}}
-	{{template "drawMainProtectAlpha3" .}}
-}
-
 var draw{{.Name}}Fallback drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
 	var out stdcolor.RGBA64
 	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
@@ -811,90 +686,13 @@ var draw{{.Name}}Fallback drawFallbackFunc = func(dst draw.Image, pX int, pY int
 	}
 }
 
-var draw{{.Name}}FallbackProtectAlpha drawFallbackFunc = func(dst draw.Image, pX int, pY int, src image.Image, spX int, spY int, mask image.Image, mpX int, mpY int, endX int, endY int, dx int, dy int) {
-	var out stdcolor.RGBA64
-	for y, sy, my := pY, spY, mpY; y != endY; y, sy, my = y+dy, sy+dy, my+dy {
-		for x, sx, mx := pX, spX, mpX; x != endX; x, sx, mx = x+dx, sx+dx, mx+dx {
-			ma := uint32(0xffff)
-			if mask != nil {
-				_, _, _, ma = mask.At(mx, my).RGBA()
-			}
-			if ma == 0 {
-				continue
-			}
-
-			sr, sg, sb, sa := src.At(sx, sy).RGBA()
-			dr, dg, db, da := dst.At(x, y).RGBA()
-			if da == 0 {
-				continue
-			}
-
-			a1 := sa * ma / 0xffff
-			a3 := 0xffff - a1
-			if sa == 0x0000 {
-				sr = 0
-				sg = 0
-				sb = 0
-			} else if sa < 0xffff {
-				sr = sr * 0xffff / sa
-				sg = sg * 0xffff / sa
-				sb = sb * 0xffff / sa
-			}
-			if da == 0x0000 {
-				dr = 0
-				dg = 0
-				db = 0
-			} else if da < 0xffff {
-				dr = dr * 0xffff / da
-				dg = dg * 0xffff / da
-				db = db * 0xffff / da
-			}
-
-			var tmp, r, g, b uint32
-			_ = tmp
-{{if .CodePerChannel16}}
-{{.CodePerChannel16.To16.Channel "r"}}
-{{.CodePerChannel16.To16.Channel "g"}}
-{{.CodePerChannel16.To16.Channel "b"}}
-{{else if .Code16}}
-{{.Code16.To16}}
-{{else if .CodePerChannel}}
-{{.CodePerChannel.To16.Channel "r"}}
-{{.CodePerChannel.To16.Channel "g"}}
-{{.CodePerChannel.To16.Channel "b"}}
-{{else if .Code}}
-{{.Code.To16}}
-{{end}}
-{{if .OverMax}}
-			out.R = uint16(clip6416((uint64(dr*a3)+uint64(r)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
-			out.G = uint16(clip6416((uint64(dg*a3)+uint64(g)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
-			out.B = uint16(clip6416((uint64(db*a3)+uint64(b)*uint64(a1)) / uint64(a1+a3)) * (a1+a3) / 0xffff * da / 0xffff)
-			out.A = uint16(da)
-{{else}}
-			out.R = uint16((r*a1 + dr*a3) / 0xffff * da / 0xffff)
-			out.G = uint16((g*a1 + dg*a3) / 0xffff * da / 0xffff)
-			out.B = uint16((b*a1 + db*a3) / 0xffff * da / 0xffff)
-			out.A = uint16(da)
-{{end}}
-
-			dst.Set(x, y, &out)
-		}
-	}
-}
-
-func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	pX, pY, endX, endY, delta := r.Min.X, r.Min.Y, r.Max.X, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
 		pX, pY, endX, endY, delta = r.Max.X-1, r.Max.Y-1, r.Min.X-1, r.Min.Y-1, -1
 	}
-	var f drawFallbackFunc
-	if protectAlpha {
-		f = draw{{.Name}}FallbackProtectAlpha
-	} else {
-		f = draw{{.Name}}Fallback
-	}
 	ofsX, ofsY := pX - r.Min.X, pY - r.Min.Y
-	f.Parallel(
+	draw{{.Name}}Fallback.Parallel(
 		dst, pX, pY,
 		src, sp.X + ofsX, sp.Y + ofsY,
 		mask, mp.X + ofsX, mp.Y + ofsY,
@@ -912,83 +710,43 @@ import "testing"
 
 {{range .}}
 	func TestBlendFallback{{.Name}}(t *testing.T) {
-		testDrawFallback(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
-	}
-
-	func TestBlendFallback{{.Name}}ProtectAlpha(t *testing.T) {
-		testDrawFallback(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+		testDrawFallback(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{})
 	}
 
 	func TestBlendNRGBAToNRGBA{{.Name}}(t *testing.T) {
-		testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
-	}
-
-	func TestBlendNRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) {
-		testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+		testDrawNRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{})
 	}
 
 	func TestBlendRGBAToNRGBA{{.Name}}(t *testing.T) {
-		testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
-	}
-
-	func TestBlendRGBAToNRGBA{{.Name}}ProtectAlpha(t *testing.T) {
-		testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+		testDrawRGBAToNRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{})
 	}
 
 	func TestBlendNRGBAToRGBA{{.Name}}(t *testing.T) {
-		testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
-	}
-
-	func TestBlendNRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) {
-		testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+		testDrawNRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{})
 	}
 
 	func TestBlendRGBAToRGBA{{.Name}}(t *testing.T) {
-		testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
-	}
-
-	func TestBlendRGBAToRGBA{{.Name}}ProtectAlpha(t *testing.T) {
-		testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+		testDrawRGBAToRGBA(t, "png/bg.png", "png/fg.png", {{.Name.Lower}}{})
 	}
 
 	func BenchmarkBlendFallback{{.Name}}(b *testing.B) {
-		benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
-	}
-
-	func BenchmarkBlendFallback{{.Name}}ProtectAlpha(b *testing.B) {
-		benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+		benchmarkDrawFallback(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{})
 	}
 
 	func BenchmarkBlendNRGBAToNRGBA{{.Name}}(b *testing.B) {
-		benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
-	}
-
-	func BenchmarkBlendNRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) {
-		benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+		benchmarkDrawNRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{})
 	}
 
 	func BenchmarkBlendRGBAToNRGBA{{.Name}}(b *testing.B) {
-		benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
-	}
-
-	func BenchmarkBlendRGBAToNRGBA{{.Name}}ProtectAlpha(b *testing.B) {
-		benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+		benchmarkDrawRGBAToNRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{})
 	}
 
 	func BenchmarkBlendNRGBAToRGBA{{.Name}}(b *testing.B) {
-		benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
-	}
-
-	func BenchmarkBlendNRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) {
-		benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+		benchmarkDrawNRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{})
 	}
 
 	func BenchmarkBlendRGBAToRGBA{{.Name}}(b *testing.B) {
-		benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, false)
-	}
-
-	func BenchmarkBlendRGBAToRGBA{{.Name}}ProtectAlpha(b *testing.B) {
-		benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{}, true)
+		benchmarkDrawRGBAToRGBA(b, "png/bg.png", "png/fg.png", {{.Name.Lower}}{})
 	}
 {{end}}
 `

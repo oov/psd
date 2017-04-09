@@ -9,20 +9,20 @@ import (
 
 type Drawer interface {
 	draw.Drawer
-	DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool)
+	DrawMask(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point)
 }
 
 type drawer interface {
-	drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool)
-	drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool)
-	drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool)
-	drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool)
-	drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool)
+	drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform)
+	drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform)
+	drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform)
+	drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform)
+	drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point)
 }
 
 type alphaDrawer interface {
-	drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool)
-	drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool)
+	drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform)
+	drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform)
 }
 
 type drawFunc func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int)
@@ -93,7 +93,7 @@ func (f drawFallbackFunc) Parallel(dst draw.Image, pX int, pY int, src image.Ima
 	wg.Wait()
 }
 
-func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	clip(dst, &r, src, &sp, mask, &mp)
 	if r.Empty() {
 		return
@@ -104,10 +104,10 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 		if mask == nil {
 			switch src0 := src.(type) {
 			case *image.RGBA:
-				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil, protectAlpha)
+				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
 				return
 			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil, protectAlpha)
+				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
 				return
 			}
 		} else {
@@ -115,10 +115,10 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 			case *image.Uniform:
 				switch src0 := src.(type) {
 				case *image.RGBA:
-					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0, protectAlpha)
+					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
 					return
 				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0, protectAlpha)
+					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
 					return
 				}
 			}
@@ -127,10 +127,10 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 		if mask == nil {
 			switch src0 := src.(type) {
 			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil, protectAlpha)
+				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
 				return
 			case *image.NRGBA:
-				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil, protectAlpha)
+				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
 				return
 			}
 		} else {
@@ -138,10 +138,10 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 			case *image.Uniform:
 				switch src0 := src.(type) {
 				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0, protectAlpha)
+					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
 					return
 				case *image.NRGBA:
-					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0, protectAlpha)
+					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
 					return
 				}
 			}
@@ -153,7 +153,7 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 			if mask == nil {
 				switch src0 := src.(type) {
 				case *image.Alpha:
-					ad.drawAlphaToRGBAUniform(dst0, r, src0, sp, nil, protectAlpha)
+					ad.drawAlphaToRGBAUniform(dst0, r, src0, sp, nil)
 					return
 				}
 			} else {
@@ -161,7 +161,7 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 				case *image.Uniform:
 					switch src0 := src.(type) {
 					case *image.Alpha:
-						ad.drawAlphaToRGBAUniform(dst0, r, src0, sp, mask0, protectAlpha)
+						ad.drawAlphaToRGBAUniform(dst0, r, src0, sp, mask0)
 						return
 					}
 				}
@@ -170,7 +170,7 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 			if mask == nil {
 				switch src0 := src.(type) {
 				case *image.Alpha:
-					ad.drawAlphaToNRGBAUniform(dst0, r, src0, sp, nil, protectAlpha)
+					ad.drawAlphaToNRGBAUniform(dst0, r, src0, sp, nil)
 					return
 				}
 			} else {
@@ -178,12 +178,12 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 				case *image.Uniform:
 					switch src0 := src.(type) {
 					case *image.Alpha:
-						ad.drawAlphaToNRGBAUniform(dst0, r, src0, sp, mask0, protectAlpha)
+						ad.drawAlphaToNRGBAUniform(dst0, r, src0, sp, mask0)
 						return
 					}
 				}
 			}
 		}
 	}
-	d.drawFallback(dst, r, src, sp, mask, mp, protectAlpha)
+	d.drawFallback(dst, r, src, sp, mask, mp)
 }

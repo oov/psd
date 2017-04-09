@@ -35,11 +35,11 @@ func (d clear) String() string {
 
 // Draw implements image.Drawer interface.
 func (d clear) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d clear) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d clear) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -72,7 +72,7 @@ func (d clear) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d clear) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d clear) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -105,7 +105,7 @@ func (d clear) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 
 }
 
-func (d clear) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d clear) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -138,7 +138,7 @@ func (d clear) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 
 }
 
-func (d clear) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d clear) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -171,7 +171,7 @@ func (d clear) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 
 }
 
-func (d clear) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d clear) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -206,7 +206,7 @@ func (d clear) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d clear) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d clear) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -425,7 +425,7 @@ var drawClearAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 
 }
 
-func (d clear) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d clear) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -470,11 +470,11 @@ func (d copy) String() string {
 
 // Draw implements image.Drawer interface.
 func (d copy) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d copy) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d copy) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -507,7 +507,7 @@ func (d copy) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 
 }
 
-func (d copy) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d copy) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -540,7 +540,7 @@ func (d copy) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 
 }
 
-func (d copy) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d copy) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -573,7 +573,7 @@ func (d copy) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 
 }
 
-func (d copy) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d copy) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -606,7 +606,7 @@ func (d copy) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 
 }
 
-func (d copy) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d copy) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -641,7 +641,7 @@ func (d copy) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 
 }
 
-func (d copy) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d copy) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -964,7 +964,7 @@ var drawCopyAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 
 }
 
-func (d copy) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d copy) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -1019,11 +1019,11 @@ func (d dest) String() string {
 
 // Draw implements image.Drawer interface.
 func (d dest) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d dest) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d dest) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1056,7 +1056,7 @@ func (d dest) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 
 }
 
-func (d dest) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d dest) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1089,7 +1089,7 @@ func (d dest) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 
 }
 
-func (d dest) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d dest) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1122,7 +1122,7 @@ func (d dest) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 
 }
 
-func (d dest) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d dest) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1155,7 +1155,7 @@ func (d dest) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 
 }
 
-func (d dest) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d dest) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1190,7 +1190,7 @@ func (d dest) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 
 }
 
-func (d dest) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d dest) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1517,7 +1517,7 @@ var drawDestAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 
 }
 
-func (d dest) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d dest) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -1572,11 +1572,11 @@ func (d srcOver) String() string {
 
 // Draw implements image.Drawer interface.
 func (d srcOver) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d srcOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1609,7 +1609,7 @@ func (d srcOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d srcOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1642,7 +1642,7 @@ func (d srcOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d srcOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1675,7 +1675,7 @@ func (d srcOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 }
 
-func (d srcOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1708,7 +1708,7 @@ func (d srcOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 }
 
-func (d srcOver) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOver) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -1743,7 +1743,7 @@ func (d srcOver) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d srcOver) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOver) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2132,7 +2132,7 @@ var drawSrcOverAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 
 }
 
-func (d srcOver) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d srcOver) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -2190,11 +2190,11 @@ func (d destOver) String() string {
 
 // Draw implements image.Drawer interface.
 func (d destOver) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d destOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2227,7 +2227,7 @@ func (d destOver) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d destOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2260,7 +2260,7 @@ func (d destOver) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d destOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2293,7 +2293,7 @@ func (d destOver) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 
 }
 
-func (d destOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2326,7 +2326,7 @@ func (d destOver) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 }
 
-func (d destOver) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOver) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2361,7 +2361,7 @@ func (d destOver) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d destOver) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOver) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2750,7 +2750,7 @@ var drawDestOverAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 
 }
 
-func (d destOver) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d destOver) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -2808,11 +2808,11 @@ func (d srcIn) String() string {
 
 // Draw implements image.Drawer interface.
 func (d srcIn) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d srcIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2845,7 +2845,7 @@ func (d srcIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d srcIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2878,7 +2878,7 @@ func (d srcIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 
 }
 
-func (d srcIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2911,7 +2911,7 @@ func (d srcIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 
 }
 
-func (d srcIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2944,7 +2944,7 @@ func (d srcIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 
 }
 
-func (d srcIn) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcIn) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -2979,7 +2979,7 @@ func (d srcIn) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d srcIn) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcIn) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3314,7 +3314,7 @@ var drawSrcInAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 
 }
 
-func (d srcIn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d srcIn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -3371,11 +3371,11 @@ func (d destIn) String() string {
 
 // Draw implements image.Drawer interface.
 func (d destIn) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d destIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3408,7 +3408,7 @@ func (d destIn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d destIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3441,7 +3441,7 @@ func (d destIn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d destIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3474,7 +3474,7 @@ func (d destIn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 }
 
-func (d destIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3507,7 +3507,7 @@ func (d destIn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 
 }
 
-func (d destIn) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destIn) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3542,7 +3542,7 @@ func (d destIn) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d destIn) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destIn) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3893,7 +3893,7 @@ var drawDestInAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 
 }
 
-func (d destIn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d destIn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -3950,11 +3950,11 @@ func (d srcOut) String() string {
 
 // Draw implements image.Drawer interface.
 func (d srcOut) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d srcOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -3987,7 +3987,7 @@ func (d srcOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d srcOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4020,7 +4020,7 @@ func (d srcOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 
 }
 
-func (d srcOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4053,7 +4053,7 @@ func (d srcOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 }
 
-func (d srcOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4086,7 +4086,7 @@ func (d srcOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 
 }
 
-func (d srcOut) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOut) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4121,7 +4121,7 @@ func (d srcOut) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d srcOut) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcOut) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4462,7 +4462,7 @@ var drawSrcOutAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 
 }
 
-func (d srcOut) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d srcOut) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -4520,11 +4520,11 @@ func (d destOut) String() string {
 
 // Draw implements image.Drawer interface.
 func (d destOut) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d destOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4557,7 +4557,7 @@ func (d destOut) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d destOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4590,7 +4590,7 @@ func (d destOut) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d destOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4623,7 +4623,7 @@ func (d destOut) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 }
 
-func (d destOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4656,7 +4656,7 @@ func (d destOut) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 }
 
-func (d destOut) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOut) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -4691,7 +4691,7 @@ func (d destOut) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d destOut) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destOut) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5048,7 +5048,7 @@ var drawDestOutAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 
 }
 
-func (d destOut) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d destOut) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -5106,11 +5106,11 @@ func (d srcAtop) String() string {
 
 // Draw implements image.Drawer interface.
 func (d srcAtop) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d srcAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5143,7 +5143,7 @@ func (d srcAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d srcAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5176,7 +5176,7 @@ func (d srcAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 
 }
 
-func (d srcAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5209,7 +5209,7 @@ func (d srcAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 }
 
-func (d srcAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5242,7 +5242,7 @@ func (d srcAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 }
 
-func (d srcAtop) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcAtop) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5277,7 +5277,7 @@ func (d srcAtop) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d srcAtop) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d srcAtop) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5666,7 +5666,7 @@ var drawSrcAtopAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 
 }
 
-func (d srcAtop) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d srcAtop) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -5724,11 +5724,11 @@ func (d destAtop) String() string {
 
 // Draw implements image.Drawer interface.
 func (d destAtop) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d destAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5761,7 +5761,7 @@ func (d destAtop) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d destAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5794,7 +5794,7 @@ func (d destAtop) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 
 }
 
-func (d destAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5827,7 +5827,7 @@ func (d destAtop) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 
 }
 
-func (d destAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5860,7 +5860,7 @@ func (d destAtop) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 }
 
-func (d destAtop) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destAtop) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -5895,7 +5895,7 @@ func (d destAtop) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 
 }
 
-func (d destAtop) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d destAtop) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6284,7 +6284,7 @@ var drawDestAtopAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 
 }
 
-func (d destAtop) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d destAtop) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
@@ -6342,11 +6342,11 @@ func (d xOR) String() string {
 
 // Draw implements image.Drawer interface.
 func (d xOR) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point) {
-	// d.drawFallback(dst, r, src, sp, nil, image.Point{}, false)
-	drawMask(d, dst, r, src, sp, nil, image.Point{}, false)
+	// d.drawFallback(dst, r, src, sp, nil, image.Point{})
+	drawMask(d, dst, r, src, sp, nil, image.Point{})
 }
 
-func (d xOR) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d xOR) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6379,7 +6379,7 @@ func (d xOR) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 
 }
 
-func (d xOR) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d xOR) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6412,7 +6412,7 @@ func (d xOR) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 
 }
 
-func (d xOR) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d xOR) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6445,7 +6445,7 @@ func (d xOR) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 
 }
 
-func (d xOR) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d xOR) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6478,7 +6478,7 @@ func (d xOR) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 
 }
 
-func (d xOR) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d xOR) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6513,7 +6513,7 @@ func (d xOR) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 
 }
 
-func (d xOR) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform, protectAlpha bool) {
+func (d xOR) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 
 	alpha := uint32(0xff)
 	if mask != nil {
@@ -6896,7 +6896,7 @@ var drawXORAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 
 }
 
-func (d xOR) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point, protectAlpha bool) {
+func (d xOR) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
 	if processBackward(dst, r, src, sp) {
