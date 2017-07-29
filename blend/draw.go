@@ -99,35 +99,35 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 		return
 	}
 
-	switch dst0 := dst.(type) {
+	switch src0 := src.(type) {
 	case *image.RGBA:
 		if mask == nil {
-			switch src0 := src.(type) {
+			switch dst0 := dst.(type) {
 			case *image.RGBA:
 				d.drawRGBAToRGBAUniform(dst0, r, src0, sp, nil)
 				return
 			case *image.NRGBA:
-				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
+				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
 				return
 			}
 		} else {
 			switch mask0 := mask.(type) {
 			case *image.Uniform:
-				switch src0 := src.(type) {
+				switch dst0 := dst.(type) {
 				case *image.RGBA:
 					d.drawRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
 					return
 				case *image.NRGBA:
-					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
+					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
 					return
 				}
 			}
 		}
 	case *image.NRGBA:
 		if mask == nil {
-			switch src0 := src.(type) {
+			switch dst0 := dst.(type) {
 			case *image.RGBA:
-				d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
+				d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, nil)
 				return
 			case *image.NRGBA:
 				d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, nil)
@@ -136,9 +136,9 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 		} else {
 			switch mask0 := mask.(type) {
 			case *image.Uniform:
-				switch src0 := src.(type) {
+				switch dst0 := dst.(type) {
 				case *image.RGBA:
-					d.drawRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
+					d.drawNRGBAToRGBAUniform(dst0, r, src0, sp, mask0)
 					return
 				case *image.NRGBA:
 					d.drawNRGBAToNRGBAUniform(dst0, r, src0, sp, mask0)
@@ -146,39 +146,26 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 				}
 			}
 		}
-	}
-	if ad, ok := d.(alphaDrawer); ok {
-		switch dst0 := dst.(type) {
-		case *image.RGBA:
+	case *image.Alpha:
+		if d, ok := d.(alphaDrawer); ok {
 			if mask == nil {
-				switch src0 := src.(type) {
-				case *image.Alpha:
-					ad.drawAlphaToRGBAUniform(dst0, r, src0, sp, nil)
+				switch dst0 := dst.(type) {
+				case *image.RGBA:
+					d.drawAlphaToRGBAUniform(dst0, r, src0, sp, nil)
+					return
+				case *image.NRGBA:
+					d.drawAlphaToNRGBAUniform(dst0, r, src0, sp, nil)
 					return
 				}
 			} else {
 				switch mask0 := mask.(type) {
 				case *image.Uniform:
-					switch src0 := src.(type) {
-					case *image.Alpha:
-						ad.drawAlphaToRGBAUniform(dst0, r, src0, sp, mask0)
+					switch dst0 := dst.(type) {
+					case *image.RGBA:
+						d.drawAlphaToRGBAUniform(dst0, r, src0, sp, mask0)
 						return
-					}
-				}
-			}
-		case *image.NRGBA:
-			if mask == nil {
-				switch src0 := src.(type) {
-				case *image.Alpha:
-					ad.drawAlphaToNRGBAUniform(dst0, r, src0, sp, nil)
-					return
-				}
-			} else {
-				switch mask0 := mask.(type) {
-				case *image.Uniform:
-					switch src0 := src.(type) {
-					case *image.Alpha:
-						ad.drawAlphaToNRGBAUniform(dst0, r, src0, sp, mask0)
+					case *image.NRGBA:
+						d.drawAlphaToNRGBAUniform(dst0, r, src0, sp, mask0)
 						return
 					}
 				}
