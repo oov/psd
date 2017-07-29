@@ -228,3 +228,47 @@ func clip(dst draw.Image, r *image.Rectangle, src image.Image, sp *image.Point, 
 		mp.Y += dy
 	}
 }
+
+type pixelOffseter interface {
+	PixOffset(x, y int) int
+}
+
+func prepare4to4(dst, src pixelOffseter, dstStride, srcStride int, r image.Rectangle, sp image.Point) (d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta int) {
+	dx, dy := r.Dx(), r.Dy()
+	d0 = dst.PixOffset(r.Min.X, r.Min.Y)
+	s0 = src.PixOffset(sp.X, sp.Y)
+	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
+		dyDelta = dstStride
+		syDelta = srcStride
+		dx0, dx1, dxDelta = 0, dx<<2, +4
+		sx0, sx1, sxDelta = 0, dx<<2, +4
+	} else {
+		d0 += (dy - 1) * dstStride
+		s0 += (dy - 1) * srcStride
+		dyDelta = -dstStride
+		syDelta = -srcStride
+		dx0, dx1, dxDelta = (dx-1)<<2, -4, -4
+		sx0, sx1, sxDelta = (dx-1)<<2, -4, -4
+	}
+	return
+}
+
+func prepare1to4(dst, src pixelOffseter, dstStride, srcStride int, r image.Rectangle, sp image.Point) (d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta int) {
+	dx, dy := r.Dx(), r.Dy()
+	d0 = dst.PixOffset(r.Min.X, r.Min.Y)
+	s0 = src.PixOffset(sp.X, sp.Y)
+	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
+		dyDelta = dstStride
+		syDelta = srcStride
+		dx0, dx1, dxDelta = 0, dx<<2, +4
+		sx0, sx1, sxDelta = 0, dx, +1
+	} else {
+		d0 += (dy - 1) * dstStride
+		s0 += (dy - 1) * srcStride
+		dyDelta = -dstStride
+		syDelta = -srcStride
+		dx0, dx1, dxDelta = (dx-1)<<2, -4, -4
+		sx0, sx1, sxDelta = (dx - 1), -1, -1
+	}
+	return
+}

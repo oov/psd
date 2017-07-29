@@ -69,25 +69,8 @@ func (d normal) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawNormalNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawNormalNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -102,25 +85,8 @@ func (d normal) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawNormalRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawNormalRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -135,25 +101,8 @@ func (d normal) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawNormalNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawNormalNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -168,25 +117,8 @@ func (d normal) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawNormalRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawNormalRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -519,25 +451,8 @@ func (d darken) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDarkenNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDarkenNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -552,25 +467,8 @@ func (d darken) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDarkenRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDarkenRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -585,25 +483,8 @@ func (d darken) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDarkenNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDarkenNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -618,25 +499,8 @@ func (d darken) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDarkenRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDarkenRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -1029,25 +893,8 @@ func (d multiply) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawMultiplyNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawMultiplyNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -1062,25 +909,8 @@ func (d multiply) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawMultiplyRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawMultiplyRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -1095,25 +925,8 @@ func (d multiply) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawMultiplyNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawMultiplyNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -1128,25 +941,8 @@ func (d multiply) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawMultiplyRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawMultiplyRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -1479,25 +1275,8 @@ func (d colorBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorBurnNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorBurnNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -1512,25 +1291,8 @@ func (d colorBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorBurnRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorBurnRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -1545,25 +1307,8 @@ func (d colorBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorBurnNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorBurnNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -1578,25 +1323,8 @@ func (d colorBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorBurnRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorBurnRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -2019,25 +1747,8 @@ func (d linearBurn) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearBurnNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearBurnNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -2052,25 +1763,8 @@ func (d linearBurn) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearBurnRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearBurnRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -2085,25 +1779,8 @@ func (d linearBurn) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearBurnNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearBurnNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -2118,25 +1795,8 @@ func (d linearBurn) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearBurnRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearBurnRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -2544,25 +2204,8 @@ func (d darkerColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDarkerColorNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDarkerColorNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -2577,25 +2220,8 @@ func (d darkerColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDarkerColorRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDarkerColorRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -2610,25 +2236,8 @@ func (d darkerColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDarkerColorNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDarkerColorNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -2643,25 +2252,8 @@ func (d darkerColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDarkerColorRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDarkerColorRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -3014,25 +2606,8 @@ func (d lighten) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLightenNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLightenNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -3047,25 +2622,8 @@ func (d lighten) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLightenRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLightenRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -3080,25 +2638,8 @@ func (d lighten) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLightenNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLightenNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -3113,25 +2654,8 @@ func (d lighten) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLightenRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLightenRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -3524,25 +3048,8 @@ func (d screen) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawScreenNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawScreenNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -3557,25 +3064,8 @@ func (d screen) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawScreenRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawScreenRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -3590,25 +3080,8 @@ func (d screen) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawScreenNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawScreenNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -3623,25 +3096,8 @@ func (d screen) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawScreenRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawScreenRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -3974,25 +3430,8 @@ func (d colorDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorDodgeNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorDodgeNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -4007,25 +3446,8 @@ func (d colorDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorDodgeRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorDodgeRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -4040,25 +3462,8 @@ func (d colorDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorDodgeNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorDodgeNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -4073,25 +3478,8 @@ func (d colorDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorDodgeRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorDodgeRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -4514,25 +3902,8 @@ func (d linearDodge) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearDodgeNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearDodgeNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -4547,25 +3918,8 @@ func (d linearDodge) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearDodgeRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearDodgeRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -4580,25 +3934,8 @@ func (d linearDodge) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearDodgeNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearDodgeNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -4613,25 +3950,8 @@ func (d linearDodge) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearDodgeRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearDodgeRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -4964,25 +4284,8 @@ func (d lighterColor) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangl
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLighterColorNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLighterColorNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -4997,25 +4300,8 @@ func (d lighterColor) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLighterColorRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLighterColorRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -5030,25 +4316,8 @@ func (d lighterColor) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle,
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLighterColorNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLighterColorNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -5063,25 +4332,8 @@ func (d lighterColor) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLighterColorRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLighterColorRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -5434,25 +4686,8 @@ func (d add) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawAddNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawAddNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -5467,25 +4702,8 @@ func (d add) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawAddRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawAddRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -5500,25 +4718,8 @@ func (d add) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawAddNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawAddNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -5533,25 +4734,8 @@ func (d add) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawAddRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawAddRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -5884,25 +5068,8 @@ func (d overlay) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawOverlayNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawOverlayNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -5917,25 +5084,8 @@ func (d overlay) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawOverlayRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawOverlayRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -5950,25 +5100,8 @@ func (d overlay) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawOverlayNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawOverlayNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -5983,25 +5116,8 @@ func (d overlay) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawOverlayRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawOverlayRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -6394,25 +5510,8 @@ func (d softLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSoftLightNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSoftLightNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -6427,25 +5526,8 @@ func (d softLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSoftLightRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSoftLightRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -6460,25 +5542,8 @@ func (d softLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSoftLightNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSoftLightNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -6493,25 +5558,8 @@ func (d softLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSoftLightRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSoftLightRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -6979,25 +6027,8 @@ func (d hardLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHardLightNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHardLightNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -7012,25 +6043,8 @@ func (d hardLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHardLightRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHardLightRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -7045,25 +6059,8 @@ func (d hardLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHardLightNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHardLightNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -7078,25 +6075,8 @@ func (d hardLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHardLightRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHardLightRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -7504,25 +6484,8 @@ func (d linearLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearLightNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearLightNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -7537,25 +6500,8 @@ func (d linearLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearLightRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearLightRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -7570,25 +6516,8 @@ func (d linearLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearLightNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearLightNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -7603,25 +6532,8 @@ func (d linearLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLinearLightRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLinearLightRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -8014,25 +6926,8 @@ func (d vividLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawVividLightNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawVividLightNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -8047,25 +6942,8 @@ func (d vividLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawVividLightRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawVividLightRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -8080,25 +6958,8 @@ func (d vividLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawVividLightNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawVividLightNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -8113,25 +6974,8 @@ func (d vividLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawVividLightRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawVividLightRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -8674,25 +7518,8 @@ func (d pinLight) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawPinLightNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawPinLightNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -8707,25 +7534,8 @@ func (d pinLight) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawPinLightRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawPinLightRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -8740,25 +7550,8 @@ func (d pinLight) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawPinLightNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawPinLightNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -8773,25 +7566,8 @@ func (d pinLight) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawPinLightRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawPinLightRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -9334,25 +8110,8 @@ func (d hardMix) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHardMixNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHardMixNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -9367,25 +8126,8 @@ func (d hardMix) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHardMixRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHardMixRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -9400,25 +8142,8 @@ func (d hardMix) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHardMixNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHardMixNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -9433,25 +8158,8 @@ func (d hardMix) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHardMixRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHardMixRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -10129,25 +8837,8 @@ func (d difference) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDifferenceNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDifferenceNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -10162,25 +8853,8 @@ func (d difference) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDifferenceRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDifferenceRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -10195,25 +8869,8 @@ func (d difference) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDifferenceNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDifferenceNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -10228,25 +8885,8 @@ func (d difference) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDifferenceRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDifferenceRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -10639,25 +9279,8 @@ func (d exclusion) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawExclusionNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawExclusionNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -10672,25 +9295,8 @@ func (d exclusion) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawExclusionRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawExclusionRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -10705,25 +9311,8 @@ func (d exclusion) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawExclusionNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawExclusionNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -10738,25 +9327,8 @@ func (d exclusion) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawExclusionRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawExclusionRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -11089,25 +9661,8 @@ func (d subtract) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSubtractNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSubtractNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -11122,25 +9677,8 @@ func (d subtract) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSubtractRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSubtractRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -11155,25 +9693,8 @@ func (d subtract) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSubtractNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSubtractNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -11188,25 +9709,8 @@ func (d subtract) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSubtractRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSubtractRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -11599,25 +10103,8 @@ func (d divide) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDivideNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDivideNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -11632,25 +10119,8 @@ func (d divide) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDivideRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDivideRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -11665,25 +10135,8 @@ func (d divide) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDivideNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDivideNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -11698,25 +10151,8 @@ func (d divide) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawDivideRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawDivideRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -12139,25 +10575,8 @@ func (d hue) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *i
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHueNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHueNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -12172,25 +10591,8 @@ func (d hue) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *im
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHueRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHueRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -12205,25 +10607,8 @@ func (d hue) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHueNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHueNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -12238,25 +10623,8 @@ func (d hue) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *imag
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawHueRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawHueRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -12574,25 +10942,8 @@ func (d saturation) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSaturationNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSaturationNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -12607,25 +10958,8 @@ func (d saturation) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSaturationRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSaturationRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -12640,25 +10974,8 @@ func (d saturation) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSaturationNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSaturationNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -12673,25 +10990,8 @@ func (d saturation) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawSaturationRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawSaturationRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -13009,25 +11309,8 @@ func (d color) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -13042,25 +11325,8 @@ func (d color) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -13075,25 +11341,8 @@ func (d color) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -13108,25 +11357,8 @@ func (d color) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawColorRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawColorRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -13439,25 +11671,8 @@ func (d luminosity) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle,
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLuminosityNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLuminosityNRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -13472,25 +11687,8 @@ func (d luminosity) drawRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, 
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLuminosityRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLuminosityRGBAToNRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -13505,25 +11703,8 @@ func (d luminosity) drawNRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, s
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLuminosityNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLuminosityNRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 
@@ -13538,25 +11719,8 @@ func (d luminosity) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangle, sr
 		}
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta   int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	drawLuminosityRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	drawLuminosityRGBAToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 
 }
 

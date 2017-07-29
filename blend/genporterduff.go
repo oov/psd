@@ -282,25 +282,8 @@ func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Recta
 		alpha >>= 8
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		dyDelta, syDelta int
-		x0, x1, xDelta int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		x0, x1, xDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		x0, x1, xDelta = (dx-1)<<2, -4, -4
-	}
-	{{.}}.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, x0, x1, xDelta, syDelta, x0, x1, xDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
+	{{.}}.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 {{end}}
 {{template "draw" printf "draw%sNRGBAToNRGBA" .Name}}
 }
@@ -328,27 +311,8 @@ func (d {{.Name.Lower}}) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Recta
 		alpha >>= 8
 	}
 
-	dx, dy := r.Dx(), r.Dy()
-	d0 := dst.PixOffset(r.Min.X, r.Min.Y)
-	s0 := src.PixOffset(sp.X, sp.Y)
-	var (
-		sx0, sx1, sxDelta, syDelta int
-		dx0, dx1, dxDelta, dyDelta int
-	)
-	if r.Min.Y < sp.Y || r.Min.Y == sp.Y && r.Min.X <= sp.X {
-		dyDelta = dst.Stride
-		syDelta = src.Stride
-		sx0, sx1, sxDelta = 0, dx, +1
-		dx0, dx1, dxDelta = 0, dx<<2, +4
-	} else {
-		d0 += (dy - 1) * dst.Stride
-		s0 += (dy - 1) * src.Stride
-		dyDelta = -dst.Stride
-		syDelta = -src.Stride
-		sx0, sx1, sxDelta = (dx-1), -1, -1
-		dx0, dx1, dxDelta = (dx-1)<<2, -4, -4
-	}
-	{{.}}.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, dy, sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
+	{{.}}.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 {{end}}
 {{template "alpha" printf "draw%sAlphaToNRGBA" .Name}}
 }
