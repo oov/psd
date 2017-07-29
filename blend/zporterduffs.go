@@ -134,6 +134,38 @@ func (d clear) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 
 }
 
+func (d clear) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawClearUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d clear) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawClearUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
 var drawClearNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 
 	var dPos, sPos int
@@ -318,6 +350,58 @@ var drawClearAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 
 }
 
+var drawClearUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawClearUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d clear) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -460,6 +544,38 @@ func (d copy) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawCopyAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d copy) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawCopyUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d copy) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawCopyUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -751,6 +867,74 @@ var drawCopyAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 
 }
 
+var drawCopyUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = sa
+
+			r = sr
+
+			g = sg
+
+			b = sb
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawCopyUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = sa
+
+			r = sr
+
+			g = sg
+
+			b = sb
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d copy) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -903,6 +1087,38 @@ func (d dest) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *im
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawDestAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d dest) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawDestUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d dest) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawDestUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -1198,6 +1414,94 @@ var drawDestAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y
 
 }
 
+var drawDestUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			if da == 0 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 255 {
+				dr = (dr * da * 32897) >> 23
+				dg = (dg * da * 32897) >> 23
+				db = (db * da * 32897) >> 23
+			}
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = da
+
+			r = dr
+
+			g = dg
+
+			b = db
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawDestUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = da
+
+			r = dr
+
+			g = dg
+
+			b = db
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d dest) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -1350,6 +1654,38 @@ func (d srcOver) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawSrcOverAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d srcOver) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawSrcOverUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d srcOver) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawSrcOverUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -1707,6 +2043,96 @@ var drawSrcOverAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 
 }
 
+var drawSrcOverUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			if da == 0 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 255 {
+				dr = (dr * da * 32897) >> 23
+				dg = (dg * da * 32897) >> 23
+				db = (db * da * 32897) >> 23
+			}
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			tmp = 0xff - sa
+			a = sa + (tmp*da*32768)>>23
+
+			r = sr + (tmp*dr*32768)>>23
+
+			g = sg + (tmp*dg*32768)>>23
+
+			b = sb + (tmp*db*32768)>>23
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawSrcOverUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			tmp = 0xff - sa
+			a = sa + (tmp*da*32768)>>23
+
+			r = sr + (tmp*dr*32768)>>23
+
+			g = sg + (tmp*dg*32768)>>23
+
+			b = sb + (tmp*db*32768)>>23
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d srcOver) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -1862,6 +2288,38 @@ func (d destOver) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawDestOverAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d destOver) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawDestOverUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d destOver) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawDestOverUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -2219,6 +2677,96 @@ var drawDestOverAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 
 }
 
+var drawDestOverUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			if da == 0 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 255 {
+				dr = (dr * da * 32897) >> 23
+				dg = (dg * da * 32897) >> 23
+				db = (db * da * 32897) >> 23
+			}
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			tmp = 0xff - da
+			a = da + (tmp*sa*32768)>>23
+
+			r = dr + (tmp*sr*32768)>>23
+
+			g = dg + (tmp*sg*32768)>>23
+
+			b = db + (tmp*sb*32768)>>23
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawDestOverUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			tmp = 0xff - da
+			a = da + (tmp*sa*32768)>>23
+
+			r = dr + (tmp*sr*32768)>>23
+
+			g = dg + (tmp*sg*32768)>>23
+
+			b = db + (tmp*sb*32768)>>23
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d destOver) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -2374,6 +2922,38 @@ func (d srcIn) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *i
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawSrcInAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d srcIn) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawSrcInUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d srcIn) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawSrcInUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -2677,6 +3257,78 @@ var drawSrcInAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 
 }
 
+var drawSrcInUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = (da * sa * 32768) >> 23
+
+			r = (da * sr * 32768) >> 23
+
+			g = (da * sg * 32768) >> 23
+
+			b = (da * sb * 32768) >> 23
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawSrcInUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = (da * sa * 32768) >> 23
+
+			r = (da * sr * 32768) >> 23
+
+			g = (da * sg * 32768) >> 23
+
+			b = (da * sb * 32768) >> 23
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d srcIn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -2831,6 +3483,38 @@ func (d destIn) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawDestInAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d destIn) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawDestInUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d destIn) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawDestInUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -3150,6 +3834,94 @@ var drawDestInAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 
 }
 
+var drawDestInUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			if da == 0 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 255 {
+				dr = (dr * da * 32897) >> 23
+				dg = (dg * da * 32897) >> 23
+				db = (db * da * 32897) >> 23
+			}
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = (da * sa * 32768) >> 23
+
+			r = (sa * dr * 32768) >> 23
+
+			g = (sa * dg * 32768) >> 23
+
+			b = (sa * db * 32768) >> 23
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawDestInUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = (da * sa * 32768) >> 23
+
+			r = (sa * dr * 32768) >> 23
+
+			g = (sa * dg * 32768) >> 23
+
+			b = (sa * db * 32768) >> 23
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d destIn) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -3304,6 +4076,38 @@ func (d srcOut) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawSrcOutAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d srcOut) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawSrcOutUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d srcOut) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawSrcOutUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -3613,6 +4417,80 @@ var drawSrcOutAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 
 }
 
+var drawSrcOutUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			tmp = 0xff - da
+			a = (tmp * sa * 32768) >> 23
+
+			r = (tmp * sr * 32768) >> 23
+
+			g = (tmp * sg * 32768) >> 23
+
+			b = (tmp * sb * 32768) >> 23
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawSrcOutUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			tmp = 0xff - da
+			a = (tmp * sa * 32768) >> 23
+
+			r = (tmp * sr * 32768) >> 23
+
+			g = (tmp * sg * 32768) >> 23
+
+			b = (tmp * sb * 32768) >> 23
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d srcOut) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -3768,6 +4646,38 @@ func (d destOut) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawDestOutAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d destOut) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawDestOutUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d destOut) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawDestOutUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -4093,6 +5003,96 @@ var drawDestOutAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 
 }
 
+var drawDestOutUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			if da == 0 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 255 {
+				dr = (dr * da * 32897) >> 23
+				dg = (dg * da * 32897) >> 23
+				db = (db * da * 32897) >> 23
+			}
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			tmp = 0xff - sa
+			a = (tmp * da * 32768) >> 23
+
+			r = (tmp * dr * 32768) >> 23
+
+			g = (tmp * dg * 32768) >> 23
+
+			b = (tmp * db * 32768) >> 23
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawDestOutUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			tmp = 0xff - sa
+			a = (tmp * da * 32768) >> 23
+
+			r = (tmp * dr * 32768) >> 23
+
+			g = (tmp * dg * 32768) >> 23
+
+			b = (tmp * db * 32768) >> 23
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d destOut) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -4248,6 +5248,38 @@ func (d srcAtop) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src 
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawSrcAtopAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d srcAtop) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawSrcAtopUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d srcAtop) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawSrcAtopUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -4605,6 +5637,96 @@ var drawSrcAtopAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 
 }
 
+var drawSrcAtopUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			if da == 0 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 255 {
+				dr = (dr * da * 32897) >> 23
+				dg = (dg * da * 32897) >> 23
+				db = (db * da * 32897) >> 23
+			}
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = da
+			tmp = 0xff - sa
+
+			r = (sr*da + dr*tmp) * 32768 >> 23
+
+			g = (sg*da + dg*tmp) * 32768 >> 23
+
+			b = (sb*da + db*tmp) * 32768 >> 23
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawSrcAtopUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = da
+			tmp = 0xff - sa
+
+			r = (sr*da + dr*tmp) * 32768 >> 23
+
+			g = (sg*da + dg*tmp) * 32768 >> 23
+
+			b = (sb*da + db*tmp) * 32768 >> 23
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d srcAtop) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -4760,6 +5882,38 @@ func (d destAtop) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawDestAtopAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d destAtop) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawDestAtopUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d destAtop) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawDestAtopUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -5117,6 +6271,96 @@ var drawDestAtopAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 
 }
 
+var drawDestAtopUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			if da == 0 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 255 {
+				dr = (dr * da * 32897) >> 23
+				dg = (dg * da * 32897) >> 23
+				db = (db * da * 32897) >> 23
+			}
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = sa
+			tmp = 0xff - da
+
+			r = (sr*tmp + dr*sa) * 32768 >> 23
+
+			g = (sg*tmp + dg*sa) * 32768 >> 23
+
+			b = (sb*tmp + db*sa) * 32768 >> 23
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawDestAtopUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = sa
+			tmp = 0xff - da
+
+			r = (sr*tmp + dr*sa) * 32768 >> 23
+
+			g = (sg*tmp + dg*sa) * 32768 >> 23
+
+			b = (sb*tmp + db*sa) * 32768 >> 23
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
 func (d destAtop) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {
 	x0, x1, dx := r.Min.X, r.Max.X, 1
 	y0, y1, dy := r.Min.Y, r.Max.Y, 1
@@ -5272,6 +6516,38 @@ func (d xOR) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *ima
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
 	drawXORAlphaToRGBA.Parallel(dst.Pix[d0:], src.Pix[s0:], alpha, r.Dy(), sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+
+}
+
+func (d xOR) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawXORUniformToNRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+
+}
+
+func (d xOR) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	drawXORUniformToRGBA.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr>>8, sg>>8, sb>>8, (sa>>8)*alpha*32897>>23, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 
 }
 
@@ -5619,6 +6895,94 @@ var drawXORAlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y 
 		}
 		dPos += dyDelta
 		sPos += syDelta
+	}
+
+}
+
+var drawXORUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			if da == 0 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 255 {
+				dr = (dr * da * 32897) >> 23
+				dg = (dg * da * 32897) >> 23
+				db = (db * da * 32897) >> 23
+			}
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = (sa*(0xff-da) + da*(0xff-sa)) * 32768 >> 23
+
+			r = (sr*(0xff-da) + dr*(0xff-sa)) * 32768 >> 23
+
+			g = (sg*(0xff-da) + dg*(0xff-sa)) * 32768 >> 23
+
+			b = (sb*(0xff-da) + db*(0xff-sa)) * 32768 >> 23
+
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+
+		}
+		dPos += dyDelta
+	}
+
+}
+
+var drawXORUniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+
+			var r, g, b, a, tmp uint32
+			_ = tmp
+
+			a = (sa*(0xff-da) + da*(0xff-sa)) * 32768 >> 23
+
+			r = (sr*(0xff-da) + dr*(0xff-sa)) * 32768 >> 23
+
+			g = (sg*(0xff-da) + dg*(0xff-sa)) * 32768 >> 23
+
+			b = (sb*(0xff-da) + db*(0xff-sa)) * 32768 >> 23
+
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+
+		}
+		dPos += dyDelta
 	}
 
 }

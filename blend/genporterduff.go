@@ -321,6 +321,35 @@ func (d {{.Name.Lower}}) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectang
 {{template "alpha" printf "draw%sAlphaToRGBA" .Name}}
 }
 
+func (d {{.Name.Lower}}) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+{{define "uniform"}}
+	alpha := uint32(0xff)
+	if mask != nil {
+		_, _, _, alpha = mask.C.RGBA()
+		if alpha == 0 {
+			return
+		}
+		alpha >>= 8
+	}
+
+	sr, sg, sb, sa := src.C.RGBA()
+	if alpha == 0x00 {
+		sr, sg, sb, sa = 0, 0, 0, 0
+	} else if alpha != 0xff {
+		sr = (sr >> 8) * alpha * 32897 >> 23
+		sg = (sg >> 8) * alpha * 32897 >> 23
+		sb = (sb >> 8) * alpha * 32897 >> 23
+		sa = (sa >> 8) * alpha * 32897 >> 23
+	}
+	{{.}}.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr, sg, sb, sa, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
+{{end}}
+{{template "uniform" printf "draw%sUniformToNRGBA" .Name}}
+}
+
+func (d {{.Name.Lower}}) drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
+{{template "uniform" printf "draw%sUniformToRGBA" .Name}}
+}
+
 var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 {{define "drawMain1"}}
 	var dPos, sPos int
@@ -555,6 +584,93 @@ var draw{{.Name}}AlphaToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 	{{template "drawMainAlpha2" .}}
 	{{template "drawMainAlpha2_SetByRGBA" .}}
 	{{template "drawMainAlpha3" .}}
+}
+
+var draw{{.Name}}UniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+{{define "drawMainUniform1"}}
+	var dPos int
+	for ; y > 0; y-- {
+		dpix := dest[dPos:]
+		for j := dx0; j != dx1; j += dxDelta {
+{{if eq .DestRead "alpha"}}
+			da := uint32(dpix[j+3])
+{{else if ne .DestRead "skip"}}
+			da := uint32(dpix[j+3])
+			db := uint32(dpix[j+2])
+			dg := uint32(dpix[j+1])
+			dr := uint32(dpix[j])
+{{end}}
+{{end}}
+{{define "drawMainUniform1_DestNRGBAToRGBA"}}
+			if da == 0 {
+				dr = 0
+				dg = 0
+				db = 0
+			} else if da < 255 {
+				dr = (dr * da * 32897) >> 23
+				dg = (dg * da * 32897) >> 23
+				db = (db * da * 32897) >> 23
+			}
+{{end}}
+{{define "drawMainUniform2"}}
+			var r, g, b, a, tmp uint32
+			_ = tmp
+			{{if .Alpha}}
+				{{.Alpha.To8.Channel "a"}}
+			{{else if .Alpha16}}
+				{{.Alpha16.To8.Channel "a"}}
+			{{end}}
+			{{if .Code}}
+				{{.Code.To8.Channel "r"}}
+				{{.Code.To8.Channel "g"}}
+				{{.Code.To8.Channel "b"}}
+			{{else if .Code16}}
+				{{.Code16.To8.Channel "r"}}
+				{{.Code16.To8.Channel "g"}}
+				{{.Code16.To8.Channel "b"}}
+			{{end}}
+{{end}}
+{{define "drawMainUniform2_SetByRGBA"}}
+			dpix[j+3] = uint8(a)
+			dpix[j+2] = uint8(b)
+			dpix[j+1] = uint8(g)
+			dpix[j+0] = uint8(r)
+{{end}}
+{{define "drawMainUniform2_SetByNRGBA"}}
+			dpix[j+3] = uint8(a)
+			if a == 255 {
+				dpix[j+2] = uint8(b)
+				dpix[j+1] = uint8(g)
+				dpix[j+0] = uint8(r)
+			} else if a == 0 {
+				dpix[j+2] = 0
+				dpix[j+1] = 0
+				dpix[j+0] = 0
+			} else {
+				dpix[j+2] = uint8(b * 0xff / a)
+				dpix[j+1] = uint8(g * 0xff / a)
+				dpix[j+0] = uint8(r * 0xff / a)
+			}
+{{end}}
+{{define "drawMainUniform3"}}
+		}
+		dPos += dyDelta
+	}
+{{end}}
+{{template "drawMainUniform1" .}}
+{{if and (ne .DestRead "skip") (ne .DestRead "alpha")}}
+	{{template "drawMainUniform1_DestNRGBAToRGBA" .}}
+{{end}}
+{{template "drawMainUniform2" .}}
+{{template "drawMainUniform2_SetByNRGBA" .}}
+{{template "drawMainUniform3" .}}
+}
+
+var draw{{.Name}}UniformToRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+	{{template "drawMainUniform1" .}}
+	{{template "drawMainUniform2" .}}
+	{{template "drawMainUniform2_SetByRGBA" .}}
+	{{template "drawMainUniform3" .}}
 }
 
 func (d {{.Name.Lower}}) drawFallback(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, mask image.Image, mp image.Point) {

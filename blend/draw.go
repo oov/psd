@@ -25,6 +25,11 @@ type alphaDrawer interface {
 	drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform)
 }
 
+type uniformDrawer interface {
+	drawUniformToRGBAUniform(dst *image.RGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform)
+	drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform)
+}
+
 type drawFunc func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int)
 
 func (f drawFunc) Parallel(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
@@ -51,6 +56,35 @@ func (f drawFunc) Parallel(dest []byte, src []byte, alpha uint32, y int, sx0 int
 	go func() {
 		defer wg.Done()
 		f(dest, src, alpha, y, sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+	}()
+	wg.Wait()
+}
+
+type drawUniformFunc func(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int)
+
+func (f drawUniformFunc) Parallel(dest []byte, sr, sg, sb, sa uint32, y int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+	n := runtime.GOMAXPROCS(0)
+	for n > 1 && n<<1 > y {
+		n--
+	}
+	if n == 1 {
+		f(dest, sr, sg, sb, sa, y, dx0, dx1, dxDelta, dyDelta)
+		return
+	}
+	var wg sync.WaitGroup
+	wg.Add(n)
+	step := y / n
+	for i := 1; i < n; i++ {
+		go func(d []byte) {
+			defer wg.Done()
+			f(d, sr, sg, sb, sa, step, dx0, dx1, dxDelta, dyDelta)
+		}(dest)
+		dest = dest[dyDelta*step:]
+		y -= step
+	}
+	go func() {
+		defer wg.Done()
+		f(dest, sr, sg, sb, sa, y, dx0, dx1, dxDelta, dyDelta)
 	}()
 	wg.Wait()
 }
@@ -166,6 +200,31 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 						return
 					case *image.NRGBA:
 						d.drawAlphaToNRGBAUniform(dst0, r, src0, sp, mask0)
+						return
+					}
+				}
+			}
+		}
+	case *image.Uniform:
+		if d, ok := d.(uniformDrawer); ok {
+			if mask == nil {
+				switch dst0 := dst.(type) {
+				case *image.RGBA:
+					d.drawUniformToRGBAUniform(dst0, r, src0, sp, nil)
+					return
+				case *image.NRGBA:
+					d.drawUniformToNRGBAUniform(dst0, r, src0, sp, nil)
+					return
+				}
+			} else {
+				switch mask0 := mask.(type) {
+				case *image.Uniform:
+					switch dst0 := dst.(type) {
+					case *image.RGBA:
+						d.drawUniformToRGBAUniform(dst0, r, src0, sp, mask0)
+						return
+					case *image.NRGBA:
+						d.drawUniformToNRGBAUniform(dst0, r, src0, sp, mask0)
 						return
 					}
 				}
