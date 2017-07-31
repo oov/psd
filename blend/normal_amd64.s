@@ -1,6 +1,6 @@
 #include "textflag.h"
 
-TEXT	·drawNormalNRGBAToNRGBAFast(SB),0,$0-128
+TEXT	·drawNormalNRGBAToNRGBAFast(SB),0,$0-144
    MOVL alpha+48(FP), AX
    IMULL $0x00008081, AX
    MOVL AX, alpha+48(FP)
