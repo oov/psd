@@ -6,12 +6,14 @@ TEXT	·drawNormalNRGBAToNRGBAFast(SB),0,$0-128
    MOVL AX, alpha+48(FP)
 
    MOVQ src+24(FP), SI
+   ADDQ s0+64(FP), SI
    MOVQ dest+0(FP), DI
-   MOVQ y+56(FP), BX
+   ADDQ d0+56(FP), DI
+   MOVQ y+72(FP), BX
 
-   MOVQ dyDelta+120(FP), R12
-   MOVQ syDelta+88(FP), R13
-   MOVQ sxDelta+80(FP), R14
+   MOVQ dyDelta+136(FP), R12
+   MOVQ syDelta+104(FP), R13
+   MOVQ sxDelta+96(FP), R14
 
    MOVQ $0x0000808180818081, AX
    MOVQ AX, X14
@@ -19,7 +21,7 @@ TEXT	·drawNormalNRGBAToNRGBAFast(SB),0,$0-128
    PXOR X15, X15
 
 LOOPY:
-   MOVQ sx0+64(FP), R15
+   MOVQ sx0+80(FP), R15
 
    LOOPX:
       MOVL (SI)(R15*1), AX
@@ -127,7 +129,7 @@ LOOPY:
 
       NEXTX:
       ADDQ R14, R15
-      CMPQ R15, sx1+72(FP)
+      CMPQ R15, sx1+88(FP)
       JNE LOOPX
 
    ADDQ R12, DI

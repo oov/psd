@@ -475,3 +475,9 @@ func benchmarkDrawRGBAToRGBA(b *testing.B, path1 string, path2 string, d drawer)
 		d.drawRGBAToRGBAUniform(img, img2.Bounds(), img2, image.Pt(0, 0), nil)
 	}
 }
+
+func TestSliceBoundsOutOfRange(t *testing.T) {
+	x := image.NewNRGBA(image.Rect(0, 0, 48, 48))
+	x2 := image.NewNRGBA(image.Rect(0, 0, 48, 27))
+	Copy.Draw(x, image.Rect(0, 10, 48, 37), x2, image.Point{})
+}

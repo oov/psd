@@ -30,32 +30,32 @@ type uniformDrawer interface {
 	drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform)
 }
 
-type drawFunc func(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int)
+type drawFunc func(dest []byte, src []byte, alpha uint32, d0 int, s0 int, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int)
 
-func (f drawFunc) Parallel(dest []byte, src []byte, alpha uint32, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
+func (f drawFunc) Parallel(dest []byte, src []byte, alpha uint32, d0 int, s0 int, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 	n := runtime.GOMAXPROCS(0)
 	for n > 1 && n<<1 > y {
 		n--
 	}
 	if n == 1 {
-		f(dest, src, alpha, y, sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+		f(dest, src, alpha, d0, s0, y, sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 		return
 	}
 	var wg sync.WaitGroup
 	wg.Add(n)
 	step := y / n
-	for i := 1; i < n; i++ {
-		go func(d []byte, s []byte) {
+	for i := 0; i < n-1; i++ {
+		go func(d0, s0 int) {
 			defer wg.Done()
-			f(d, s, alpha, step, sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
-		}(dest, src)
-		dest = dest[dyDelta*step:]
-		src = src[syDelta*step:]
+			f(dest, src, alpha, d0, s0, step, sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+		}(d0, s0)
+		d0 += dyDelta * step
+		s0 += syDelta * step
 		y -= step
 	}
 	go func() {
 		defer wg.Done()
-		f(dest, src, alpha, y, sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
+		f(dest, src, alpha, d0, s0, y, sx0, sx1, sxDelta, syDelta, dx0, dx1, dxDelta, dyDelta)
 	}()
 	wg.Wait()
 }
