@@ -58,25 +58,27 @@ type Layer struct {
 	Clip      []*Layer
 }
 
+const DefaultTileSize = 64
+
 type Options struct {
-	TileSize                  int
+	TileSize int
+	// It will used to detect character encoding of a variable-width encoding layer name.
 	LayerNameEncodingDetector func([]byte) encoding.Encoding
 }
 
 // New creates layer tree from the psdFile.
 //
 // New can cancel processing through ctx.
-// If you pass 0 to tileSize, it will be defaultTileSize.
+// If you pass 0 to opt.TileSize, it will be DefaultTileSize.
 func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 	if opt == nil {
-		opt = &Options{
-			TileSize:                  defaultTileSize,
-			LayerNameEncodingDetector: func([]byte) encoding.Encoding { return encoding.Nop },
-		}
-	} else {
-		if opt.TileSize == 0 {
-			opt.TileSize = defaultTileSize
-		}
+		opt = &Options{}
+	}
+	if opt.TileSize == 0 {
+		opt.TileSize = DefaultTileSize
+	}
+	if opt.LayerNameEncodingDetector == nil {
+		opt.LayerNameEncodingDetector = func([]byte) encoding.Encoding { return encoding.Nop }
 	}
 	renderer, img, err := newRenderer(ctx, psdFile, opt.TileSize)
 	if err != nil {

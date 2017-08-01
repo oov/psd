@@ -21,8 +21,6 @@ const (
 	drInvisible drawResult = 3
 )
 
-const defaultTileSize = 64
-
 // Renderer is a renderer.
 type Renderer struct {
 	tileSize int
