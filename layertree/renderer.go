@@ -223,7 +223,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, l *Layer, opacity in
 	if len(l.Children) > 0 {
 		var a int
 		if blendMode == psd.BlendModePassThrough {
-			r.draw(ldBuffer, b, 255, psd.BlendModeNormal)
+			blend.Copy.Draw(ldBuffer, ldBuffer.Rect, b, ldBuffer.Rect.Min)
 			a = opacity * 32897
 		} else {
 			a = 255 * 32897
@@ -234,7 +234,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, l *Layer, opacity in
 			}
 		}
 	} else if ld.Canvas != nil {
-		r.draw(ldBuffer, ldCanvas, 255, psd.BlendModeNormal)
+		blend.Copy.Draw(ldBuffer, ldCanvas.Rect, ldCanvas, ldCanvas.Rect.Min)
 	}
 
 	if l.MaskEnabled {
@@ -275,7 +275,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, l *Layer, opacity in
 	defer r.putBuffer(ldClipBuffer)
 
 	if l.BlendClippedElements {
-		r.draw(ldClipBuffer, ldBuffer, 255, psd.BlendModeNormal)
+		blend.Copy.Draw(ldClipBuffer, ldBuffer.Rect, ldBuffer, ldBuffer.Rect.Min)
 		r.writeAlpha(ldClipBuffer, 255)
 		for _, cl := range l.Clip {
 			dr := r.drawLayer(pt, ldClipBuffer, cl, cl.Opacity, cl.BlendMode, true)
@@ -285,8 +285,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, l *Layer, opacity in
 		}
 		r.applyAlpha(ldClipBuffer, ldBuffer)
 		if blendMode == psd.BlendModePassThrough {
-			blend.Clear.Draw(b, b.Rect, image.Transparent, image.Point{})
-			r.draw(b, ldClipBuffer, 255, psd.BlendModeNormal)
+			blend.Copy.Draw(b, b.Rect, ldClipBuffer, b.Rect.Min)
 		} else {
 			r.draw(b, ldClipBuffer, opacity, blendMode)
 		}
