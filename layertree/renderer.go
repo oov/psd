@@ -29,6 +29,7 @@ type Renderer struct {
 
 	layerImage map[int]layerImage
 	rootImage  tiledImage
+	rootImageM sync.Mutex
 
 	cached map[image.Point]struct{}
 	cacheM sync.RWMutex
@@ -141,6 +142,9 @@ func (r *Renderer) SetDirty(rect image.Rectangle) {
 
 // Render renders image.
 func (r *Renderer) Render(ctx context.Context, root *Root) (*image.RGBA, error) {
+	r.rootImageM.Lock()
+	defer r.rootImageM.Unlock()
+
 	img := image.NewRGBA(root.CanvasRect)
 	rect := root.Rect
 	tileSize := r.tileSize
@@ -153,21 +157,27 @@ func (r *Renderer) Render(ctx context.Context, root *Root) (*image.RGBA, error) 
 	for n > 1 && n<<1 > ylen {
 		n--
 	}
+	modified := map[image.Point]struct{}{}
 	pc := &parallelContext{}
 	pc.Wg.Add(n)
 	step := (ylen / n) * tileSize
 	for i := 1; i < n; i++ {
-		go r.renderInner(pc, img, root, x0, x1, y0, y0+step)
+		go r.renderInner(pc, img, root, modified, x0, x1, y0, y0+step)
 		y0 += step
 	}
-	go r.renderInner(pc, img, root, x0, x1, y0, y1)
+	go r.renderInner(pc, img, root, modified, x0, x1, y0, y1)
 	if err := pc.Wait(ctx); err != nil {
 		return nil, err
 	}
+	r.cacheM.Lock()
+	for pt := range modified {
+		r.cached[pt] = struct{}{}
+	}
+	r.cacheM.Unlock()
 	return img, nil
 }
 
-func (r *Renderer) renderInner(pc *parallelContext, img *image.RGBA, root *Root, x0, x1, y0, y1 int) {
+func (r *Renderer) renderInner(pc *parallelContext, img *image.RGBA, root *Root, modified map[image.Point]struct{}, x0, x1, y0, y1 int) {
 	defer pc.Done()
 	tileSize := r.tileSize
 	for ty := y0; ty < y1; ty += tileSize {
@@ -181,9 +191,9 @@ func (r *Renderer) renderInner(pc *parallelContext, img *image.RGBA, root *Root,
 			r.cacheM.RUnlock()
 			if !cached {
 				r.renderTile(r.rootImage, root, pt)
-				r.cacheM.Lock()
-				r.cached[pt] = struct{}{}
-				r.cacheM.Unlock()
+				pc.M.Lock()
+				modified[pt] = struct{}{}
+				pc.M.Unlock()
 			}
 			blend.Copy.Draw(img, image.Rect(tx, ty, tx+tileSize, ty+tileSize), r.rootImage[pt], pt)
 		}
