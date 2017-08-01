@@ -45,10 +45,10 @@ func gatherLayer(layers *[]*Layer, l *Layer) {
 	}
 }
 
-func (r *Renderer) Thumbnails(ctx context.Context, root *Root, size int) (map[int]*image.RGBA, error) {
+func (r *Renderer) Thumbnails(ctx context.Context, size int) (map[int]*image.RGBA, error) {
 	var layers []*Layer
-	for i := range root.Children {
-		gatherLayer(&layers, &root.Children[i])
+	for i := range r.layertree.Children {
+		gatherLayer(&layers, &r.layertree.Children[i])
 	}
 
 	nLayers := len(layers)
@@ -99,8 +99,8 @@ func (r *Renderer) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, l
 	}
 }
 
-func (r *Renderer) ThumbnailSheet(ctx context.Context, root *Root, size int) (*image.NRGBA, map[int]image.Rectangle, error) {
-	m, err := r.Thumbnails(ctx, root, size)
+func (r *Renderer) ThumbnailSheet(ctx context.Context, size int) (*image.NRGBA, map[int]image.Rectangle, error) {
+	m, err := r.Thumbnails(ctx, size)
 	if err != nil {
 		return nil, nil, err
 	}

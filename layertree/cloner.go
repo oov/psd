@@ -28,6 +28,7 @@ func (cl cloner) registerClippingGroup(src *Layer, dest *Layer) {
 
 func (cl cloner) Clone(r *Root) *Root {
 	rr := *r
+	rr.Renderer.layertree = &rr
 	rr.Children = make([]Layer, len(r.Children))
 	for i := range rr.Children {
 		cl.clone(&r.Children[i], &rr.Children[i])

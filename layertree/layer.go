@@ -87,6 +87,7 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 		Renderer:   renderer,
 		CanvasRect: img.Config.Rect,
 	}
+	renderer.layertree = r
 
 	b := &builder{
 		Img: img,
