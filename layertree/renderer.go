@@ -239,8 +239,16 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, l *Layer, opacity in
 
 	if l.MaskEnabled {
 		if blendMode == psd.BlendModePassThrough {
-			// TODO: implement
-			panic("mask on pass-through blend mode is not implement yet")
+			if ldMask, ok := ld.Mask[pt]; ok {
+				if l.MaskDefaultColor == 255 {
+					blend.DestOut.Draw(ldBuffer, ldBuffer.Rect, ldMask, ldMask.Rect.Min)
+				} else {
+					blend.DestIn.Draw(ldBuffer, ldBuffer.Rect, ldMask, ldMask.Rect.Min)
+				}
+			} else {
+				// ???
+			}
+			blend.DestOver.Draw(ldBuffer, ldBuffer.Rect, b, ldBuffer.Rect.Min)
 		} else {
 			if ldMask, ok := ld.Mask[pt]; ok {
 				if l.MaskDefaultColor == 255 {
