@@ -8,7 +8,7 @@ import (
 	"github.com/oov/psd/blend"
 )
 
-var blendMode = map[psd.BlendMode]blend.Drawer{
+var blendModes = map[psd.BlendMode]blend.Drawer{
 	psd.BlendModeNormal:       blend.Normal,
 	psd.BlendModeDarken:       blend.Darken,
 	psd.BlendModeMultiply:     blend.Multiply,
@@ -37,38 +37,25 @@ var blendMode = map[psd.BlendMode]blend.Drawer{
 	psd.BlendModeLuminosity:   blend.Luminosity,
 }
 
-func (r *Renderer) draw(b *image.RGBA, src *image.RGBA, opacity int, bm psd.BlendMode) {
-	blendMode[bm].DrawMask(
-		b,
-		src.Rect,
-		src,
-		src.Rect.Min,
-		image.NewUniform(color.Alpha{uint8(opacity)}),
-		image.Point{},
-	)
+func drawWithOpacity(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, opacity int, bm psd.BlendMode) {
+	blendModes[bm].DrawMask(dst, r, src, sp, image.NewUniform(color.Alpha{uint8(opacity)}), image.Point{})
 }
 
-func (r *Renderer) writeAlpha(b *image.RGBA, alpha byte) {
+func removeAlpha(b *image.RGBA) {
 	d := b.Pix
 	ln := len(d)
 	_ = d[ln-1]
-	if alpha == 255 {
-		for i := 0; i < ln; i += 4 {
-			if a := uint32(d[i+3]); a > 0 {
-				d[i+0] = uint8(uint32(d[i+0]) * 0xff / a)
-				d[i+1] = uint8(uint32(d[i+1]) * 0xff / a)
-				d[i+2] = uint8(uint32(d[i+2]) * 0xff / a)
-			}
-			d[i+3] = 255
+	for i := 0; i < ln; i += 4 {
+		if a := uint32(d[i+3]); a > 0 {
+			d[i+0] = uint8(uint32(d[i+0]) * 0xff / a)
+			d[i+1] = uint8(uint32(d[i+1]) * 0xff / a)
+			d[i+2] = uint8(uint32(d[i+2]) * 0xff / a)
 		}
-	} else {
-		for i := 3; i < ln; i += 4 {
-			d[i] = alpha
-		}
+		d[i+3] = 255
 	}
 }
 
-func (r *Renderer) applyAlpha(b *image.RGBA, src *image.RGBA) {
+func applyAlpha(b *image.RGBA, src *image.RGBA) {
 	d, s := b.Pix, src.Pix
 	ln := len(d)
 	_, _ = d[ln-1], s[ln-1]

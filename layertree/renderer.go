@@ -238,27 +238,17 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, l *Layer, opacity in
 	}
 
 	if l.MaskEnabled {
-		if blendMode == psd.BlendModePassThrough {
-			if ldMask, ok := ld.Mask[pt]; ok {
-				if l.MaskDefaultColor == 255 {
-					blend.DestOut.Draw(ldBuffer, ldBuffer.Rect, ldMask, ldMask.Rect.Min)
-				} else {
-					blend.DestIn.Draw(ldBuffer, ldBuffer.Rect, ldMask, ldMask.Rect.Min)
-				}
+		if ldMask, ok := ld.Mask[pt]; ok {
+			if l.MaskDefaultColor == 255 {
+				blend.DestOut.Draw(ldBuffer, ldBuffer.Rect, ldMask, ldMask.Rect.Min)
 			} else {
-				// ???
+				blend.DestIn.Draw(ldBuffer, ldBuffer.Rect, ldMask, ldMask.Rect.Min)
 			}
-			blend.DestOver.Draw(ldBuffer, ldBuffer.Rect, b, ldBuffer.Rect.Min)
 		} else {
-			if ldMask, ok := ld.Mask[pt]; ok {
-				if l.MaskDefaultColor == 255 {
-					blend.DestOut.Draw(ldBuffer, ldBuffer.Rect, ldMask, ldMask.Rect.Min)
-				} else {
-					blend.DestIn.Draw(ldBuffer, ldBuffer.Rect, ldMask, ldMask.Rect.Min)
-				}
-			} else {
-				// ???
-			}
+			// ???
+		}
+		if blendMode == psd.BlendModePassThrough {
+			blend.DestOver.Draw(ldBuffer, ldBuffer.Rect, b, ldBuffer.Rect.Min)
 		}
 	}
 
@@ -266,7 +256,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, l *Layer, opacity in
 		if blendMode == psd.BlendModePassThrough {
 			blend.Copy.Draw(b, b.Rect, ldBuffer, ldBuffer.Rect.Min)
 		} else {
-			r.draw(b, ldBuffer, opacity, blendMode)
+			drawWithOpacity(b, ldBuffer.Rect, ldBuffer, ldBuffer.Rect.Min, opacity, blendMode)
 		}
 		return drDrew
 	}
@@ -276,18 +266,18 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, l *Layer, opacity in
 
 	if l.BlendClippedElements {
 		blend.Copy.Draw(ldClipBuffer, ldBuffer.Rect, ldBuffer, ldBuffer.Rect.Min)
-		r.writeAlpha(ldClipBuffer, 255)
+		removeAlpha(ldClipBuffer)
 		for _, cl := range l.Clip {
 			dr := r.drawLayer(pt, ldClipBuffer, cl, cl.Opacity, cl.BlendMode, true)
 			if dr < 0 {
 				return dr
 			}
 		}
-		r.applyAlpha(ldClipBuffer, ldBuffer)
+		blend.DestIn.Draw(ldClipBuffer, ldBuffer.Rect, ldBuffer, ldBuffer.Rect.Min)
 		if blendMode == psd.BlendModePassThrough {
-			blend.Copy.Draw(b, b.Rect, ldClipBuffer, b.Rect.Min)
+			blend.Copy.Draw(b, ldClipBuffer.Rect, ldClipBuffer, ldClipBuffer.Rect.Min)
 		} else {
-			r.draw(b, ldClipBuffer, opacity, blendMode)
+			drawWithOpacity(b, ldClipBuffer.Rect, ldClipBuffer, ldClipBuffer.Rect.Min, opacity, blendMode)
 		}
 		return drDrew
 	}
@@ -295,7 +285,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, l *Layer, opacity in
 	// this is minor code path.
 	// it is only used when "Blend Clipped Layers as Group" is unchecked in Photoshop's Layer Style dialog.
 	// TODO: implement
-	r.draw(b, ldBuffer, opacity, blendMode)
+	drawWithOpacity(b, ldBuffer.Rect, ldBuffer, ldBuffer.Rect.Min, opacity, blendMode)
 	for _, cl := range l.Clip {
 		if dr := r.drawLayer(pt, b, cl, cl.Opacity, cl.BlendMode, false); dr < 0 {
 			return dr
