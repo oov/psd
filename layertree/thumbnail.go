@@ -99,7 +99,7 @@ func (r *Renderer) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, l
 	}
 }
 
-func (r *Renderer) ThumbnailSheet(ctx context.Context, size int) (*image.NRGBA, map[int]image.Rectangle, error) {
+func (r *Renderer) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[int]image.Rectangle, error) {
 	m, err := r.Thumbnails(ctx, size)
 	if err != nil {
 		return nil, nil, err
@@ -122,7 +122,7 @@ func (r *Renderer) ThumbnailSheet(ctx context.Context, size int) (*image.NRGBA, 
 	if textureSize > 4096 {
 		return nil, nil, errors.New("layertree: could not create thumbnail sheet because too many layers")
 	}
-	img := image.NewNRGBA(image.Rect(0, 0, textureSize, textureSize))
+	img := image.NewRGBA(image.Rect(0, 0, textureSize, textureSize))
 	mpt := make(map[int]image.Rectangle)
 
 	n := runtime.GOMAXPROCS(0)
@@ -146,7 +146,7 @@ func (r *Renderer) ThumbnailSheet(ctx context.Context, size int) (*image.NRGBA, 
 
 }
 
-func (r *Renderer) thumbnailSheetInner(pc *parallelContext, img *image.NRGBA, mpt map[int]image.Rectangle, m map[int]*image.RGBA, indices []int, sIdx, eIdx, size int) {
+func (r *Renderer) thumbnailSheetInner(pc *parallelContext, img *image.RGBA, mpt map[int]image.Rectangle, m map[int]*image.RGBA, indices []int, sIdx, eIdx, size int) {
 	defer pc.Done()
 	iw := img.Rect.Dx() / size
 	for i := sIdx; i < eIdx; i++ {
