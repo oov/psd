@@ -11,7 +11,7 @@ import (
 )
 
 // Thumbnail creates thumbnail.
-func (r *Renderer) Thumbnail(l *Layer, size int, tempBuffer []byte) *image.RGBA {
+func (r *Root) Thumbnail(l *Layer, size int, tempBuffer []byte) *image.RGBA {
 	ld := r.layerImage[l.SeqID]
 	if ld.Canvas == nil {
 		return nil
@@ -45,10 +45,10 @@ func gatherLayer(layers *[]*Layer, l *Layer) {
 	}
 }
 
-func (r *Renderer) Thumbnails(ctx context.Context, size int) (map[int]*image.RGBA, error) {
+func (r *Root) Thumbnails(ctx context.Context, size int) (map[int]*image.RGBA, error) {
 	var layers []*Layer
-	for i := range r.layertree.Children {
-		gatherLayer(&layers, &r.layertree.Children[i])
+	for i := range r.Children {
+		gatherLayer(&layers, &r.Children[i])
 	}
 
 	nLayers := len(layers)
@@ -74,7 +74,7 @@ func (r *Renderer) Thumbnails(ctx context.Context, size int) (map[int]*image.RGB
 
 }
 
-func (r *Renderer) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layers []*Layer, size, sIdx, eIdx int) {
+func (r *Root) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layers []*Layer, size, sIdx, eIdx int) {
 	defer pc.Done()
 
 	bufLen := 0
@@ -99,7 +99,7 @@ func (r *Renderer) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, l
 	}
 }
 
-func (r *Renderer) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[int]image.Rectangle, error) {
+func (r *Root) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[int]image.Rectangle, error) {
 	m, err := r.Thumbnails(ctx, size)
 	if err != nil {
 		return nil, nil, err
@@ -146,7 +146,7 @@ func (r *Renderer) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, m
 
 }
 
-func (r *Renderer) thumbnailSheetInner(pc *parallelContext, img *image.RGBA, mpt map[int]image.Rectangle, m map[int]*image.RGBA, indices []int, sIdx, eIdx, size int) {
+func (r *Root) thumbnailSheetInner(pc *parallelContext, img *image.RGBA, mpt map[int]image.Rectangle, m map[int]*image.RGBA, indices []int, sIdx, eIdx, size int) {
 	defer pc.Done()
 	iw := img.Rect.Dx() / size
 	for i := sIdx; i < eIdx; i++ {

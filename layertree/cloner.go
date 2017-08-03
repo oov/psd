@@ -1,5 +1,7 @@
 package layertree
 
+import "image"
+
 type cloner map[int]*Layer
 
 func (cl cloner) clone(src *Layer, dest *Layer) {
@@ -28,7 +30,13 @@ func (cl cloner) registerClippingGroup(src *Layer, dest *Layer) {
 
 func (cl cloner) Clone(r *Root) *Root {
 	rr := *r
-	rr.Renderer.layertree = &rr
+	rr.Renderer = &Renderer{
+		layertree: &rr,
+		rootImage: tiledImage{},
+		cached:    map[image.Point]struct{}{},
+	}
+	rr.Renderer.pool.New = rr.Renderer.allocate
+
 	rr.Children = make([]Layer, len(r.Children))
 	for i := range rr.Children {
 		cl.clone(&r.Children[i], &rr.Children[i])

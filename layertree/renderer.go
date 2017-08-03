@@ -3,7 +3,6 @@ package layertree
 import (
 	"context"
 	"image"
-	"io"
 	"runtime"
 	"sync"
 
@@ -23,28 +22,25 @@ const (
 
 // Renderer is a renderer.
 type Renderer struct {
-	tileSize int
+	layertree *Root
 
-	layertree  *Root
-	layerImage map[int]layerImage
 	rootImage  tiledImage
 	rootImageM sync.Mutex
-
-	cached map[image.Point]struct{}
-	cacheM sync.RWMutex
+	cached     map[image.Point]struct{}
+	cacheM     sync.RWMutex
 
 	pool sync.Pool
 }
 
 func (r *Renderer) allocate() interface{} {
-	return make([]byte, r.tileSize*r.tileSize*4)
+	return make([]byte, r.layertree.tileSize*r.layertree.tileSize*4)
 }
 
 func (r *Renderer) getBuffer(pt image.Point) *image.RGBA {
 	return &image.RGBA{
 		Pix:    r.pool.Get().([]byte),
-		Stride: r.tileSize * 4,
-		Rect:   image.Rect(pt.X, pt.Y, pt.X+r.tileSize, pt.Y+r.tileSize),
+		Stride: r.layertree.tileSize * 4,
+		Rect:   image.Rect(pt.X, pt.Y, pt.X+r.layertree.tileSize, pt.Y+r.layertree.tileSize),
 	}
 }
 
@@ -56,79 +52,8 @@ func (r *Renderer) putBuffer(b *image.RGBA) {
 	r.pool.Put(buf)
 }
 
-func newRenderer(ctx context.Context, psdFile io.Reader, tileSize int) (*Renderer, *psd.PSD, error) {
-	/*
-		if img.Config.ColorMode != psd.ColorModeRGB {
-			return errors.New("Unsupported color mode")
-		}
-	*/
-
-	r := &Renderer{
-		layerImage: map[int]layerImage{},
-		rootImage:  tiledImage{},
-		cached:     map[image.Point]struct{}{},
-		tileSize:   tileSize,
-	}
-	r.pool.New = r.allocate
-
-	n := runtime.GOMAXPROCS(0)
-
-	ch := make(chan *psd.Layer)
-
-	cctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	pc := &parallelContext{}
-	pc.Wg.Add(n)
-	for i := 0; i < n; i++ {
-		go r.createCanvas(cctx, pc, ch)
-	}
-	img, _, err := psd.Decode(psdFile, &psd.DecodeOptions{
-		SkipMergedImage:  true,
-		LayerImageLoaded: func(l *psd.Layer, index int, total int) { ch <- l },
-	})
-	if err != nil {
-		return nil, nil, err
-	}
-	close(ch)
-	if err = pc.Wait(ctx); err != nil {
-		return nil, nil, err
-	}
-
-	return r, img, nil
-}
-
-func (r *Renderer) createCanvas(ctx context.Context, pc *parallelContext, ch <-chan *psd.Layer) {
-	defer pc.Done()
-	tileSize := r.tileSize
-	for l := range ch {
-		var ld layerImage
-		if l.HasImage() && !l.Rect.Empty() {
-			r, g, b := l.Channel[0].Data, l.Channel[1].Data, l.Channel[2].Data
-			var a []byte
-			if ach, ok := l.Channel[-1]; ok {
-				a = ach.Data
-			}
-			if err := ld.Canvas.Store(ctx, tileSize, l.Rect, r, g, b, a); err != nil {
-				return
-			}
-		}
-		if !l.Mask.Rect.Empty() {
-			if a, ok := l.Channel[-2]; ok {
-				if err := ld.Mask.Store(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor); err != nil {
-					return
-				}
-			}
-		}
-
-		pc.M.Lock()
-		r.layerImage[l.SeqID] = ld
-		pc.M.Unlock()
-	}
-}
-
 func (r *Renderer) SetDirty(rect image.Rectangle) {
-	tileSize := r.tileSize
+	tileSize := r.layertree.tileSize
 	r.cacheM.Lock()
 	rx0, ry0, rx1, ry1 := rect.Min.X, rect.Min.Y, rect.Max.X, rect.Max.Y
 	for ty := (ry0 / tileSize) * tileSize; ty < ry1; ty += tileSize {
@@ -153,7 +78,7 @@ func (r *Renderer) Render(ctx context.Context) (*image.RGBA, error) {
 
 	img := image.NewRGBA(r.layertree.CanvasRect)
 	rect := r.layertree.Rect
-	tileSize := r.tileSize
+	tileSize := r.layertree.tileSize
 	r.rootImage.Alloc(tileSize, rect)
 	x0, x1 := (rect.Min.X/tileSize)*tileSize, rect.Max.X
 	y0, y1 := (rect.Min.Y/tileSize)*tileSize, rect.Max.Y
@@ -187,7 +112,7 @@ func (r *Renderer) Render(ctx context.Context) (*image.RGBA, error) {
 
 func (r *Renderer) renderInner(pc *parallelContext, img *image.RGBA, cached, modified map[image.Point]struct{}, x0, x1, y0, y1 int) {
 	defer pc.Done()
-	tileSize := r.tileSize
+	tileSize := r.layertree.tileSize
 	for ty := y0; ty < y1; ty += tileSize {
 		if pc.Aborted() {
 			return
@@ -227,7 +152,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, l *Layer, opacity in
 		return drDefered
 	}
 
-	ld := r.layerImage[l.SeqID]
+	ld := r.layertree.layerImage[l.SeqID]
 	ldCanvas, ok := ld.Canvas[pt]
 	if len(l.Children) == 0 && !ok {
 		return drSkipped
