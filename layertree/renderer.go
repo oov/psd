@@ -64,6 +64,18 @@ func (r *Renderer) SetDirty(rect image.Rectangle) {
 	r.cacheM.Unlock()
 }
 
+func (r *Renderer) SetDirtyByLayer(l *Layer) {
+	if l.Folder {
+		r.SetDirty(l.Rect)
+		return
+	}
+	r.cacheM.Lock()
+	for pt := range r.layertree.layerImage[l.SeqID].Canvas {
+		delete(r.cached, pt)
+	}
+	r.cacheM.Unlock()
+}
+
 // Render renders image.
 func (r *Renderer) Render(ctx context.Context) (*image.RGBA, error) {
 	r.rootImageM.Lock()
