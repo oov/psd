@@ -37,8 +37,7 @@ func (r *Root) Clone() *Root {
 type Layer struct {
 	SeqID int
 
-	Name        string
-	DisplayName string
+	Name string
 
 	Folder     bool
 	FolderOpen bool
