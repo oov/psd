@@ -1,7 +1,5 @@
 package layertree
 
-import "image"
-
 type cloner map[int]*Layer
 
 func (cl cloner) clone(src *Layer, dest *Layer) {
@@ -32,8 +30,7 @@ func (cl cloner) Clone(r *Root) *Root {
 	rr := *r
 	rr.Renderer = &Renderer{
 		layertree: &rr,
-		rootImage: tiledImage{},
-		cached:    map[image.Point]struct{}{},
+		cache:     map[int]*cache{},
 	}
 	rr.Renderer.pool.New = rr.Renderer.allocate
 

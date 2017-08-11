@@ -103,8 +103,7 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 
 	r := &Root{
 		Renderer: &Renderer{
-			rootImage: tiledImage{},
-			cached:    map[image.Point]struct{}{},
+			cache: map[int]*cache{},
 		},
 		tileSize:   opt.TileSize,
 		layerImage: layerImages,

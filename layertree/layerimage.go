@@ -31,6 +31,15 @@ func (t *tiledImage) Alloc(tileSize int, rect image.Rectangle) {
 	}
 }
 
+func (t *tiledImage) Get(tileSize int, pt image.Point) (*image.RGBA, bool) {
+	r, ok := (*t)[pt]
+	if !ok {
+		r = image.NewRGBA(image.Rect(pt.X, pt.Y, pt.X+tileSize, pt.Y+tileSize))
+		(*t)[pt] = r
+	}
+	return r, ok
+}
+
 func (t *tiledImage) Render(ctx context.Context, tileSize int, img *image.RGBA) error {
 	if *t == nil {
 		*t = make(tiledImage)
