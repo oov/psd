@@ -272,16 +272,16 @@ func (r *Renderer) renderInner(pc *parallelContext, img *image.RGBA, c *cache, c
 			cs, ok := c.Cached[pt]
 			c.M.RUnlock()
 			if !ok {
-				ldBuffer := r.getBuffer(pt)
-				dr := r.renderTile(ldBuffer, c, clst, pt)
-				r.updateCache(dr, pt, ldBuffer, c, clst)
+				buf := r.getBuffer(pt)
+				dr := r.renderTile(buf, c, clst, pt)
+				r.updateCache(dr, pt, buf, c, clst)
 				switch {
 				case dr < 0:
 					return
 				case dr == drDrew || dr == drDrewFromCache:
-					blend.Copy.Draw(img, ldBuffer.Rect, ldBuffer, pt)
+					blend.Copy.Draw(img, buf.Rect, buf, pt)
 				}
-				r.putBuffer(ldBuffer)
+				r.putBuffer(buf)
 			} else if cs == csCached {
 				c.M.RLock()
 				img2 := c.Image[pt]
@@ -348,7 +348,7 @@ func (r *Renderer) renderTile(b *image.RGBA, c *cache, clst *changeList, pt imag
 
 func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l *Layer, opacity int, blendMode psd.BlendMode, forceNoClip bool) drawResult {
 	var fc *cache
-	var ldBuffer *image.RGBA
+	var buf *image.RGBA
 	ret := func(dr drawResult) drawResult {
 		if fc == nil {
 			if len(l.Children) > 0 {
@@ -368,7 +368,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 			cb, _ := fc.Image.Get(r.layertree.tileSize, pt)
 			fc.M.Unlock()
 			clst.Add(l, pt)
-			blend.Copy.Draw(cb, cb.Rect, ldBuffer, pt)
+			blend.Copy.Draw(cb, cb.Rect, buf, pt)
 		case drDrewFromCache, drDrewFromCacheInvisible:
 			// do nothing
 		default:
@@ -414,19 +414,19 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 			fc.M.RUnlock()
 		}
 
-		ldBuffer = r.getBuffer(pt)
-		defer r.putBuffer(ldBuffer)
+		buf = r.getBuffer(pt)
+		defer r.putBuffer(buf)
 
 		var a int
 		if blendMode == psd.BlendModePassThrough {
-			blend.Copy.Draw(ldBuffer, ldBuffer.Rect, b, pt)
+			blend.Copy.Draw(buf, buf.Rect, b, pt)
 			a = opacity * 32897
 		} else {
 			a = 255 * 32897
 		}
 		drew := false
 		for _, l2 := range l.Children {
-			switch dr := r.drawLayer(pt, ldBuffer, clst, &l2, l2.Opacity*a>>23, l2.BlendMode, false); {
+			switch dr := r.drawLayer(pt, buf, clst, &l2, l2.Opacity*a>>23, l2.BlendMode, false); {
 			case dr < 0:
 				return ret(dr)
 			case dr == drDrew || dr == drDrewFromCache:
@@ -437,60 +437,60 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 			return ret(drInvisible)
 		}
 	} else if ld.Canvas != nil {
-		ldBuffer = r.getBuffer(pt)
-		blend.Copy.Draw(ldBuffer, ldCanvas.Rect, ldCanvas, pt)
+		buf = r.getBuffer(pt)
+		blend.Copy.Draw(buf, ldCanvas.Rect, ldCanvas, pt)
 	}
 
 	if l.MaskEnabled {
 		if ldMask, ok := ld.Mask[pt]; ok {
 			if l.MaskDefaultColor == 255 {
-				blend.DestOut.Draw(ldBuffer, ldBuffer.Rect, ldMask, pt)
+				blend.DestOut.Draw(buf, buf.Rect, ldMask, pt)
 			} else {
-				blend.DestIn.Draw(ldBuffer, ldBuffer.Rect, ldMask, pt)
+				blend.DestIn.Draw(buf, buf.Rect, ldMask, pt)
 			}
 		} else {
 			// ???
 		}
 		if blendMode == psd.BlendModePassThrough {
-			blend.DestOver.Draw(ldBuffer, ldBuffer.Rect, b, pt)
+			blend.DestOver.Draw(buf, buf.Rect, b, pt)
 		}
 	}
 
 	if len(l.Clip) == 0 {
 		if blendMode == psd.BlendModePassThrough {
-			blend.Copy.Draw(b, b.Rect, ldBuffer, pt)
+			blend.Copy.Draw(b, b.Rect, buf, pt)
 		} else {
-			drawWithOpacity(b, ldBuffer.Rect, ldBuffer, pt, opacity, blendMode)
+			drawWithOpacity(b, buf.Rect, buf, pt, opacity, blendMode)
 		}
 		return ret(drDrew)
 	}
 
-	ldClipBuffer := r.getBuffer(pt)
-	defer r.putBuffer(ldClipBuffer)
+	clipBuf := r.getBuffer(pt)
+	defer r.putBuffer(clipBuf)
 
 	if l.BlendClippedElements {
-		blend.Copy.Draw(ldClipBuffer, ldBuffer.Rect, ldBuffer, pt)
-		removeAlpha(ldClipBuffer)
+		blend.Copy.Draw(clipBuf, buf.Rect, buf, pt)
+		removeAlpha(clipBuf)
 		for _, cl := range l.Clip {
-			dr := r.drawLayer(pt, ldClipBuffer, clst, cl, cl.Opacity, cl.BlendMode, true)
+			dr := r.drawLayer(pt, clipBuf, clst, cl, cl.Opacity, cl.BlendMode, true)
 			if dr < 0 {
 				return ret(dr)
 			}
 		}
-		blend.DestIn.Draw(ldClipBuffer, ldBuffer.Rect, ldBuffer, pt)
+		blend.DestIn.Draw(clipBuf, buf.Rect, buf, pt)
 		if blendMode == psd.BlendModePassThrough {
-			blend.Copy.Draw(b, ldClipBuffer.Rect, ldClipBuffer, pt)
+			blend.Copy.Draw(b, clipBuf.Rect, clipBuf, pt)
 		} else {
-			drawWithOpacity(b, ldClipBuffer.Rect, ldClipBuffer, pt, opacity, blendMode)
+			drawWithOpacity(b, clipBuf.Rect, clipBuf, pt, opacity, blendMode)
 		}
-		ldClipBuffer, ldBuffer = ldBuffer, ldClipBuffer
+		clipBuf.Pix, buf.Pix = buf.Pix, clipBuf.Pix
 		return ret(drDrew)
 	}
 
 	// this is minor code path.
 	// it is only used when "Blend Clipped Layers as Group" is unchecked in Photoshop's Layer Style dialog.
 	// TODO: implement
-	drawWithOpacity(b, ldBuffer.Rect, ldBuffer, pt, opacity, blendMode)
+	drawWithOpacity(b, buf.Rect, buf, pt, opacity, blendMode)
 	for _, cl := range l.Clip {
 		if dr := r.drawLayer(pt, b, clst, cl, cl.Opacity, cl.BlendMode, false); dr < 0 {
 			return ret(dr)
