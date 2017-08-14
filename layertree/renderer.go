@@ -241,6 +241,7 @@ func (r *Renderer) Render(ctx context.Context) (*image.RGBA, error) {
 	}
 	go r.renderInner(pc, img, c, clst, x0, x1, y0, y1)
 	if err := pc.Wait(ctx); err == ErrAborted {
+		// revert
 		for seqID, pts := range clst.Map {
 			r.cacheM.Lock()
 			c := r.cache[seqID]
@@ -273,38 +274,52 @@ func (r *Renderer) renderInner(pc *parallelContext, img *image.RGBA, c *cache, c
 			c.M.RUnlock()
 			if !ok {
 				buf := r.getBuffer(pt)
-				dr := r.renderTile(buf, c, clst, pt)
-				r.updateCache(dr, pt, buf, c, clst)
-				switch {
-				case dr < 0:
-					return
-				case dr == drDrew || dr == drDrewFromCache:
+				var drew bool
+				for _, l := range r.layertree.Children {
+					switch dr := r.drawLayer(pt, buf, clst, &l, l.Opacity, l.BlendMode, false); {
+					case dr < 0:
+						r.putBuffer(buf)
+						return
+					case dr == drDrew || dr == drDrewFromCache:
+						drew = true
+					}
+				}
+				if drew {
+					r.updateCache(drDrew, nil, pt, buf, c, clst)
+				} else {
+					r.updateCache(drInvisible, nil, pt, buf, c, clst)
+				}
+				if drew {
 					blend.Copy.Draw(img, buf.Rect, buf, pt)
 				}
 				r.putBuffer(buf)
 			} else if cs == csCached {
 				c.M.RLock()
-				img2 := c.Image[pt]
+				ci := c.Image[pt]
 				c.M.RUnlock()
-				blend.Copy.Draw(img, img2.Rect, img2, pt)
+				blend.Copy.Draw(img, ci.Rect, ci, pt)
 			}
 		}
 	}
 }
 
-func (r *Renderer) updateCache(dr drawResult, pt image.Point, b *image.RGBA, c *cache, clst *changeList) drawResult {
+func (r *Renderer) updateCache(dr drawResult, l *Layer, pt image.Point, b *image.RGBA, c *cache, clst *changeList) drawResult {
+	if c == nil {
+		return dr
+	}
 	switch dr {
 	case drAbort:
 		c.M.Lock()
 		delete(c.Cached, pt)
+		delete(c.Image, pt)
 		c.M.Unlock()
 	case drDrew:
 		c.M.Lock()
 		c.Cached[pt] = csCached
 		cb, _ := c.Image.Get(r.layertree.tileSize, pt)
-		blend.Copy.Draw(cb, cb.Rect, b, pt)
 		c.M.Unlock()
-		clst.Add(nil, pt)
+		blend.Copy.Draw(cb, cb.Rect, b, pt)
+		clst.Add(l, pt)
 	case drDrewFromCache, drDrewFromCacheInvisible:
 		// do nothing
 	default:
@@ -312,107 +327,46 @@ func (r *Renderer) updateCache(dr drawResult, pt image.Point, b *image.RGBA, c *
 		c.Cached[pt] = csCachedEmpty
 		delete(c.Image, pt)
 		c.M.Unlock()
-		clst.Add(nil, pt)
+		clst.Add(l, pt)
 	}
 	return dr
 }
 
-func (r *Renderer) renderTile(b *image.RGBA, c *cache, clst *changeList, pt image.Point) drawResult {
-	c.M.RLock()
-	cs, ok := c.Cached[pt]
-	if ok {
-		if cs == csCached {
-			blend.Copy.Draw(b, b.Rect, c.Image[pt], pt)
-			c.M.RUnlock()
-			return drDrewFromCache
-		}
-		c.M.RUnlock()
-		return drDrewFromCacheInvisible
-	}
-	c.M.RUnlock()
-
-	var drew bool
-	for _, l := range r.layertree.Children {
-		switch dr := r.drawLayer(pt, b, clst, &l, l.Opacity, l.BlendMode, false); {
-		case dr < 0:
-			return dr
-		case dr == drDrew || dr == drDrewFromCache:
-			drew = true
-		}
-	}
-	if !drew {
-		return drInvisible
-	}
-	return drDrew
-}
-
 func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l *Layer, opacity int, blendMode psd.BlendMode, forceNoClip bool) drawResult {
-	var fc *cache
+	var c *cache
 	var buf *image.RGBA
-	ret := func(dr drawResult) drawResult {
-		if fc == nil {
-			if len(l.Children) > 0 {
-				fc = r.getCache(l, true)
-			} else {
-				return dr
-			}
-		}
-		switch dr {
-		case drAbort:
-			fc.M.Lock()
-			delete(fc.Cached, pt)
-			fc.M.Unlock()
-		case drDrew:
-			fc.M.Lock()
-			fc.Cached[pt] = csCached
-			cb, _ := fc.Image.Get(r.layertree.tileSize, pt)
-			fc.M.Unlock()
-			clst.Add(l, pt)
-			blend.Copy.Draw(cb, cb.Rect, buf, pt)
-		case drDrewFromCache, drDrewFromCacheInvisible:
-			// do nothing
-		default:
-			fc.M.Lock()
-			fc.Cached[pt] = csCachedEmpty
-			delete(fc.Image, pt)
-			fc.M.Unlock()
-			clst.Add(l, pt)
-		}
-		return dr
-	}
 
 	if !l.Visible || opacity == 0 {
-		return ret(drInvisible)
+		return r.updateCache(drInvisible, l, pt, buf, c, clst)
 	}
 	if l.Clipping && !forceNoClip {
-		return ret(drDefered)
+		return r.updateCache(drDefered, l, pt, buf, c, clst)
 	}
 
 	ld := r.layertree.layerImage[l.SeqID]
 	ldCanvas, ok := ld.Canvas[pt]
 	if len(l.Children) == 0 && !ok {
-		return ret(drSkipped)
+		return r.updateCache(drSkipped, l, pt, buf, c, clst)
 	}
 
 	if len(l.Children) > 0 {
-		if fc = r.getCache(l, false); fc != nil {
-			fc.M.RLock()
-			if cs, ok := fc.Cached[pt]; ok {
-				if cs == csCached {
-					cb, _ := fc.Image.Get(r.layertree.tileSize, pt)
-					if blendMode == psd.BlendModePassThrough {
-						blend.Copy.Draw(b, b.Rect, cb, pt)
-					} else {
-						drawWithOpacity(b, b.Rect, cb, pt, opacity, blendMode)
-					}
-					fc.M.RUnlock()
-					return ret(drDrewFromCache)
+		c = r.getCache(l, true)
+		c.M.RLock()
+		if cs, ok := c.Cached[pt]; ok {
+			if cs == csCached {
+				ci := c.Image[pt]
+				c.M.RUnlock()
+				if blendMode == psd.BlendModePassThrough {
+					blend.Copy.Draw(b, b.Rect, ci, pt)
+				} else {
+					drawWithOpacity(b, b.Rect, ci, pt, opacity, blendMode)
 				}
-				fc.M.RUnlock()
-				return ret(drDrewFromCacheInvisible)
+				return r.updateCache(drDrewFromCache, l, pt, buf, c, clst)
 			}
-			fc.M.RUnlock()
+			c.M.RUnlock()
+			return r.updateCache(drDrewFromCacheInvisible, l, pt, buf, c, clst)
 		}
+		c.M.RUnlock()
 
 		buf = r.getBuffer(pt)
 		defer r.putBuffer(buf)
@@ -428,13 +382,13 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 		for _, l2 := range l.Children {
 			switch dr := r.drawLayer(pt, buf, clst, &l2, l2.Opacity*a>>23, l2.BlendMode, false); {
 			case dr < 0:
-				return ret(dr)
+				return r.updateCache(dr, l, pt, buf, c, clst)
 			case dr == drDrew || dr == drDrewFromCache:
 				drew = true
 			}
 		}
 		if !drew {
-			return ret(drInvisible)
+			return r.updateCache(drInvisible, l, pt, buf, c, clst)
 		}
 	} else if ld.Canvas != nil {
 		buf = r.getBuffer(pt)
@@ -462,7 +416,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 		} else {
 			drawWithOpacity(b, buf.Rect, buf, pt, opacity, blendMode)
 		}
-		return ret(drDrew)
+		return r.updateCache(drDrew, l, pt, buf, c, clst)
 	}
 
 	clipBuf := r.getBuffer(pt)
@@ -474,7 +428,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 		for _, cl := range l.Clip {
 			dr := r.drawLayer(pt, clipBuf, clst, cl, cl.Opacity, cl.BlendMode, true)
 			if dr < 0 {
-				return ret(dr)
+				return r.updateCache(dr, l, pt, buf, c, clst)
 			}
 		}
 		blend.DestIn.Draw(clipBuf, buf.Rect, buf, pt)
@@ -484,7 +438,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 			drawWithOpacity(b, clipBuf.Rect, clipBuf, pt, opacity, blendMode)
 		}
 		clipBuf.Pix, buf.Pix = buf.Pix, clipBuf.Pix
-		return ret(drDrew)
+		return r.updateCache(drDrew, l, pt, buf, c, clst)
 	}
 
 	// this is minor code path.
@@ -493,7 +447,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 	drawWithOpacity(b, buf.Rect, buf, pt, opacity, blendMode)
 	for _, cl := range l.Clip {
 		if dr := r.drawLayer(pt, b, clst, cl, cl.Opacity, cl.BlendMode, false); dr < 0 {
-			return ret(dr)
+			return r.updateCache(dr, l, pt, buf, c, clst)
 		}
 	}
 
@@ -508,5 +462,5 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 	// 	this.clear(cbbctx);
 	// }
 	// n.state = n.nextState;
-	return ret(drDrew)
+	return r.updateCache(drDrew, l, pt, buf, c, clst)
 }
