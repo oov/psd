@@ -92,6 +92,23 @@ func (r *Renderer) getCache(l *Layer, createIfNotExists bool) *cache {
 	return c
 }
 
+func (r *Renderer) buildAreaMapRecursive(areaMap map[image.Point]struct{}, l *Layer) {
+	for i := range l.Children {
+		l2 := &l.Children[i]
+		if !l2.Visible || l2.Opacity == 0 || l2.Clipping {
+			continue
+		}
+		ld := r.layertree.layerImage[l2.SeqID]
+		if ld.Canvas != nil {
+			for pt := range ld.Canvas {
+				areaMap[pt] = struct{}{}
+			}
+		} else if len(l2.Children) > 0 {
+			r.buildAreaMapRecursive(areaMap, l2)
+		}
+	}
+}
+
 func (r *Renderer) buildAreaMap(l *Layer) []image.Point {
 	var ret []image.Point
 	ld := r.layertree.layerImage[l.SeqID]
@@ -102,13 +119,12 @@ func (r *Renderer) buildAreaMap(l *Layer) []image.Point {
 			ret[i] = pt
 			i++
 		}
-	} else {
-		rect, tileSize := l.Rect, r.layertree.tileSize
-		rx0, ry0, rx1, ry1 := rect.Min.X, rect.Min.Y, rect.Max.X, rect.Max.Y
-		for ty := (ry0 / tileSize) * tileSize; ty < ry1; ty += tileSize {
-			for tx := (rx0 / tileSize) * tileSize; tx < rx1; tx += tileSize {
-				ret = append(ret, image.Pt(tx, ty))
-			}
+	} else if len(l.Children) > 0 {
+		areaMap := map[image.Point]struct{}{}
+		r.buildAreaMapRecursive(areaMap, l)
+		ret = make([]image.Point, 0, len(areaMap))
+		for pt := range areaMap {
+			ret = append(ret, pt)
 		}
 	}
 	return ret
