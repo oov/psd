@@ -214,11 +214,19 @@ func (cl *changeList) Add(l *Layer, pt image.Point) {
 }
 
 // Render renders image.
-func (r *Renderer) Render(ctx context.Context) (*image.RGBA, error) {
+func (r *Renderer) Render(ctx context.Context, dest *image.RGBA) error {
+	return r.render(ctx, dest, false)
+}
+
+// RenderDiff renders only the place changed since last time.
+func (r *Renderer) RenderDiff(ctx context.Context, dest *image.RGBA) error {
+	return r.render(ctx, dest, true)
+}
+
+func (r *Renderer) render(ctx context.Context, dest *image.RGBA, diffOnly bool) error {
 	r.renderM.Lock()
 	defer r.renderM.Unlock()
 
-	img := image.NewRGBA(r.layertree.CanvasRect)
 	rect := r.layertree.Rect
 	tileSize := r.layertree.tileSize
 
@@ -252,10 +260,10 @@ func (r *Renderer) Render(ctx context.Context) (*image.RGBA, error) {
 
 	pc.Wg.Add(n)
 	for i := 1; i < n; i++ {
-		go r.renderInner(pc, img, c, clst, x0, x1, y0, y0+step)
+		go r.renderInner(pc, dest, diffOnly, c, clst, x0, x1, y0, y0+step)
 		y0 += step
 	}
-	go r.renderInner(pc, img, c, clst, x0, x1, y0, y1)
+	go r.renderInner(pc, dest, diffOnly, c, clst, x0, x1, y0, y1)
 	if err := pc.Wait(ctx); err == ErrAborted {
 		// revert
 		for seqID, pts := range clst.Map {
@@ -268,15 +276,14 @@ func (r *Renderer) Render(ctx context.Context) (*image.RGBA, error) {
 			}
 			c.M.Unlock()
 		}
-		return nil, err
+		return err
 	} else if err != nil {
-		return nil, err
+		return err
 	}
-
-	return img, nil
+	return nil
 }
 
-func (r *Renderer) renderInner(pc *parallelContext, img *image.RGBA, c *cache, clst *changeList, x0, x1, y0, y1 int) {
+func (r *Renderer) renderInner(pc *parallelContext, dest *image.RGBA, diffOnly bool, c *cache, clst *changeList, x0, x1, y0, y1 int) {
 	defer pc.Done()
 	tileSize := r.layertree.tileSize
 	for ty := y0; ty < y1; ty += tileSize {
@@ -285,38 +292,54 @@ func (r *Renderer) renderInner(pc *parallelContext, img *image.RGBA, c *cache, c
 		}
 		for tx := x0; tx < x1; tx += tileSize {
 			pt := image.Pt(tx, ty)
-			c.M.RLock()
-			cs, ok := c.Cached[pt]
-			c.M.RUnlock()
-			if !ok {
-				buf := r.getBuffer(pt)
-				var drew bool
-				for _, l := range r.layertree.Children {
-					switch dr := r.drawLayer(pt, buf, clst, &l, l.Opacity, l.BlendMode, false); {
-					case dr < 0:
-						r.putBuffer(buf)
-						return
-					case dr == drDrew || dr == drDrewFromCache:
-						drew = true
+			modified, dr := r.renderTile(pt, c, clst)
+			if diffOnly {
+				if modified {
+					if dr == drDrew || dr == drDrewFromCache {
+						c.M.RLock()
+						ci := c.Image[pt]
+						c.M.RUnlock()
+						blend.Copy.Draw(dest, ci.Rect, ci, pt)
+					} else {
+						blend.Clear.Draw(dest, image.Rect(pt.X, pt.Y, pt.X+tileSize, pt.Y+tileSize), image.Transparent, image.Point{})
 					}
 				}
-				if drew {
-					r.updateCache(drDrew, nil, pt, buf, c, clst)
-				} else {
-					r.updateCache(drInvisible, nil, pt, buf, c, clst)
+			} else {
+				if dr == drDrew || dr == drDrewFromCache {
+					c.M.RLock()
+					ci := c.Image[pt]
+					c.M.RUnlock()
+					blend.Copy.Draw(dest, ci.Rect, ci, pt)
 				}
-				if drew {
-					blend.Copy.Draw(img, buf.Rect, buf, pt)
-				}
-				r.putBuffer(buf)
-			} else if cs == csCached {
-				c.M.RLock()
-				ci := c.Image[pt]
-				c.M.RUnlock()
-				blend.Copy.Draw(img, ci.Rect, ci, pt)
 			}
 		}
 	}
+}
+
+func (r *Renderer) renderTile(pt image.Point, c *cache, clst *changeList) (modified bool, dr drawResult) {
+	c.M.RLock()
+	cs, ok := c.Cached[pt]
+	c.M.RUnlock()
+	if ok {
+		if cs == csCachedEmpty {
+			return false, drDrewFromCacheInvisible
+		}
+		return false, drDrewFromCache
+	}
+
+	buf := r.getBuffer(pt)
+	defer r.putBuffer(buf)
+	dr = drInvisible
+	for _, l := range r.layertree.Children {
+		switch ldr := r.drawLayer(pt, buf, clst, &l, l.Opacity, l.BlendMode, false); {
+		case ldr < 0:
+			return false, ldr
+		case ldr == drDrew || ldr == drDrewFromCache:
+			dr = drDrew
+		}
+	}
+	r.updateCache(dr, nil, pt, buf, c, clst)
+	return true, dr
 }
 
 func (r *Renderer) updateCache(dr drawResult, l *Layer, pt image.Point, b *image.RGBA, c *cache, clst *changeList) drawResult {
