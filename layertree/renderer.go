@@ -155,18 +155,21 @@ func (r *Renderer) setDirtyByLayerRecursive(l *Layer, areaMap []image.Point) {
 		c.M.Unlock()
 	}
 	if l != nil {
+		var sib []Layer
 		if l.Parent != nil {
-			sib := l.Parent.Children
-			for i := len(sib) - 1; i >= 0; i-- {
-				l2 := &sib[i]
-				if l == l2 {
-					break
-				}
-				if l2.BlendMode != psd.BlendModePassThrough {
-					continue
-				}
-				r.setDirtyByLayerPassThrough(l2, areaMap)
+			sib = l.Parent.Children
+		} else {
+			sib = r.layertree.Children
+		}
+		for i := len(sib) - 1; i >= 0; i-- {
+			l2 := &sib[i]
+			if l == l2 {
+				break
 			}
+			if l2.BlendMode != psd.BlendModePassThrough {
+				continue
+			}
+			r.setDirtyByLayerPassThrough(l2, areaMap)
 		}
 		r.setDirtyByLayerRecursive(l.Parent, areaMap)
 	}
