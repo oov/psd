@@ -503,16 +503,16 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 {{end}}
 {{define "drawMain1_SrcRGBAToNRGBA"}}
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 {{end}}
 {{define "drawMain1_DestRGBAToNRGBA"}}
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 {{end}}
 {{define "drawMain2"}}

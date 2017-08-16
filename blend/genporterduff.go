@@ -434,9 +434,9 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 {{end}}
 {{define "drawMain3"}}
@@ -557,9 +557,9 @@ var draw{{.Name}}AlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 {{end}}
 {{define "drawMainAlpha3"}}
@@ -645,9 +645,9 @@ var draw{{.Name}}UniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, 
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 {{end}}
 {{define "drawMainUniform3"}}

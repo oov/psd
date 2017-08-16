@@ -201,9 +201,9 @@ var drawNormalRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -256,9 +256,9 @@ var drawNormalNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -311,15 +311,15 @@ var drawNormalRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -591,9 +591,9 @@ var drawDarkenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -658,9 +658,9 @@ var drawDarkenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -725,15 +725,15 @@ var drawDarkenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -1017,9 +1017,9 @@ var drawMultiplyRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -1072,9 +1072,9 @@ var drawMultiplyNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -1127,15 +1127,15 @@ var drawMultiplyRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -1413,9 +1413,9 @@ var drawColorBurnRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -1486,9 +1486,9 @@ var drawColorBurnNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -1559,15 +1559,15 @@ var drawColorBurnRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -1878,9 +1878,9 @@ var drawLinearBurnRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -1948,9 +1948,9 @@ var drawLinearBurnNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -2018,15 +2018,15 @@ var drawLinearBurnRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -2320,9 +2320,9 @@ var drawDarkerColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -2379,9 +2379,9 @@ var drawDarkerColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -2438,15 +2438,15 @@ var drawDarkerColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -2726,9 +2726,9 @@ var drawLightenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -2793,9 +2793,9 @@ var drawLightenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -2860,15 +2860,15 @@ var drawLightenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -3152,9 +3152,9 @@ var drawScreenRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -3207,9 +3207,9 @@ var drawScreenNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -3262,15 +3262,15 @@ var drawScreenRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -3548,9 +3548,9 @@ var drawColorDodgeRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -3621,9 +3621,9 @@ var drawColorDodgeNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -3694,15 +3694,15 @@ var drawColorDodgeRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -3998,9 +3998,9 @@ var drawLinearDodgeRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -4053,9 +4053,9 @@ var drawLinearDodgeNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -4108,15 +4108,15 @@ var drawLinearDodgeRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -4380,9 +4380,9 @@ var drawLighterColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -4439,9 +4439,9 @@ var drawLighterColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha u
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -4498,15 +4498,15 @@ var drawLighterColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -4774,9 +4774,9 @@ var drawAddRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d0
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -4829,9 +4829,9 @@ var drawAddNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d0
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -4884,15 +4884,15 @@ var drawAddRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d0,
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -5164,9 +5164,9 @@ var drawOverlayRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -5231,9 +5231,9 @@ var drawOverlayNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -5298,15 +5298,15 @@ var drawOverlayRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -5617,9 +5617,9 @@ var drawSoftLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -5699,9 +5699,9 @@ var drawSoftLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -5781,15 +5781,15 @@ var drawSoftLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -6118,9 +6118,9 @@ var drawHardLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -6188,9 +6188,9 @@ var drawHardLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -6258,15 +6258,15 @@ var drawHardLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -6568,9 +6568,9 @@ var drawLinearLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -6635,9 +6635,9 @@ var drawLinearLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha ui
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -6702,15 +6702,15 @@ var drawLinearLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -7036,9 +7036,9 @@ var drawVividLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -7133,9 +7133,9 @@ var drawVividLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -7230,15 +7230,15 @@ var drawVividLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -7624,9 +7624,9 @@ var drawPinLightRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -7721,9 +7721,9 @@ var drawPinLightNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -7818,15 +7818,15 @@ var drawPinLightRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -8239,9 +8239,9 @@ var drawHardMixRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -8363,9 +8363,9 @@ var drawHardMixNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -8487,15 +8487,15 @@ var drawHardMixRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -8905,9 +8905,9 @@ var drawDifferenceRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -8972,9 +8972,9 @@ var drawDifferenceNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -9039,15 +9039,15 @@ var drawDifferenceRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -9331,9 +9331,9 @@ var drawExclusionRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -9386,9 +9386,9 @@ var drawExclusionNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -9441,15 +9441,15 @@ var drawExclusionRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -9721,9 +9721,9 @@ var drawSubtractRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -9788,9 +9788,9 @@ var drawSubtractNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -9855,15 +9855,15 @@ var drawSubtractRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -10165,9 +10165,9 @@ var drawDivideRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -10238,9 +10238,9 @@ var drawDivideNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -10311,15 +10311,15 @@ var drawDivideRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -10612,9 +10612,9 @@ var drawHueRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d0
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -10664,9 +10664,9 @@ var drawHueNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d0
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -10716,15 +10716,15 @@ var drawHueRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d0,
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -10975,9 +10975,9 @@ var drawSaturationRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -11027,9 +11027,9 @@ var drawSaturationNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -11079,15 +11079,15 @@ var drawSaturationRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -11337,9 +11337,9 @@ var drawColorRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -11388,9 +11388,9 @@ var drawColorNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -11439,15 +11439,15 @@ var drawColorRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -11695,9 +11695,9 @@ var drawLuminosityRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			var r, g, b uint32
@@ -11746,9 +11746,9 @@ var drawLuminosityNRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32
@@ -11797,15 +11797,15 @@ var drawLuminosityRGBAToRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 			}
 
 			if sa < 0xff {
-				sr = sr * 0xff / sa
-				sg = sg * 0xff / sa
-				sb = sb * 0xff / sa
+				sr = uint32(rgbaToNRGBATable[(sr<<8)+sa])
+				sg = uint32(rgbaToNRGBATable[(sg<<8)+sa])
+				sb = uint32(rgbaToNRGBATable[(sb<<8)+sa])
 			}
 
 			if 0x00 < da && da < 0xff {
-				dr = dr * 0xff / da
-				dg = dg * 0xff / da
-				db = db * 0xff / da
+				dr = uint32(rgbaToNRGBATable[(dr<<8)+da])
+				dg = uint32(rgbaToNRGBATable[(dg<<8)+da])
+				db = uint32(rgbaToNRGBATable[(db<<8)+da])
 			}
 
 			var r, g, b uint32

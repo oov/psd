@@ -203,9 +203,9 @@ var drawClearNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -236,9 +236,9 @@ var drawClearRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -320,9 +320,9 @@ var drawClearAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -380,9 +380,9 @@ var drawClearUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa u
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -651,9 +651,9 @@ var drawCopyNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -699,9 +699,9 @@ var drawCopyRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -835,9 +835,9 @@ var drawCopyAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -915,9 +915,9 @@ var drawCopyUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa ui
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -1202,9 +1202,9 @@ var drawDestNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -1258,9 +1258,9 @@ var drawDestRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -1391,9 +1391,9 @@ var drawDestAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -1487,9 +1487,9 @@ var drawDestUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa ui
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -1797,9 +1797,9 @@ var drawSrcOverNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -1861,9 +1861,9 @@ var drawSrcOverRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -2025,9 +2025,9 @@ var drawSrcOverAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -2127,9 +2127,9 @@ var drawSrcOverUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -2441,9 +2441,9 @@ var drawDestOverNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -2505,9 +2505,9 @@ var drawDestOverRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -2669,9 +2669,9 @@ var drawDestOverAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -2771,9 +2771,9 @@ var drawDestOverUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, s
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -3071,9 +3071,9 @@ var drawSrcInNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -3121,9 +3121,9 @@ var drawSrcInRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, 
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -3263,9 +3263,9 @@ var drawSrcInAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -3347,9 +3347,9 @@ var drawSrcInUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa u
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -3642,9 +3642,9 @@ var drawDestInNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -3702,9 +3702,9 @@ var drawDestInRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -3847,9 +3847,9 @@ var drawDestInAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -3947,9 +3947,9 @@ var drawDestInUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa 
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -4246,9 +4246,9 @@ var drawSrcOutNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -4297,9 +4297,9 @@ var drawSrcOutRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32,
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -4442,9 +4442,9 @@ var drawSrcOutAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -4528,9 +4528,9 @@ var drawSrcOutUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa 
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -4826,9 +4826,9 @@ var drawDestOutNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -4887,9 +4887,9 @@ var drawDestOutRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -5035,9 +5035,9 @@ var drawDestOutAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -5137,9 +5137,9 @@ var drawDestOutUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -5451,9 +5451,9 @@ var drawSrcAtopNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -5515,9 +5515,9 @@ var drawSrcAtopRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -5679,9 +5679,9 @@ var drawSrcAtopAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -5781,9 +5781,9 @@ var drawSrcAtopUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -6095,9 +6095,9 @@ var drawDestAtopNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -6159,9 +6159,9 @@ var drawDestAtopRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint3
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -6323,9 +6323,9 @@ var drawDestAtopAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -6425,9 +6425,9 @@ var drawDestAtopUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, s
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -6738,9 +6738,9 @@ var drawXORNRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -6801,9 +6801,9 @@ var drawXORRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d0
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -6962,9 +6962,9 @@ var drawXORAlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
@@ -7062,9 +7062,9 @@ var drawXORUniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, sa uin
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(b * 0xff / a)
-				dpix[j+1] = uint8(g * 0xff / a)
-				dpix[j+0] = uint8(r * 0xff / a)
+				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
+				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
+				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
 			}
 
 		}
