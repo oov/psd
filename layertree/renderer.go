@@ -439,13 +439,15 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 
 	if l.MaskEnabled {
 		if ldMask, ok := ld.Mask[pt]; ok {
-			if l.MaskDefaultColor == 255 {
-				blend.DestOut.Draw(buf, buf.Rect, ldMask, pt)
-			} else {
+			if l.MaskDefaultColor != 255 {
 				blend.DestIn.Draw(buf, buf.Rect, ldMask, pt)
+			} else {
+				blend.DestOut.Draw(buf, buf.Rect, ldMask, pt)
 			}
 		} else {
-			// ???
+			if l.MaskDefaultColor != 255 {
+				blend.Clear.Draw(buf, buf.Rect, image.Transparent, image.Point{})
+			}
 		}
 		if blendMode == psd.BlendModePassThrough {
 			blend.DestOver.Draw(buf, buf.Rect, b, pt)
