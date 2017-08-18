@@ -140,7 +140,13 @@ func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int) (map[int
 		go createCanvasInner(cctx, pc, ch, tileSize, layerImages)
 	}
 	img, _, err := psd.Decode(psdFile, &psd.DecodeOptions{
-		SkipMergedImage:  true,
+		SkipMergedImage: true,
+		ConfigLoaded: func(c psd.Config) error {
+			if c.ColorMode != psd.ColorModeRGB {
+				return errors.New("Unsupported color mode")
+			}
+			return nil
+		},
 		LayerImageLoaded: func(l *psd.Layer, index int, total int) { ch <- l },
 	})
 	close(ch)
