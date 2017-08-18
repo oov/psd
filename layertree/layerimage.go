@@ -143,7 +143,13 @@ func (t *tiledImage) storeInner(pc *parallelContext, rect image.Rectangle, tileS
 				for dy, sy := dyMin*tw, syMin*rw; dy < dyMax; dy += tw {
 					for dx, sx, dEnd := dy+dxMin, sy+sxMin, dy+dxMax; dx < dEnd; dx += 4 {
 						alpha = uint32(a[sx]) * 32897
-						if alpha > 0 {
+						if alpha == 255*32897 {
+							buf[dx+3] = 255
+							buf[dx+2] = b[sx]
+							buf[dx+1] = g[sx]
+							buf[dx+0] = r[sx]
+							used = true
+						} else if alpha > 0 {
 							buf[dx+3] = a[sx]
 							buf[dx+2] = uint8((uint32(b[sx]) * alpha) >> 23)
 							buf[dx+1] = uint8((uint32(g[sx]) * alpha) >> 23)
