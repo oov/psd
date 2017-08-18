@@ -78,7 +78,7 @@ func (t *tiledImage) renderInner(pc *parallelContext, img *image.RGBA, tileSize,
 	}
 }
 
-func (t *tiledImage) Store(ctx context.Context, tileSize int, rect image.Rectangle, r []byte, g []byte, b []byte, a []byte) error {
+func (t *tiledImage) Store(ctx context.Context, tileSize int, rect image.Rectangle, r, g, b, a []byte, deltaX int) error {
 	if *t == nil {
 		*t = make(tiledImage)
 	}
@@ -95,19 +95,18 @@ func (t *tiledImage) Store(ctx context.Context, tileSize int, rect image.Rectang
 	pc.Wg.Add(n)
 	step := (ylen / n) * tileSize
 	for i := 1; i < n; i++ {
-		go t.storeInner(pc, rect, tileSize, x0, x1, y0, y0+step, r, g, b, a)
+		go t.storeInner(pc, rect, tileSize, x0, x1, y0, y0+step, r, g, b, a, deltaX)
 		y0 += step
 	}
-	go t.storeInner(pc, rect, tileSize, x0, x1, y0, y1, r, g, b, a)
+	go t.storeInner(pc, rect, tileSize, x0, x1, y0, y1, r, g, b, a, deltaX)
 	return pc.Wait(ctx)
-
 }
 
-func (t *tiledImage) storeInner(pc *parallelContext, rect image.Rectangle, tileSize, x0, x1, y0, y1 int, r []byte, g []byte, b []byte, a []byte) {
+func (t *tiledImage) storeInner(pc *parallelContext, rect image.Rectangle, tileSize, x0, x1, y0, y1 int, r, g, b, a []byte, deltaX int) {
 	defer pc.Done()
 
 	rx0, ry0, rx1, ry1 := rect.Min.X, rect.Min.Y, rect.Max.X, rect.Max.Y
-	rw := rect.Dx()
+	sw := rect.Dx() * deltaX
 	tw := tileSize << 2
 
 	buf := make([]byte, tw*tileSize)
@@ -140,7 +139,7 @@ func (t *tiledImage) storeInner(pc *parallelContext, rect image.Rectangle, tileS
 			dxMin, dxMax = dxMin<<2, dxMax<<2
 			if a != nil {
 				var alpha uint32
-				for dy, sy := dyMin*tw, syMin*rw; dy < dyMax; dy += tw {
+				for dy, sy := dyMin*tw, syMin*sw; dy < dyMax; dy += tw {
 					for dx, sx, dEnd := dy+dxMin, sy+sxMin, dy+dxMax; dx < dEnd; dx += 4 {
 						alpha = uint32(a[sx]) * 32897
 						if alpha == 255*32897 {
@@ -156,21 +155,21 @@ func (t *tiledImage) storeInner(pc *parallelContext, rect image.Rectangle, tileS
 							buf[dx+0] = uint8((uint32(r[sx]) * alpha) >> 23)
 							used = true
 						}
-						sx++
+						sx += deltaX
 					}
-					sy += rw
+					sy += sw
 				}
 			} else {
-				for dy, sy := dyMin*tw, syMin*rw; dy < dyMax; dy += tw {
+				for dy, sy := dyMin*tw, syMin*sw; dy < dyMax; dy += tw {
 					for dx, sx, dEnd := dy+dxMin, sy+sxMin, dy+dxMax; dx < dEnd; dx += 4 {
 						buf[dx+3] = 0xff
 						buf[dx+2] = b[sx]
 						buf[dx+1] = g[sx]
 						buf[dx+0] = r[sx]
 						used = true
-						sx++
+						sx += deltaX
 					}
-					sy += rw
+					sy += sw
 				}
 			}
 			if used {

@@ -163,7 +163,7 @@ func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.
 			if ach, ok := l.Channel[-1]; ok {
 				a = ach.Data
 			}
-			if err := ld.Canvas.Store(ctx, tileSize, l.Rect, r, g, b, a); err != nil {
+			if err := ld.Canvas.Store(ctx, tileSize, l.Rect, r, g, b, a, 1); err != nil {
 				return
 			}
 		}
