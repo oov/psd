@@ -208,6 +208,7 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 type DecodeOptions struct {
 	SkipLayerImage   bool
 	SkipMergedImage  bool
+	ConfigLoaded     func(cfg Config) error
 	LayerImageLoaded func(layer *Layer, index int, total int)
 }
 
@@ -222,6 +223,12 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 		return nil, 0, err
 	}
 	read += l
+	if o.ConfigLoaded != nil {
+		err = o.ConfigLoaded(cfg)
+		if err != nil {
+			return nil, 0, err
+		}
+	}
 
 	psd, l, err = readLayerAndMaskInfo(r, &cfg, o)
 	if err != nil {
