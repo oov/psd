@@ -8,6 +8,7 @@ import (
 	"errors"
 	"image"
 	"io"
+	"math"
 	"runtime"
 
 	"github.com/oov/psd"
@@ -155,7 +156,16 @@ func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int, scale fl
 	if err = pc.Wait(ctx); err != nil {
 		return nil, nil, err
 	}
-	img.Config.Rect = scaleRect(img.Config.Rect, scale)
+	img.Config.Rect = image.Rectangle{
+		Min: image.Point{
+			int(math.Floor(float64(img.Config.Rect.Min.X) * scale)),
+			int(math.Floor(float64(img.Config.Rect.Min.Y) * scale)),
+		},
+		Max: image.Point{
+			int(math.Floor(float64(img.Config.Rect.Max.X)*scale + 0.5)),
+			int(math.Floor(float64(img.Config.Rect.Max.Y)*scale + 0.5)),
+		},
+	}
 	return layerImages, img, nil
 }
 
