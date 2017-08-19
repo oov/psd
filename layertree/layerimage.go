@@ -3,7 +3,11 @@ package layertree
 import (
 	"context"
 	"image"
+	"math"
 	"runtime"
+
+	"golang.org/x/image/draw"
+	"golang.org/x/image/math/f64"
 
 	"github.com/oov/psd/blend"
 )
@@ -78,6 +82,88 @@ func (t *tiledImage) renderInner(pc *parallelContext, img *image.RGBA, tileSize,
 	}
 }
 
+func createImage(rect image.Rectangle, r []byte, g []byte, b []byte, a []byte) *image.NRGBA {
+	img := image.NewNRGBA(rect)
+	w, h := rect.Dx(), rect.Dy()
+	pix := img.Pix
+	var y, sx0, sx1, dx int
+	if a != nil {
+		for y = 0; y < h; y++ {
+			sx0 = y * w
+			sx1 = sx0 + w
+			dx = sx0 << 2
+			for sx0 < sx1 {
+				if a[sx0] > 0 {
+					pix[dx+3] = a[sx0]
+					pix[dx+2] = b[sx0]
+					pix[dx+1] = g[sx0]
+					pix[dx+0] = r[sx0]
+				}
+				dx += 4
+				sx0++
+			}
+		}
+	} else {
+		for y = 0; y < h; y++ {
+			sx0 = y * w
+			sx1 = sx0 + w
+			dx = sx0 << 2
+			for sx0 < sx1 {
+				pix[dx+3] = 0xff
+				pix[dx+2] = b[sx0]
+				pix[dx+1] = g[sx0]
+				pix[dx+0] = r[sx0]
+				dx += 4
+				sx0++
+			}
+		}
+	}
+	return img
+}
+
+func scaleRect(rect image.Rectangle, scale float64) image.Rectangle {
+	return image.Rectangle{
+		Min: image.Point{
+			int(math.Floor(float64(rect.Min.X) * scale)),
+			int(math.Floor(float64(rect.Min.Y) * scale)),
+		},
+		Max: image.Point{
+			int(math.Ceil(float64(rect.Max.X) * scale)),
+			int(math.Ceil(float64(rect.Max.Y) * scale)),
+		},
+	}
+}
+
+func (t *tiledImage) Rescale(ctx context.Context, tileSize int, rect image.Rectangle, scale float64) (*tiledImage, image.Rectangle, error) {
+	tmp := image.NewRGBA(rect)
+	if err := t.Render(ctx, tileSize, tmp); err != nil {
+		return nil, image.Rectangle{}, err
+	}
+	scaledRect := scaleRect(rect, scale)
+	tmp2 := image.NewNRGBA(scaledRect)
+	draw.BiLinear.Transform(tmp2, f64.Aff3{scale, 0, 0, 0, scale, 0}, tmp, rect, draw.Src, nil)
+	var t2 tiledImage
+	if err := t2.Store(ctx, tileSize, scaledRect, tmp2.Pix[0:], tmp2.Pix[1:], tmp2.Pix[2:], tmp2.Pix[3:], 4); err != nil {
+		return nil, image.Rectangle{}, err
+	}
+	return &t2, scaledRect, nil
+}
+
+func (t *tiledImage) StoreScaled(ctx context.Context, tileSize int, rect image.Rectangle, r, g, b, a []byte, scale float64) (image.Rectangle, error) {
+	if *t == nil {
+		*t = make(tiledImage)
+	}
+
+	tmp := createImage(rect, r, g, b, a)
+	scaledRect := scaleRect(rect, scale)
+	tmp2 := image.NewNRGBA(scaledRect)
+	draw.BiLinear.Transform(tmp2, f64.Aff3{scale, 0, 0, 0, scale, 0}, tmp, rect, draw.Src, nil)
+	if err := t.Store(ctx, tileSize, scaledRect, tmp2.Pix[0:], tmp2.Pix[1:], tmp2.Pix[2:], tmp2.Pix[3:], 4); err != nil {
+		return image.Rectangle{}, err
+	}
+	return scaledRect, nil
+}
+
 func (t *tiledImage) Store(ctx context.Context, tileSize int, rect image.Rectangle, r, g, b, a []byte, deltaX int) error {
 	if *t == nil {
 		*t = make(tiledImage)
@@ -135,6 +221,7 @@ func (t *tiledImage) storeInner(pc *parallelContext, rect image.Rectangle, tileS
 				dyMax -= ry0 + syMin + (dyMax - dyMin) - ry1
 			}
 			used := false
+			sxMin = sxMin * deltaX
 			dyMax = dyMax * tw
 			dxMin, dxMax = dxMin<<2, dxMax<<2
 			if a != nil {
@@ -241,6 +328,54 @@ func (t *tiledMask) renderInner(pc *parallelContext, img *image.Alpha, tileSize,
 			}
 		}
 	}
+}
+
+func createMask(rect image.Rectangle, a []byte) *image.Alpha {
+	img := image.NewAlpha(rect)
+	w, h := rect.Dx(), rect.Dy()
+	pix := img.Pix
+	var y, sx0, sx1 int
+	for y = 0; y < h; y++ {
+		sx0 = y * w
+		sx1 = sx0 + w
+		for sx0 < sx1 {
+			pix[sx0] = a[sx0]
+			sx0++
+		}
+	}
+	return img
+}
+
+func (t *tiledMask) Rescale(ctx context.Context, tileSize int, rect image.Rectangle, a []byte, defaultColor int, scale float64) (*tiledMask, image.Rectangle, error) {
+	tmp := image.NewAlpha(rect)
+	if err := t.Render(ctx, tileSize, tmp); err != nil {
+		return nil, image.Rectangle{}, err
+	}
+	scaledRect := scaleRect(rect, scale)
+	tmp2 := image.NewAlpha(scaledRect)
+	// TODO: currently, it seems fallback path is used in image.Alpha.
+	draw.BiLinear.Transform(tmp2, f64.Aff3{scale, 0, 0, 0, scale, 0}, tmp, rect, draw.Src, nil)
+	var t2 tiledMask
+	if err := t.Store(ctx, tileSize, scaledRect, tmp2.Pix, defaultColor); err != nil {
+		return nil, image.Rectangle{}, err
+	}
+	return &t2, scaledRect, nil
+}
+
+func (t *tiledMask) StoreScaled(ctx context.Context, tileSize int, rect image.Rectangle, a []byte, defaultColor int, scale float64) (image.Rectangle, error) {
+	if *t == nil {
+		*t = make(tiledMask)
+	}
+
+	tmp := createMask(rect, a)
+	scaledRect := scaleRect(rect, scale)
+	tmp2 := image.NewAlpha(scaledRect)
+	// TODO: currently, it seems fallback path is used in image.Alpha.
+	draw.BiLinear.Transform(tmp2, f64.Aff3{scale, 0, 0, 0, scale, 0}, tmp, rect, draw.Src, nil)
+	if err := t.Store(ctx, tileSize, scaledRect, tmp2.Pix, defaultColor); err != nil {
+		return image.Rectangle{}, err
+	}
+	return scaledRect, nil
 }
 
 func (t *tiledMask) Store(ctx context.Context, tileSize int, rect image.Rectangle, a []byte, defaultColor int) error {

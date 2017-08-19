@@ -5,6 +5,7 @@ package layertree
 
 import (
 	"context"
+	"errors"
 	"image"
 	"io"
 	"runtime"
@@ -66,6 +67,7 @@ const DefaultTileSize = 64
 
 type Options struct {
 	TileSize int
+	Scale    float64
 	// It will used to detect character encoding of a variable-width encoding layer name.
 	LayerNameEncodingDetector func([]byte) encoding.Encoding
 }
@@ -81,11 +83,14 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 	if opt.TileSize == 0 {
 		opt.TileSize = DefaultTileSize
 	}
+	if opt.Scale == 0 {
+		opt.Scale = 1
+	}
 	if opt.LayerNameEncodingDetector == nil {
 		opt.LayerNameEncodingDetector = func([]byte) encoding.Encoding { return encoding.Nop }
 	}
 
-	layerImages, img, err := createCanvas(ctx, psdFile, opt.TileSize)
+	layerImages, img, err := createCanvas(ctx, psdFile, opt.TileSize, opt.Scale)
 	if err != nil {
 		return nil, err
 	}
@@ -119,13 +124,7 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 	return r, nil
 }
 
-func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int) (map[int]layerImage, *psd.PSD, error) {
-	/*
-		if img.Config.ColorMode != psd.ColorModeRGB {
-			return errors.New("Unsupported color mode")
-		}
-	*/
-
+func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int, scale float64) (map[int]layerImage, *psd.PSD, error) {
 	n := runtime.GOMAXPROCS(0)
 
 	ch := make(chan *psd.Layer)
@@ -137,7 +136,7 @@ func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int) (map[int
 	pc := &parallelContext{}
 	pc.Wg.Add(n)
 	for i := 0; i < n; i++ {
-		go createCanvasInner(cctx, pc, ch, tileSize, layerImages)
+		go createCanvasInner(cctx, pc, ch, tileSize, scale, layerImages)
 	}
 	img, _, err := psd.Decode(psdFile, &psd.DecodeOptions{
 		SkipMergedImage: true,
@@ -156,10 +155,11 @@ func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int) (map[int
 	if err = pc.Wait(ctx); err != nil {
 		return nil, nil, err
 	}
+	img.Config.Rect = scaleRect(img.Config.Rect, scale)
 	return layerImages, img, nil
 }
 
-func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.Layer, tileSize int, layerImages map[int]layerImage) {
+func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.Layer, tileSize int, scale float64, layerImages map[int]layerImage) {
 	defer pc.Done()
 	for l := range ch {
 		var ld layerImage
@@ -169,14 +169,32 @@ func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.
 			if ach, ok := l.Channel[-1]; ok {
 				a = ach.Data
 			}
-			if err := ld.Canvas.Store(ctx, tileSize, l.Rect, r, g, b, a, 1); err != nil {
-				return
+			if scale < 1 {
+				r, err := ld.Canvas.StoreScaled(ctx, tileSize, l.Rect, r, g, b, a, scale)
+				if err != nil {
+					return
+				}
+				l.Rect = r
+			} else {
+				err := ld.Canvas.Store(ctx, tileSize, l.Rect, r, g, b, a, 1)
+				if err != nil {
+					return
+				}
 			}
 		}
 		if !l.Mask.Rect.Empty() {
 			if a, ok := l.Channel[-2]; ok {
-				if err := ld.Mask.Store(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor); err != nil {
-					return
+				if scale < 1 {
+					r, err := ld.Mask.StoreScaled(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor, scale)
+					if err != nil {
+						return
+					}
+					l.Mask.Rect = r
+				} else {
+					err := ld.Mask.Store(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor)
+					if err != nil {
+						return
+					}
 				}
 			}
 		}
