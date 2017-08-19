@@ -169,33 +169,21 @@ func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.
 			if ach, ok := l.Channel[-1]; ok {
 				a = ach.Data
 			}
-			if scale < 1 {
-				r, err := ld.Canvas.StoreScaled(ctx, tileSize, l.Rect, r, g, b, a, scale)
-				if err != nil {
-					return
-				}
-				l.Rect = r
-			} else {
-				err := ld.Canvas.Store(ctx, tileSize, l.Rect, r, g, b, a, 1)
-				if err != nil {
-					return
-				}
+			ti, rect, err := newScaledTiledImage(ctx, tileSize, l.Rect, r, g, b, a, 1, scale)
+			if err != nil {
+				return
 			}
+			ld.Canvas = ti
+			l.Rect = rect
 		}
 		if !l.Mask.Rect.Empty() {
 			if a, ok := l.Channel[-2]; ok {
-				if scale < 1 {
-					r, err := ld.Mask.StoreScaled(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor, scale)
-					if err != nil {
-						return
-					}
-					l.Mask.Rect = r
-				} else {
-					err := ld.Mask.Store(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor)
-					if err != nil {
-						return
-					}
+				m, rect, err := newScaledTiledMask(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor, scale)
+				if err != nil {
+					return
 				}
+				l.Mask.Rect = rect
+				ld.Mask = m
 			}
 		}
 
