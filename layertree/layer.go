@@ -41,9 +41,13 @@ func (r *Root) Clone() *Root {
 // Transform creates copy of r that transformed by m.
 //
 // This takes time because it applies transformations to all layers.
-func (r *Root) Transform(ctx context.Context, m f64.Aff3) (*Root, error) {
+func (r *Root) Transform(ctx context.Context, m f64.Aff3, gamma float64) (*Root, error) {
 	rr := r.Clone()
 
+	var gt *gammaTable
+	if gamma != 0 {
+		gt = makeGammaTable(gamma)
+	}
 	// flatten layerImage
 	nImages := len(r.layerImage)
 	seqIDs := make([]int, nImages)
@@ -66,10 +70,10 @@ func (r *Root) Transform(ctx context.Context, m f64.Aff3) (*Root, error) {
 	step := nImages / n
 	idx := 0
 	for i := 1; i < n; i++ {
-		go rr.transformInner(pc, m, seqIDs, images, idx, idx+step)
+		go rr.transformInner(pc, m, gt, seqIDs, images, idx, idx+step)
 		idx += step
 	}
-	go rr.transformInner(pc, m, seqIDs, images, idx, nImages)
+	go rr.transformInner(pc, m, gt, seqIDs, images, idx, nImages)
 	if err := pc.Wait(ctx); err != nil {
 		return nil, err
 	}
@@ -77,7 +81,7 @@ func (r *Root) Transform(ctx context.Context, m f64.Aff3) (*Root, error) {
 
 }
 
-func (r *Root) transformInner(pc *parallelContext, m f64.Aff3, seqIDs []int, images []layerImage, sIdx, eIdx int) {
+func (r *Root) transformInner(pc *parallelContext, m f64.Aff3, gt *gammaTable, seqIDs []int, images []layerImage, sIdx, eIdx int) {
 	defer pc.Done()
 	for i := sIdx; i < eIdx; i++ {
 		if pc.Aborted() {
@@ -89,7 +93,7 @@ func (r *Root) transformInner(pc *parallelContext, m f64.Aff3, seqIDs []int, ima
 		var tm tiledMask
 		var err error
 		if li.Canvas != nil {
-			if ti, err = li.Canvas.Transform(context.Background(), m); err != nil {
+			if ti, err = li.Canvas.Transform(context.Background(), m, gt); err != nil {
 				return
 			}
 		}
@@ -135,6 +139,7 @@ const DefaultTileSize = 64
 type Options struct {
 	TileSize        int
 	TransformMatrix f64.Aff3
+	Gamma           float64
 	// It will used to detect character encoding of a variable-width encoding layer name.
 	LayerNameEncodingDetector func([]byte) encoding.Encoding
 }
@@ -193,11 +198,15 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 	if opt.TransformMatrix[4] == 0 {
 		opt.TransformMatrix[4] = 1
 	}
+	var gt *gammaTable
+	if opt.Gamma != 0 {
+		gt = makeGammaTable(opt.Gamma)
+	}
 	if opt.LayerNameEncodingDetector == nil {
 		opt.LayerNameEncodingDetector = func([]byte) encoding.Encoding { return encoding.Nop }
 	}
 
-	layerImages, img, err := createCanvas(ctx, psdFile, opt.TileSize, opt.TransformMatrix)
+	layerImages, img, err := createCanvas(ctx, psdFile, opt.TileSize, opt.TransformMatrix, gt)
 	if err != nil {
 		return nil, err
 	}
@@ -230,7 +239,7 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 	return r, nil
 }
 
-func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int, m f64.Aff3) (map[int]layerImage, *psd.PSD, error) {
+func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int, m f64.Aff3, gt *gammaTable) (map[int]layerImage, *psd.PSD, error) {
 	n := runtime.GOMAXPROCS(0)
 
 	ch := make(chan *psd.Layer)
@@ -242,7 +251,7 @@ func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int, m f64.Af
 	pc := &parallelContext{}
 	pc.Wg.Add(n)
 	for i := 0; i < n; i++ {
-		go createCanvasInner(cctx, pc, ch, tileSize, m, layerImages)
+		go createCanvasInner(cctx, pc, ch, tileSize, m, gt, layerImages)
 	}
 	img, _, err := psd.Decode(psdFile, &psd.DecodeOptions{
 		SkipMergedImage: true,
@@ -265,7 +274,7 @@ func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int, m f64.Af
 	return layerImages, img, nil
 }
 
-func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.Layer, tileSize int, m f64.Aff3, layerImages map[int]layerImage) {
+func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.Layer, tileSize int, m f64.Aff3, gt *gammaTable, layerImages map[int]layerImage) {
 	defer pc.Done()
 	for l := range ch {
 		var ld layerImage
@@ -275,7 +284,7 @@ func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.
 			if ach, ok := l.Channel[-1]; ok {
 				a = ach.Data
 			}
-			ti, err := newScaledTiledImage(ctx, tileSize, l.Rect, r, g, b, a, 1, m)
+			ti, err := newScaledTiledImage(ctx, tileSize, l.Rect, r, g, b, a, 1, m, gt)
 			if err != nil {
 				return
 			}

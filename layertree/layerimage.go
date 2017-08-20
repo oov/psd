@@ -3,6 +3,7 @@ package layertree
 import (
 	"context"
 	"image"
+	"math"
 	"runtime"
 
 	"golang.org/x/image/draw"
@@ -74,6 +75,25 @@ func (t tiledImage) renderInner(pc *parallelContext, img draw.Image, tileSize, x
 	}
 }
 
+type gammaTable struct {
+	T8  [256]uint16
+	T16 [65536]uint8
+}
+
+func makeGammaTable(g float64) *gammaTable {
+	var t [256]uint16
+	for i := range t {
+		t[i] = uint16(math.Pow(float64(i)/255, g) * 65535)
+	}
+
+	g = 1.0 / g
+	var rt [65536]uint8
+	for i := range rt {
+		rt[i] = uint8(math.Pow(float64(i)/65535, g) * 255)
+	}
+	return &gammaTable{t, rt}
+}
+
 func createImage(rect image.Rectangle, r []byte, g []byte, b []byte, a []byte, deltaX int) *image.NRGBA {
 	if deltaX == 4 {
 		return &image.NRGBA{
@@ -113,6 +133,59 @@ func createImage(rect image.Rectangle, r []byte, g []byte, b []byte, a []byte, d
 	}
 }
 
+func createImageGamma(rect image.Rectangle, r []byte, g []byte, b []byte, a []byte, deltaX int, gt [256]uint16) *image.NRGBA64 {
+	w, h := rect.Dx(), rect.Dy()
+	pix := make([]byte, w*8*h)
+	var s, d int
+	if a != nil {
+		for d < len(pix) {
+			if a[s] > 0 {
+				a8, r16, g16, b16 := a[s], gt[r[s]], gt[g[s]], gt[b[s]]
+				pix[d+7] = a8
+				pix[d+6] = a8
+				pix[d+5] = uint8(b16)
+				pix[d+4] = uint8(b16 >> 8)
+				pix[d+3] = uint8(g16)
+				pix[d+2] = uint8(g16 >> 8)
+				pix[d+1] = uint8(r16)
+				pix[d+0] = uint8(r16 >> 8)
+			}
+			d += 8
+			s += deltaX
+		}
+	} else {
+		for d < len(pix) {
+			r16, g16, b16 := gt[r[s]], gt[g[s]], gt[b[s]]
+			pix[d+7] = 0xff
+			pix[d+6] = 0xff
+			pix[d+5] = uint8(b16)
+			pix[d+4] = uint8(b16 >> 8)
+			pix[d+3] = uint8(g16)
+			pix[d+2] = uint8(g16 >> 8)
+			pix[d+1] = uint8(r16)
+			pix[d+0] = uint8(r16 >> 8)
+			d += 8
+			s += deltaX
+		}
+	}
+	return &image.NRGBA64{
+		Pix:    pix,
+		Stride: w * 8,
+		Rect:   rect,
+	}
+}
+
+func restoreGamma(img *image.NRGBA64, gt [65536]uint8) {
+	pix := img.Pix
+	var s int
+	for s < len(pix) {
+		pix[s+4] = gt[(uint16(pix[s+4])<<8)|uint16(pix[s+5])]
+		pix[s+2] = gt[(uint16(pix[s+2])<<8)|uint16(pix[s+3])]
+		pix[s+0] = gt[(uint16(pix[s+0])<<8)|uint16(pix[s+1])]
+		s += 8
+	}
+}
+
 func (t tiledImage) tileSize() int {
 	for _, m := range t {
 		return m.Rect.Dx()
@@ -120,7 +193,7 @@ func (t tiledImage) tileSize() int {
 	return 0
 }
 
-func (t tiledImage) Transform(ctx context.Context, m f64.Aff3) (tiledImage, error) {
+func (t tiledImage) Transform(ctx context.Context, m f64.Aff3, gt *gammaTable) (tiledImage, error) {
 	rect := t.Rect()
 	if rect.Empty() {
 		return tiledImage{}, nil
@@ -134,18 +207,26 @@ func (t tiledImage) Transform(ctx context.Context, m f64.Aff3) (tiledImage, erro
 	if err := t.Render(ctx, tmp); err != nil {
 		return nil, err
 	}
-	return newScaledTiledImage(ctx, tileSize, rect, tmp.Pix[0:], tmp.Pix[1:], tmp.Pix[2:], tmp.Pix[3:], 4, m)
+	return newScaledTiledImage(ctx, tileSize, rect, tmp.Pix[0:], tmp.Pix[1:], tmp.Pix[2:], tmp.Pix[3:], 4, m, gt)
 }
 
-func newScaledTiledImage(ctx context.Context, tileSize int, rect image.Rectangle, r, g, b, a []byte, deltaX int, m f64.Aff3) (tiledImage, error) {
+func newScaledTiledImage(ctx context.Context, tileSize int, rect image.Rectangle, r, g, b, a []byte, deltaX int, m f64.Aff3, gt *gammaTable) (tiledImage, error) {
 	if m[0] == 1 && m[1] == 0 && m[2] == 0 && m[3] == 0 && m[4] == 1 && m[5] == 0 {
 		return newTiledImage(ctx, tileSize, rect, r, g, b, a, deltaX)
 	}
-	tmp := createImage(rect, r, g, b, a, deltaX)
+	if gt == nil {
+		tmp := createImage(rect, r, g, b, a, deltaX)
+		trRect := transformRect(rect, m)
+		tmp2 := image.NewNRGBA(trRect)
+		draw.BiLinear.Transform(tmp2, m, tmp, rect, draw.Src, nil)
+		return newTiledImage(ctx, tileSize, trRect, tmp2.Pix[0:], tmp2.Pix[1:], tmp2.Pix[2:], tmp2.Pix[3:], 4)
+	}
+	tmp := createImageGamma(rect, r, g, b, a, deltaX, gt.T8)
 	trRect := transformRect(rect, m)
-	tmp2 := image.NewNRGBA(trRect)
+	tmp2 := image.NewNRGBA64(trRect)
 	draw.BiLinear.Transform(tmp2, m, tmp, rect, draw.Src, nil)
-	return newTiledImage(ctx, tileSize, trRect, tmp2.Pix[0:], tmp2.Pix[1:], tmp2.Pix[2:], tmp2.Pix[3:], 4)
+	restoreGamma(tmp2, gt.T16)
+	return newTiledImage(ctx, tileSize, trRect, tmp2.Pix[0:], tmp2.Pix[2:], tmp2.Pix[4:], tmp2.Pix[6:], 8)
 }
 
 func newTiledImage(ctx context.Context, tileSize int, rect image.Rectangle, r, g, b, a []byte, deltaX int) (tiledImage, error) {
