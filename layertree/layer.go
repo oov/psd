@@ -11,9 +11,10 @@ import (
 	"math"
 	"runtime"
 
-	"github.com/oov/psd"
-
+	"golang.org/x/image/math/f64"
 	"golang.org/x/text/encoding"
+
+	"github.com/oov/psd"
 )
 
 // Root represents root of the layer tree.
@@ -51,10 +52,7 @@ type Layer struct {
 
 	BlendClippedElements bool
 
-	Rect image.Rectangle
-
 	MaskEnabled      bool
-	MaskRect         image.Rectangle
 	MaskDefaultColor int // 0 or 255
 
 	Parent   *Layer
@@ -67,10 +65,47 @@ type Layer struct {
 const DefaultTileSize = 64
 
 type Options struct {
-	TileSize int
-	Scale    float64
+	TileSize        int
+	TransformMatrix f64.Aff3
 	// It will used to detect character encoding of a variable-width encoding layer name.
 	LayerNameEncodingDetector func([]byte) encoding.Encoding
+}
+
+func transformRect(r image.Rectangle, m f64.Aff3) image.Rectangle {
+	pts := []float64{
+		float64(r.Min.X), float64(r.Min.Y),
+		float64(r.Max.X), float64(r.Min.Y),
+		float64(r.Max.X), float64(r.Max.Y),
+		float64(r.Min.X), float64(r.Max.Y),
+	}
+	var xMin, yMin, xMax, yMax float64
+	for i := 0; i < len(pts); i += 2 {
+		sx, sy := pts[i], pts[i+1]
+		dx, dy := sx*m[0]+sy*m[1]+m[2], sx*m[3]+sy*m[4]+m[5]
+		if i == 0 {
+			xMin, yMin = dx, dy
+			xMax, yMax = dx+1, dy+1
+			continue
+		}
+		if xMin > dx {
+			xMin = dx
+		}
+		if yMin > dy {
+			yMin = dy
+		}
+		dx++
+		dy++
+		if xMax < dx {
+			xMax = dx
+		}
+		if yMax < dy {
+			yMax = dy
+		}
+	}
+	return image.Rectangle{
+		Min: image.Point{X: int(math.Floor(xMin)), Y: int(math.Floor(yMin))},
+		Max: image.Point{X: int(math.Ceil(xMax)), Y: int(math.Ceil(yMax))},
+	}
 }
 
 // New creates layer tree from the psdFile.
@@ -84,14 +119,17 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 	if opt.TileSize == 0 {
 		opt.TileSize = DefaultTileSize
 	}
-	if opt.Scale == 0 {
-		opt.Scale = 1
+	if opt.TransformMatrix[0] == 0 {
+		opt.TransformMatrix[0] = 1
+	}
+	if opt.TransformMatrix[4] == 0 {
+		opt.TransformMatrix[4] = 1
 	}
 	if opt.LayerNameEncodingDetector == nil {
 		opt.LayerNameEncodingDetector = func([]byte) encoding.Encoding { return encoding.Nop }
 	}
 
-	layerImages, img, err := createCanvas(ctx, psdFile, opt.TileSize, opt.Scale)
+	layerImages, img, err := createCanvas(ctx, psdFile, opt.TileSize, opt.TransformMatrix)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +163,7 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 	return r, nil
 }
 
-func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int, scale float64) (map[int]layerImage, *psd.PSD, error) {
+func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int, m f64.Aff3) (map[int]layerImage, *psd.PSD, error) {
 	n := runtime.GOMAXPROCS(0)
 
 	ch := make(chan *psd.Layer)
@@ -137,7 +175,7 @@ func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int, scale fl
 	pc := &parallelContext{}
 	pc.Wg.Add(n)
 	for i := 0; i < n; i++ {
-		go createCanvasInner(cctx, pc, ch, tileSize, scale, layerImages)
+		go createCanvasInner(cctx, pc, ch, tileSize, m, layerImages)
 	}
 	img, _, err := psd.Decode(psdFile, &psd.DecodeOptions{
 		SkipMergedImage: true,
@@ -156,20 +194,11 @@ func createCanvas(ctx context.Context, psdFile io.Reader, tileSize int, scale fl
 	if err = pc.Wait(ctx); err != nil {
 		return nil, nil, err
 	}
-	img.Config.Rect = image.Rectangle{
-		Min: image.Point{
-			int(math.Floor(float64(img.Config.Rect.Min.X) * scale)),
-			int(math.Floor(float64(img.Config.Rect.Min.Y) * scale)),
-		},
-		Max: image.Point{
-			int(math.Floor(float64(img.Config.Rect.Max.X)*scale + 0.5)),
-			int(math.Floor(float64(img.Config.Rect.Max.Y)*scale + 0.5)),
-		},
-	}
+	img.Config.Rect = transformRect(img.Config.Rect, m)
 	return layerImages, img, nil
 }
 
-func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.Layer, tileSize int, scale float64, layerImages map[int]layerImage) {
+func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.Layer, tileSize int, m f64.Aff3, layerImages map[int]layerImage) {
 	defer pc.Done()
 	for l := range ch {
 		var ld layerImage
@@ -179,7 +208,7 @@ func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.
 			if ach, ok := l.Channel[-1]; ok {
 				a = ach.Data
 			}
-			ti, rect, err := newScaledTiledImage(ctx, tileSize, l.Rect, r, g, b, a, 1, scale)
+			ti, rect, err := newScaledTiledImage(ctx, tileSize, l.Rect, r, g, b, a, 1, m)
 			if err != nil {
 				return
 			}
@@ -188,7 +217,7 @@ func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.
 		}
 		if !l.Mask.Rect.Empty() {
 			if a, ok := l.Channel[-2]; ok {
-				m, rect, err := newScaledTiledMask(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor, scale)
+				m, rect, err := newScaledTiledMask(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor, m)
 				if err != nil {
 					return
 				}

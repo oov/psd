@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/oov/psd"
-
 	"golang.org/x/text/encoding"
+
+	"github.com/oov/psd"
 )
 
 type builder struct {
@@ -47,19 +47,14 @@ func (b *builder) buildLayer(l *Layer, psdl *psd.Layer) {
 	l.Folder = psdl.Folder()
 	l.FolderOpen = psdl.FolderIsOpen()
 
-	l.MaskRect = psdl.Mask.Rect
 	l.MaskDefaultColor = psdl.Mask.DefaultColor
 	l.MaskEnabled = psdl.Mask.Enabled() && !psdl.Mask.Rect.Empty()
 
 	b.Rect = b.Rect.Union(psdl.Rect)
-
-	rect := psdl.Rect
 	for i := range psdl.Layer {
 		l.Children = append(l.Children, Layer{Parent: l})
 		b.buildLayer(&l.Children[i], &psdl.Layer[i])
-		rect = rect.Union(l.Children[i].Rect)
 	}
-	l.Rect = rect
 }
 
 func reverse(ls []*Layer) {

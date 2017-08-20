@@ -16,9 +16,10 @@ func (r *Root) Thumbnail(l *Layer, size int, tempBuffer []byte) *image.RGBA {
 	if ld.Canvas == nil {
 		return nil
 	}
+	rect := ld.Canvas.Rect()
 	src := &image.RGBA{
-		Rect:   l.Rect,
-		Stride: l.Rect.Dx() * 4,
+		Rect:   rect,
+		Stride: rect.Dx() * 4,
 	}
 	if src.Stride*src.Rect.Dy() > len(tempBuffer) {
 		src.Pix = make([]byte, src.Stride*src.Rect.Dy())
@@ -28,7 +29,7 @@ func (r *Root) Thumbnail(l *Layer, size int, tempBuffer []byte) *image.RGBA {
 	ld.Canvas.Render(context.Background(), r.tileSize, src)
 
 	var dest *image.RGBA
-	sw, sh := l.Rect.Dx(), l.Rect.Dy()
+	sw, sh := rect.Dx(), rect.Dy()
 	if sw > sh {
 		dest = image.NewRGBA(image.Rect(0, 0, size, sh*size/sw))
 	} else {
@@ -79,7 +80,12 @@ func (r *Root) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layer
 
 	bufLen := 0
 	for i := sIdx; i < eIdx; i++ {
-		l := layers[i].Rect.Dx() * 4 * layers[i].Rect.Dy()
+		ld, ok := r.layerImage[layers[i].SeqID]
+		if !ok || ld.Canvas == nil {
+			continue
+		}
+		rect := ld.Canvas.Rect()
+		l := rect.Dx() * 4 * rect.Dy()
 		if bufLen < l {
 			bufLen = l
 		}
@@ -91,11 +97,12 @@ func (r *Root) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layer
 
 	for i := sIdx; i < eIdx; i++ {
 		t := r.Thumbnail(layers[i], size, buf)
-		if t != nil {
-			pc.M.Lock()
-			m[layers[i].SeqID] = t
-			pc.M.Unlock()
+		if t == nil {
+			continue
 		}
+		pc.M.Lock()
+		m[layers[i].SeqID] = t
+		pc.M.Unlock()
 	}
 }
 
