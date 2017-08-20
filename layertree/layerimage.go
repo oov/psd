@@ -35,8 +35,13 @@ func (t tiledImage) Rect() image.Rectangle {
 	return r
 }
 
-func (t tiledImage) Render(ctx context.Context, tileSize int, img *image.RGBA) error {
-	rect := img.Rect
+func (t tiledImage) Render(ctx context.Context, img draw.Image) error {
+	tileSize := t.tileSize()
+	if tileSize == 0 {
+		return nil
+	}
+
+	rect := img.Bounds()
 	x0, x1 := (rect.Min.X/tileSize)*tileSize, rect.Max.X
 	y0, y1 := (rect.Min.Y/tileSize)*tileSize, rect.Max.Y
 	ylen := (y1 - y0) / tileSize
@@ -56,7 +61,7 @@ func (t tiledImage) Render(ctx context.Context, tileSize int, img *image.RGBA) e
 	return pc.Wait(ctx)
 }
 
-func (t tiledImage) renderInner(pc *parallelContext, img *image.RGBA, tileSize, x0, x1, y0, y1 int) {
+func (t tiledImage) renderInner(pc *parallelContext, img draw.Image, tileSize, x0, x1, y0, y1 int) {
 	defer pc.Done()
 	for ty := y0; ty < y1; ty += tileSize {
 		for tx := x0; tx < x1; tx += tileSize {
@@ -70,6 +75,13 @@ func (t tiledImage) renderInner(pc *parallelContext, img *image.RGBA, tileSize, 
 }
 
 func createImage(rect image.Rectangle, r []byte, g []byte, b []byte, a []byte, deltaX int) *image.NRGBA {
+	if deltaX == 4 {
+		return &image.NRGBA{
+			Pix:    r,
+			Stride: rect.Dx() * 4,
+			Rect:   rect,
+		}
+	}
 	w, h := rect.Dx(), rect.Dy()
 	pix := make([]byte, w*4*h)
 	var s, d int
@@ -101,25 +113,39 @@ func createImage(rect image.Rectangle, r []byte, g []byte, b []byte, a []byte, d
 	}
 }
 
-func (t *tiledImage) Rescale(ctx context.Context, tileSize int, rect image.Rectangle, m f64.Aff3) (tiledImage, image.Rectangle, error) {
-	tmp := image.NewRGBA(rect)
-	if err := t.Render(ctx, tileSize, tmp); err != nil {
-		return nil, image.Rectangle{}, err
+func (t tiledImage) tileSize() int {
+	for _, m := range t {
+		return m.Rect.Dx()
+	}
+	return 0
+}
+
+func (t tiledImage) Transform(ctx context.Context, m f64.Aff3) (tiledImage, error) {
+	rect := t.Rect()
+	if rect.Empty() {
+		return tiledImage{}, nil
+	}
+	tileSize := t.tileSize()
+	if tileSize == 0 {
+		return tiledImage{}, nil
+	}
+
+	tmp := image.NewNRGBA(rect)
+	if err := t.Render(ctx, tmp); err != nil {
+		return nil, err
 	}
 	return newScaledTiledImage(ctx, tileSize, rect, tmp.Pix[0:], tmp.Pix[1:], tmp.Pix[2:], tmp.Pix[3:], 4, m)
 }
 
-func newScaledTiledImage(ctx context.Context, tileSize int, rect image.Rectangle, r, g, b, a []byte, deltaX int, m f64.Aff3) (tiledImage, image.Rectangle, error) {
+func newScaledTiledImage(ctx context.Context, tileSize int, rect image.Rectangle, r, g, b, a []byte, deltaX int, m f64.Aff3) (tiledImage, error) {
 	if m[0] == 1 && m[1] == 0 && m[2] == 0 && m[3] == 0 && m[4] == 1 && m[5] == 0 {
-		t, err := newTiledImage(ctx, tileSize, rect, r, g, b, a, deltaX)
-		return t, rect, err
+		return newTiledImage(ctx, tileSize, rect, r, g, b, a, deltaX)
 	}
 	tmp := createImage(rect, r, g, b, a, deltaX)
 	trRect := transformRect(rect, m)
 	tmp2 := image.NewNRGBA(trRect)
 	draw.BiLinear.Transform(tmp2, m, tmp, rect, draw.Src, nil)
-	t, err := newTiledImage(ctx, tileSize, trRect, tmp2.Pix[0:], tmp2.Pix[1:], tmp2.Pix[2:], tmp2.Pix[3:], 4)
-	return t, trRect, err
+	return newTiledImage(ctx, tileSize, trRect, tmp2.Pix[0:], tmp2.Pix[1:], tmp2.Pix[2:], tmp2.Pix[3:], 4)
 }
 
 func newTiledImage(ctx context.Context, tileSize int, rect image.Rectangle, r, g, b, a []byte, deltaX int) (tiledImage, error) {
@@ -132,7 +158,7 @@ func newTiledImage(ctx context.Context, tileSize int, rect image.Rectangle, r, g
 		n--
 	}
 
-	t := make(tiledImage)
+	t := tiledImage{}
 	pc := &parallelContext{}
 	pc.Wg.Add(n)
 	step := (ylen / n) * tileSize
@@ -242,8 +268,20 @@ func (t tiledMask) Rect() image.Rectangle {
 	return r
 }
 
-func (t tiledMask) Render(ctx context.Context, tileSize int, img *image.Alpha) error {
-	rect := img.Rect
+func (t tiledMask) tileSize() int {
+	for _, m := range t {
+		return m.Rect.Dx()
+	}
+	return 0
+}
+
+func (t tiledMask) Render(ctx context.Context, img draw.Image) error {
+	tileSize := t.tileSize()
+	if tileSize == 0 {
+		return nil
+	}
+
+	rect := img.Bounds()
 	x0, x1 := (rect.Min.X/tileSize)*tileSize, rect.Max.X
 	y0, y1 := (rect.Min.Y/tileSize)*tileSize, rect.Max.Y
 	ylen := (y1 - y0) / tileSize
@@ -263,7 +301,7 @@ func (t tiledMask) Render(ctx context.Context, tileSize int, img *image.Alpha) e
 	return pc.Wait(ctx)
 }
 
-func (t tiledMask) renderInner(pc *parallelContext, img *image.Alpha, tileSize, x0, x1, y0, y1 int) {
+func (t tiledMask) renderInner(pc *parallelContext, img draw.Image, tileSize, x0, x1, y0, y1 int) {
 	defer pc.Done()
 	for ty := y0; ty < y1; ty += tileSize {
 		for tx := x0; tx < x1; tx += tileSize {
@@ -284,26 +322,32 @@ func createMask(rect image.Rectangle, a []byte) *image.Alpha {
 	}
 }
 
-func (t tiledMask) Rescale(ctx context.Context, tileSize int, rect image.Rectangle, defaultColor int, m f64.Aff3) (tiledMask, image.Rectangle, error) {
+func (t tiledMask) Transform(ctx context.Context, m f64.Aff3) (tiledMask, error) {
+	rect := t.Rect()
+	if rect.Empty() {
+		return tiledMask{}, nil
+	}
+	tileSize := t.tileSize()
+	if tileSize == 0 {
+		return tiledMask{}, nil
+	}
 	tmp := image.NewAlpha(rect)
-	if err := t.Render(ctx, tileSize, tmp); err != nil {
-		return nil, image.Rectangle{}, err
+	if err := t.Render(ctx, tmp); err != nil {
+		return nil, err
 	}
 	return newScaledTiledMask(ctx, tileSize, rect, tmp.Pix, 0, m)
 }
 
-func newScaledTiledMask(ctx context.Context, tileSize int, rect image.Rectangle, a []byte, defaultColor int, m f64.Aff3) (tiledMask, image.Rectangle, error) {
+func newScaledTiledMask(ctx context.Context, tileSize int, rect image.Rectangle, a []byte, defaultColor int, m f64.Aff3) (tiledMask, error) {
 	if m[0] == 1 && m[1] == 0 && m[2] == 0 && m[3] == 0 && m[4] == 1 && m[5] == 0 {
-		t, err := newTiledMask(ctx, tileSize, rect, a, defaultColor)
-		return t, rect, err
+		return newTiledMask(ctx, tileSize, rect, a, defaultColor)
 	}
 	tmp := createMask(rect, a)
 	trRect := transformRect(rect, m)
 	tmp2 := image.NewAlpha(trRect)
 	// TODO: currently, it seems fallback path is used in image.Alpha.
 	draw.BiLinear.Transform(tmp2, m, tmp, rect, draw.Src, nil)
-	t, err := newTiledMask(ctx, tileSize, trRect, tmp2.Pix, defaultColor)
-	return t, trRect, err
+	return newTiledMask(ctx, tileSize, trRect, tmp2.Pix, defaultColor)
 }
 
 func newTiledMask(ctx context.Context, tileSize int, rect image.Rectangle, a []byte, defaultColor int) (tiledMask, error) {
@@ -315,7 +359,7 @@ func newTiledMask(ctx context.Context, tileSize int, rect image.Rectangle, a []b
 	for n > 1 && n<<1 > ylen {
 		n--
 	}
-	t := make(tiledMask)
+	t := tiledMask{}
 	pc := &parallelContext{}
 	pc.Wg.Add(n)
 	step := (ylen / n) * tileSize

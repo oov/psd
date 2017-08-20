@@ -32,8 +32,76 @@ type Root struct {
 }
 
 // Clone creates copy of r.
+//
+// Required memory is not very large because layer images are shared between them.
 func (r *Root) Clone() *Root {
 	return cloner{}.Clone(r)
+}
+
+// Transform creates copy of r that transformed by m.
+//
+// This takes time because it applies transformations to all layers.
+func (r *Root) Transform(ctx context.Context, m f64.Aff3) (*Root, error) {
+	rr := r.Clone()
+
+	// flatten layerImage
+	nImages := len(r.layerImage)
+	seqIDs := make([]int, nImages)
+	images := make([]layerImage, nImages)
+	i := 0
+	for seqID, li := range r.layerImage {
+		seqIDs[i] = seqID
+		images[i] = li
+		i++
+	}
+
+	rr.layerImage = map[int]layerImage{}
+
+	n := runtime.GOMAXPROCS(0)
+	for n > 1 && n<<1 > nImages {
+		n--
+	}
+	pc := &parallelContext{}
+	pc.Wg.Add(n)
+	step := nImages / n
+	idx := 0
+	for i := 1; i < n; i++ {
+		go rr.transformInner(pc, m, seqIDs, images, idx, idx+step)
+		idx += step
+	}
+	go rr.transformInner(pc, m, seqIDs, images, idx, nImages)
+	if err := pc.Wait(ctx); err != nil {
+		return nil, err
+	}
+	return rr, nil
+
+}
+
+func (r *Root) transformInner(pc *parallelContext, m f64.Aff3, seqIDs []int, images []layerImage, sIdx, eIdx int) {
+	defer pc.Done()
+	for i := sIdx; i < eIdx; i++ {
+		if pc.Aborted() {
+			return
+		}
+
+		li := images[i]
+		var ti tiledImage
+		var tm tiledMask
+		var err error
+		if li.Canvas != nil {
+			if ti, err = li.Canvas.Transform(context.Background(), m); err != nil {
+				return
+			}
+		}
+		if li.Mask != nil {
+			if tm, err = li.Mask.Transform(context.Background(), m); err != nil {
+				return
+			}
+		}
+		pc.M.Lock()
+		r.layerImage[seqIDs[i]] = layerImage{ti, tm}
+		pc.M.Unlock()
+	}
 }
 
 // Layer represents the layer image.
@@ -159,7 +227,6 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 	}
 	r.Renderer.pool.New = r.Renderer.allocate
 	r.Renderer.layertree = r
-
 	return r, nil
 }
 
@@ -208,21 +275,21 @@ func createCanvasInner(ctx context.Context, pc *parallelContext, ch <-chan *psd.
 			if ach, ok := l.Channel[-1]; ok {
 				a = ach.Data
 			}
-			ti, rect, err := newScaledTiledImage(ctx, tileSize, l.Rect, r, g, b, a, 1, m)
+			ti, err := newScaledTiledImage(ctx, tileSize, l.Rect, r, g, b, a, 1, m)
 			if err != nil {
 				return
 			}
 			ld.Canvas = ti
-			l.Rect = rect
+			l.Rect = ti.Rect()
 		}
 		if !l.Mask.Rect.Empty() {
 			if a, ok := l.Channel[-2]; ok {
-				m, rect, err := newScaledTiledMask(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor, m)
+				m, err := newScaledTiledMask(ctx, tileSize, l.Mask.Rect, a.Data, l.Mask.DefaultColor, m)
 				if err != nil {
 					return
 				}
-				l.Mask.Rect = rect
 				ld.Mask = m
+				l.Mask.Rect = m.Rect()
 			}
 		}
 

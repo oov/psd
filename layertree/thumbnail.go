@@ -2,19 +2,28 @@ package layertree
 
 import (
 	"context"
-	"errors"
 	"image"
 	"runtime"
+
+	"github.com/pkg/errors"
 
 	"github.com/oov/downscale"
 	"github.com/oov/psd/blend"
 )
 
+var (
+	errLayerNotFound = errors.New("layertree: layer not found")
+	errNoCanvas      = errors.New("layertree: no canvas")
+)
+
 // Thumbnail creates thumbnail.
-func (r *Root) Thumbnail(l *Layer, size int, tempBuffer []byte) *image.RGBA {
-	ld := r.layerImage[l.SeqID]
+func (r *Root) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.RGBA, error) {
+	ld, ok := r.layerImage[seqID]
+	if !ok {
+		return nil, errors.Wrap(errLayerNotFound, "layertree: cannot create thumbnail")
+	}
 	if ld.Canvas == nil {
-		return nil
+		return nil, errors.Wrap(errNoCanvas, "layertree: cannot create thumbnail")
 	}
 	rect := ld.Canvas.Rect()
 	src := &image.RGBA{
@@ -26,7 +35,9 @@ func (r *Root) Thumbnail(l *Layer, size int, tempBuffer []byte) *image.RGBA {
 	} else {
 		src.Pix = tempBuffer[:src.Stride*src.Rect.Dy()]
 	}
-	ld.Canvas.Render(context.Background(), r.tileSize, src)
+	if err := ld.Canvas.Render(context.Background(), src); err != nil {
+		return nil, errors.Wrap(err, "layertree: failed to create thumbnail")
+	}
 
 	var dest *image.RGBA
 	sw, sh := rect.Dx(), rect.Dy()
@@ -35,8 +46,10 @@ func (r *Root) Thumbnail(l *Layer, size int, tempBuffer []byte) *image.RGBA {
 	} else {
 		dest = image.NewRGBA(image.Rect(0, 0, sw*size/sh, size))
 	}
-	downscale.RGBAFast(context.Background(), dest, src)
-	return dest
+	if err := downscale.RGBAFast(context.Background(), dest, src); err != nil {
+		return nil, errors.Wrap(err, "layertree: failed to create thumbnail")
+	}
+	return dest, nil
 }
 
 func gatherLayer(layers *[]*Layer, l *Layer) {
@@ -96,8 +109,8 @@ func (r *Root) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layer
 	}
 
 	for i := sIdx; i < eIdx; i++ {
-		t := r.Thumbnail(layers[i], size, buf)
-		if t == nil {
+		t, err := r.Thumbnail(layers[i].SeqID, size, buf)
+		if err != nil {
 			continue
 		}
 		pc.M.Lock()
