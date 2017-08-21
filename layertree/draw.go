@@ -56,16 +56,3 @@ func removeAlpha(b *image.RGBA) {
 		d[i+3] = 255
 	}
 }
-
-func applyAlpha(b *image.RGBA, src *image.RGBA) {
-	d, s := b.Pix, src.Pix
-	ln := len(d)
-	_, _ = d[ln-1], s[ln-1]
-	for i := 0; i < ln; i += 4 {
-		a := uint32(s[i+3])
-		d[i+0] = uint8(uint32(d[i+0]) * a * 32897 >> 23)
-		d[i+1] = uint8(uint32(d[i+1]) * a * 32897 >> 23)
-		d[i+2] = uint8(uint32(d[i+2]) * a * 32897 >> 23)
-		d[i+3] = s[i+3]
-	}
-}
