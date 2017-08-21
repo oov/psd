@@ -302,7 +302,7 @@ func (r *Renderer) renderInner(pc *parallelContext, dest *image.RGBA, diffOnly b
 						c.M.RLock()
 						ci := c.Image[pt]
 						c.M.RUnlock()
-						blend.Copy.Draw(dest, ci.Rect, ci, pt)
+						blend.Copy.Draw(dest, ci.Bounds(), ci, pt)
 					} else {
 						blend.Clear.Draw(dest, image.Rect(pt.X, pt.Y, pt.X+tileSize, pt.Y+tileSize), image.Transparent, image.Point{})
 					}
@@ -312,7 +312,7 @@ func (r *Renderer) renderInner(pc *parallelContext, dest *image.RGBA, diffOnly b
 					c.M.RLock()
 					ci := c.Image[pt]
 					c.M.RUnlock()
-					blend.Copy.Draw(dest, ci.Rect, ci, pt)
+					blend.Copy.Draw(dest, ci.Bounds(), ci, pt)
 				}
 			}
 		}
@@ -360,7 +360,7 @@ func (r *Renderer) updateCache(dr drawResult, l *Layer, pt image.Point, b *image
 		c.Cached[pt] = csCached
 		cb, _ := c.Image.Get(r.layertree.tileSize, pt)
 		c.M.Unlock()
-		blend.Copy.Draw(cb, cb.Rect, b, pt)
+		blend.Copy.Draw(cb, cb.Bounds(), b, pt)
 		clst.Add(l, pt)
 	case drDrewFromCache, drDrewFromCacheInvisible:
 		// do nothing
@@ -434,7 +434,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 		}
 	} else if ld.Canvas != nil {
 		buf = r.getBuffer(pt)
-		blend.Copy.Draw(buf, ldCanvas.Rect, ldCanvas, pt)
+		blend.Copy.Draw(buf, ldCanvas.Bounds(), ldCanvas, pt)
 	}
 
 	if l.MaskEnabled {

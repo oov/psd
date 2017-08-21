@@ -4,6 +4,8 @@ import (
 	"image"
 	"image/color"
 
+	"golang.org/x/image/draw"
+
 	"github.com/oov/psd"
 	"github.com/oov/psd/blend"
 )
@@ -37,7 +39,7 @@ var blendModes = map[psd.BlendMode]blend.Drawer{
 	psd.BlendModeLuminosity:   blend.Luminosity,
 }
 
-func drawWithOpacity(dst *image.RGBA, r image.Rectangle, src *image.RGBA, sp image.Point, opacity int, bm psd.BlendMode) {
+func drawWithOpacity(dst draw.Image, r image.Rectangle, src draw.Image, sp image.Point, opacity int, bm psd.BlendMode) {
 	blendModes[bm].DrawMask(dst, r, src, sp, image.NewUniform(color.Alpha{uint8(opacity)}), image.Point{})
 }
 

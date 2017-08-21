@@ -17,9 +17,9 @@ type layerImage struct {
 	Mask   tiledMask
 }
 
-type tiledImage map[image.Point]*image.RGBA
+type tiledImage map[image.Point]draw.Image
 
-func (t tiledImage) Get(tileSize int, pt image.Point) (*image.RGBA, bool) {
+func (t tiledImage) Get(tileSize int, pt image.Point) (draw.Image, bool) {
 	r, ok := t[pt]
 	if !ok {
 		r = image.NewRGBA(image.Rect(pt.X, pt.Y, pt.X+tileSize, pt.Y+tileSize))
@@ -31,7 +31,7 @@ func (t tiledImage) Get(tileSize int, pt image.Point) (*image.RGBA, bool) {
 func (t tiledImage) Rect() image.Rectangle {
 	var r image.Rectangle
 	for _, img := range t {
-		r = img.Rect.Union(r)
+		r = img.Bounds().Union(r)
 	}
 	return r
 }
@@ -67,7 +67,8 @@ func (t tiledImage) renderInner(pc *parallelContext, img draw.Image, tileSize, x
 	for ty := y0; ty < y1; ty += tileSize {
 		for tx := x0; tx < x1; tx += tileSize {
 			if b, ok := t[image.Pt(tx, ty)]; ok {
-				blend.Copy.Draw(img, b.Rect, b, b.Rect.Min)
+				rect := b.Bounds()
+				blend.Copy.Draw(img, rect, b, rect.Min)
 			} else {
 				blend.Clear.Draw(img, image.Rect(tx, ty, tx+tileSize, ty+tileSize), image.Transparent, image.Point{})
 			}
@@ -188,7 +189,7 @@ func restoreGamma(img *image.NRGBA64, gt [65536]uint8) {
 
 func (t tiledImage) tileSize() int {
 	for _, m := range t {
-		return m.Rect.Dx()
+		return m.Bounds().Dx()
 	}
 	return 0
 }
