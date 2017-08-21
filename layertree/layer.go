@@ -77,6 +77,8 @@ func (r *Root) Transform(ctx context.Context, m f64.Aff3, gamma float64) (*Root,
 	if err := pc.Wait(ctx); err != nil {
 		return nil, err
 	}
+	rr.CanvasRect = transformRect(rr.CanvasRect, m)
+	rr.Rect = transformRect(rr.Rect, m)
 	return rr, nil
 
 }
