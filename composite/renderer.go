@@ -1,4 +1,4 @@
-package layertree
+package composite
 
 import (
 	"context"
@@ -13,7 +13,6 @@ import (
 type drawResult int
 
 const (
-	drAbort                  drawResult = -1
 	drDrew                   drawResult = 0
 	drDrewFromCache          drawResult = 1
 	drDrewFromCacheInvisible drawResult = 2
@@ -38,8 +37,8 @@ type cache struct {
 
 // Renderer is a renderer.
 type Renderer struct {
-	layertree *Root
-	renderM   sync.Mutex
+	tree    *Tree
+	renderM sync.Mutex
 
 	cache           map[int]*cache
 	deferedDirtyReq []*Layer
@@ -50,14 +49,14 @@ type Renderer struct {
 }
 
 func (r *Renderer) allocate() interface{} {
-	return make([]byte, r.layertree.tileSize*r.layertree.tileSize*4)
+	return make([]byte, r.tree.tileSize*r.tree.tileSize*4)
 }
 
 func (r *Renderer) getBuffer(pt image.Point) *image.RGBA {
 	return &image.RGBA{
 		Pix:    r.pool.Get().([]byte),
-		Stride: r.layertree.tileSize * 4,
-		Rect:   image.Rect(pt.X, pt.Y, pt.X+r.layertree.tileSize, pt.Y+r.layertree.tileSize),
+		Stride: r.tree.tileSize * 4,
+		Rect:   image.Rect(pt.X, pt.Y, pt.X+r.tree.tileSize, pt.Y+r.tree.tileSize),
 	}
 }
 
@@ -72,13 +71,7 @@ func (r *Renderer) putBuffer(b *image.RGBA) {
 	r.pool.Put(buf)
 }
 
-func (r *Renderer) getCache(l *Layer, createIfNotExists bool) *cache {
-	var seqID int
-	if l != nil {
-		seqID = l.SeqID
-	} else {
-		seqID = -1
-	}
+func (r *Renderer) getCache(seqID int, createIfNotExists bool) *cache {
 	r.cacheM.Lock()
 	c, ok := r.cache[seqID]
 	if !ok && createIfNotExists {
@@ -98,7 +91,7 @@ func (r *Renderer) buildAreaMapRecursive(areaMap map[image.Point]struct{}, l *La
 		if !l2.Visible || l2.Opacity == 0 || l2.Clipping {
 			continue
 		}
-		ld := r.layertree.layerImage[l2.SeqID]
+		ld := r.tree.layerImage[l2.SeqID]
 		if ld.Canvas != nil {
 			for pt := range ld.Canvas {
 				areaMap[pt] = struct{}{}
@@ -111,7 +104,7 @@ func (r *Renderer) buildAreaMapRecursive(areaMap map[image.Point]struct{}, l *La
 
 func (r *Renderer) buildAreaMap(l *Layer) []image.Point {
 	var ret []image.Point
-	ld := r.layertree.layerImage[l.SeqID]
+	ld := r.tree.layerImage[l.SeqID]
 	if ld.Canvas != nil {
 		ret = make([]image.Point, len(ld.Canvas))
 		i := 0
@@ -131,7 +124,7 @@ func (r *Renderer) buildAreaMap(l *Layer) []image.Point {
 }
 
 func (r *Renderer) setDirtyByLayerPassThrough(l *Layer, areaMap []image.Point) {
-	if c := r.getCache(l, false); c != nil {
+	if c := r.getCache(l.SeqID, false); c != nil {
 		c.M.Lock()
 		for _, pt := range areaMap {
 			delete(c.Cached, pt)
@@ -147,25 +140,17 @@ func (r *Renderer) setDirtyByLayerPassThrough(l *Layer, areaMap []image.Point) {
 }
 
 func (r *Renderer) setDirtyByLayerRecursive(l *Layer, areaMap []image.Point) {
-	if c := r.getCache(l, false); c != nil {
+	if c := r.getCache(l.SeqID, false); c != nil {
 		c.M.Lock()
 		for _, pt := range areaMap {
 			delete(c.Cached, pt)
 		}
 		c.M.Unlock()
 	}
-	if l != nil {
-		var sib []Layer
-		if l.Parent != nil {
-			sib = l.Parent.Children
-		} else {
-			sib = r.layertree.Children
-		}
+	if l.Parent != nil {
+		sib := l.Parent.Children
 		for i := len(sib) - 1; i >= 0; i-- {
 			l2 := &sib[i]
-			if l == l2 {
-				break
-			}
 			if l2.BlendMode != psd.BlendModePassThrough {
 				continue
 			}
@@ -230,8 +215,8 @@ func (r *Renderer) render(ctx context.Context, dest *image.RGBA, diffOnly bool) 
 	r.renderM.Lock()
 	defer r.renderM.Unlock()
 
-	rect := r.layertree.Rect
-	tileSize := r.layertree.tileSize
+	rect := r.tree.Rect
+	tileSize := r.tree.tileSize
 
 	r.setDirtyM.Lock()
 	r.deferedDirtyReq = make([]*Layer, 0)
@@ -245,7 +230,7 @@ func (r *Renderer) render(ctx context.Context, dest *image.RGBA, diffOnly bool) 
 		r.setDirtyM.Unlock()
 	}()
 
-	c := r.getCache(nil, true)
+	rootCache := r.getCache(SeqIDRoot, true)
 	clst := &changeList{
 		Map: map[int]*[]image.Point{},
 	}
@@ -263,10 +248,10 @@ func (r *Renderer) render(ctx context.Context, dest *image.RGBA, diffOnly bool) 
 
 	pc.Wg.Add(n)
 	for i := 1; i < n; i++ {
-		go r.renderInner(pc, dest, diffOnly, c, clst, x0, x1, y0, y0+step)
+		go r.renderInner(pc, dest, diffOnly, rootCache, clst, x0, x1, y0, y0+step)
 		y0 += step
 	}
-	go r.renderInner(pc, dest, diffOnly, c, clst, x0, x1, y0, y1)
+	go r.renderInner(pc, dest, diffOnly, rootCache, clst, x0, x1, y0, y1)
 	if err := pc.Wait(ctx); err == ErrAborted {
 		// revert
 		for seqID, pts := range clst.Map {
@@ -286,63 +271,51 @@ func (r *Renderer) render(ctx context.Context, dest *image.RGBA, diffOnly bool) 
 	return nil
 }
 
-func (r *Renderer) renderInner(pc *parallelContext, dest *image.RGBA, diffOnly bool, c *cache, clst *changeList, x0, x1, y0, y1 int) {
+func (r *Renderer) renderInner(pc *parallelContext, dest *image.RGBA, diffOnly bool, rootCache *cache, clst *changeList, x0, x1, y0, y1 int) {
 	defer pc.Done()
-	tileSize := r.layertree.tileSize
+	tileSize := r.tree.tileSize
 	for ty := y0; ty < y1; ty += tileSize {
 		if pc.Aborted() {
 			return
 		}
 		for tx := x0; tx < x1; tx += tileSize {
 			pt := image.Pt(tx, ty)
-			modified, dr := r.renderTile(pt, c, clst)
-			if diffOnly {
-				if modified {
-					if dr == drDrew || dr == drDrewFromCache {
-						c.M.RLock()
-						ci := c.Image[pt]
-						c.M.RUnlock()
-						blend.Copy.Draw(dest, ci.Bounds(), ci, pt)
-					} else {
-						blend.Clear.Draw(dest, image.Rect(pt.X, pt.Y, pt.X+tileSize, pt.Y+tileSize), image.Transparent, image.Point{})
-					}
-				}
-			} else {
-				if dr == drDrew || dr == drDrewFromCache {
-					c.M.RLock()
-					ci := c.Image[pt]
-					c.M.RUnlock()
+			if modified, cs := r.updateTile(pt, rootCache, clst); modified || !diffOnly {
+				if cs == csCached {
+					rootCache.M.RLock()
+					ci := rootCache.Image[pt]
+					rootCache.M.RUnlock()
 					blend.Copy.Draw(dest, ci.Bounds(), ci, pt)
+				} else {
+					blend.Clear.Draw(dest, image.Rect(pt.X, pt.Y, pt.X+tileSize, pt.Y+tileSize), image.Transparent, image.Point{})
 				}
 			}
 		}
 	}
 }
 
-func (r *Renderer) renderTile(pt image.Point, c *cache, clst *changeList) (modified bool, dr drawResult) {
-	c.M.RLock()
-	cs, ok := c.Cached[pt]
-	c.M.RUnlock()
+func (r *Renderer) updateTile(pt image.Point, rootCache *cache, clst *changeList) (modified bool, cs cacheState) {
+	rootCache.M.RLock()
+	cs, ok := rootCache.Cached[pt]
+	rootCache.M.RUnlock()
 	if ok {
-		if cs == csCachedEmpty {
-			return false, drDrewFromCacheInvisible
-		}
-		return false, drDrewFromCache
+		return false, cs
 	}
 
 	buf := r.getBuffer(pt)
-	defer r.putBuffer(buf)
-	dr = drInvisible
-	for _, l := range r.layertree.Children {
-		switch ldr := r.drawLayer(pt, buf, clst, &l, l.Opacity, l.BlendMode, false); {
-		case ldr < 0:
-			return false, ldr
-		case ldr == drDrew || ldr == drDrewFromCache:
-			dr = drDrew
-		}
+	drew := false
+	for _, l := range r.tree.Root.Children {
+		dr := r.drawLayer(pt, buf, clst, &l, l.Opacity, l.BlendMode, false)
+		drew = drew || dr == drDrew || dr == drDrewFromCache
 	}
-	r.updateCache(dr, nil, pt, buf, c, clst)
-	return true, dr
+	if drew {
+		r.updateCache(drDrew, nil, pt, buf, rootCache, clst)
+		r.putBuffer(buf)
+		return true, csCached
+	}
+	r.updateCache(drInvisible, nil, pt, buf, rootCache, clst)
+	r.putBuffer(buf)
+	return true, csCachedEmpty
 }
 
 func (r *Renderer) updateCache(dr drawResult, l *Layer, pt image.Point, b *image.RGBA, c *cache, clst *changeList) drawResult {
@@ -350,17 +323,12 @@ func (r *Renderer) updateCache(dr drawResult, l *Layer, pt image.Point, b *image
 		return dr
 	}
 	switch dr {
-	case drAbort:
-		c.M.Lock()
-		delete(c.Cached, pt)
-		delete(c.Image, pt)
-		c.M.Unlock()
 	case drDrew:
 		c.M.Lock()
 		c.Cached[pt] = csCached
-		cb, _ := c.Image.Get(r.layertree.tileSize, pt)
+		ci, _ := c.Image.Get(r.tree.tileSize, pt)
 		c.M.Unlock()
-		blend.Copy.Draw(cb, cb.Bounds(), b, pt)
+		blend.Copy.Draw(ci, ci.Bounds(), b, pt)
 		clst.Add(l, pt)
 	case drDrewFromCache, drDrewFromCacheInvisible:
 		// do nothing
@@ -385,14 +353,14 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 		return r.updateCache(drDefered, l, pt, buf, c, clst)
 	}
 
-	ld := r.layertree.layerImage[l.SeqID]
+	ld := r.tree.layerImage[l.SeqID]
 	ldCanvas, ok := ld.Canvas[pt]
 	if len(l.Children) == 0 && !ok {
 		return r.updateCache(drSkipped, l, pt, buf, c, clst)
 	}
 
 	if len(l.Children) > 0 {
-		c = r.getCache(l, true)
+		c = r.getCache(l.SeqID, true)
 		c.M.RLock()
 		if cs, ok := c.Cached[pt]; ok {
 			if cs == csCached {
@@ -422,12 +390,8 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 		}
 		drew := false
 		for _, l2 := range l.Children {
-			switch dr := r.drawLayer(pt, buf, clst, &l2, l2.Opacity*a>>23, l2.BlendMode, false); {
-			case dr < 0:
-				return r.updateCache(dr, l, pt, buf, c, clst)
-			case dr == drDrew || dr == drDrewFromCache:
-				drew = true
-			}
+			dr := r.drawLayer(pt, buf, clst, &l2, l2.Opacity*a>>23, l2.BlendMode, false)
+			drew = drew || dr == drDrew || dr == drDrewFromCache
 		}
 		if !drew {
 			return r.updateCache(drInvisible, l, pt, buf, c, clst)
@@ -470,10 +434,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 		blend.Copy.Draw(clipBuf, buf.Rect, buf, pt)
 		removeAlpha(clipBuf)
 		for _, cl := range l.Clip {
-			dr := r.drawLayer(pt, clipBuf, clst, cl, cl.Opacity, cl.BlendMode, true)
-			if dr < 0 {
-				return r.updateCache(dr, l, pt, buf, c, clst)
-			}
+			r.drawLayer(pt, clipBuf, clst, cl, cl.Opacity, cl.BlendMode, true)
 		}
 		blend.DestIn.Draw(clipBuf, buf.Rect, buf, pt)
 		if blendMode == psd.BlendModePassThrough {
@@ -490,9 +451,7 @@ func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l 
 	// TODO: implement
 	drawWithOpacity(b, buf.Rect, buf, pt, opacity, blendMode)
 	for _, cl := range l.Clip {
-		if dr := r.drawLayer(pt, b, clst, cl, cl.Opacity, cl.BlendMode, false); dr < 0 {
-			return r.updateCache(dr, l, pt, buf, c, clst)
-		}
+		r.drawLayer(pt, b, clst, cl, cl.Opacity, cl.BlendMode, false)
 	}
 
 	// this.draw(ctx, bb, x + n.layer.X, y + n.layer.Y, opacity, blendMode);

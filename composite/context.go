@@ -1,4 +1,4 @@
-package layertree
+package composite
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 )
 
-var ErrAborted = errors.New("layertree: aborted")
+var ErrAborted = errors.New("composite: aborted")
 
 type parallelContext struct {
 	M     sync.RWMutex

@@ -1,7 +1,7 @@
-// Package layertree implements PSD image drawing function.
+// Package composite implements PSD image compositor.
 //
 // This package supports only RGBA color mode.
-package layertree
+package composite
 
 import (
 	"context"
@@ -17,49 +17,49 @@ import (
 	"github.com/oov/psd"
 )
 
-// Root represents root of the layer tree.
-type Root struct {
-	Renderer *Renderer
+const SeqIDRoot = -1
 
+// Tree represents the layer tree.
+type Tree struct {
+	Renderer *Renderer
 	tileSize int
 
+	Root       Layer
 	layerImage map[int]layerImage
 
 	Rect       image.Rectangle
 	CanvasRect image.Rectangle
-
-	Children []Layer
 }
 
 // Clone creates copy of r.
 //
 // Required memory is not very large because layer images are shared between them.
-func (r *Root) Clone() *Root {
-	return cloner{}.Clone(r)
+func (t *Tree) Clone() *Tree {
+	return cloner{}.Clone(t)
 }
 
 // Transform creates copy of r that transformed by m.
 //
 // This takes time because it applies transformations to all layers.
-func (r *Root) Transform(ctx context.Context, m f64.Aff3, gamma float64) (*Root, error) {
-	rr := r.Clone()
+func (t *Tree) Transform(ctx context.Context, m f64.Aff3, gamma float64) (*Tree, error) {
+	nt := t.Clone()
 
 	var gt *gammaTable
 	if gamma != 0 {
 		gt = makeGammaTable(gamma)
 	}
 	// flatten layerImage
-	nImages := len(r.layerImage)
+	nImages := len(t.layerImage)
 	seqIDs := make([]int, nImages)
 	images := make([]layerImage, nImages)
 	i := 0
-	for seqID, li := range r.layerImage {
+	for seqID, li := range t.layerImage {
 		seqIDs[i] = seqID
 		images[i] = li
 		i++
 	}
 
-	rr.layerImage = map[int]layerImage{}
+	nt.layerImage = map[int]layerImage{}
 
 	n := runtime.GOMAXPROCS(0)
 	for n > 1 && n<<1 > nImages {
@@ -70,20 +70,20 @@ func (r *Root) Transform(ctx context.Context, m f64.Aff3, gamma float64) (*Root,
 	step := nImages / n
 	idx := 0
 	for i := 1; i < n; i++ {
-		go rr.transformInner(pc, m, gt, seqIDs, images, idx, idx+step)
+		go nt.transformInner(pc, m, gt, seqIDs, images, idx, idx+step)
 		idx += step
 	}
-	go rr.transformInner(pc, m, gt, seqIDs, images, idx, nImages)
+	go nt.transformInner(pc, m, gt, seqIDs, images, idx, nImages)
 	if err := pc.Wait(ctx); err != nil {
 		return nil, err
 	}
-	rr.CanvasRect = transformRect(rr.CanvasRect, m)
-	rr.Rect = transformRect(rr.Rect, m)
-	return rr, nil
+	nt.CanvasRect = transformRect(nt.CanvasRect, m)
+	nt.Rect = transformRect(nt.Rect, m)
+	return nt, nil
 
 }
 
-func (r *Root) transformInner(pc *parallelContext, m f64.Aff3, gt *gammaTable, seqIDs []int, images []layerImage, sIdx, eIdx int) {
+func (t *Tree) transformInner(pc *parallelContext, m f64.Aff3, gt *gammaTable, seqIDs []int, images []layerImage, sIdx, eIdx int) {
 	defer pc.Done()
 	for i := sIdx; i < eIdx; i++ {
 		if pc.Aborted() {
@@ -105,7 +105,7 @@ func (r *Root) transformInner(pc *parallelContext, m f64.Aff3, gt *gammaTable, s
 			}
 		}
 		pc.M.Lock()
-		r.layerImage[seqIDs[i]] = layerImage{ti, tm}
+		t.layerImage[seqIDs[i]] = layerImage{ti, tm}
 		pc.M.Unlock()
 	}
 }
@@ -187,7 +187,7 @@ func transformRect(r image.Rectangle, m f64.Aff3) image.Rectangle {
 //
 // New can cancel processing through ctx.
 // If you pass 0 to opt.TileSize, it will be DefaultTileSize.
-func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
+func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Tree, error) {
 	if opt == nil {
 		opt = &Options{}
 	}
@@ -217,14 +217,21 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 		Img: img,
 		LayerNameEncodingDetector: opt.LayerNameEncodingDetector,
 	}
-	var layers []Layer
-	for i := range img.Layer {
-		layers = append(layers, Layer{})
-		b.buildLayer(&layers[i], &img.Layer[i])
+	root := Layer{
+		SeqID:      SeqIDRoot,
+		Folder:     true,
+		FolderOpen: true,
+		Visible:    true,
+		BlendMode:  psd.BlendModeNormal,
+		Opacity:    255,
 	}
-	b.registerClippingGroup(layers)
+	for i := range img.Layer {
+		root.Children = append(root.Children, Layer{})
+		b.buildLayer(&root.Children[i], &img.Layer[i])
+	}
+	b.registerClippingGroup(root.Children)
 
-	r := &Root{
+	r := &Tree{
 		Renderer: &Renderer{
 			cache: map[int]*cache{},
 		},
@@ -234,10 +241,11 @@ func New(ctx context.Context, psdFile io.Reader, opt *Options) (*Root, error) {
 		CanvasRect: img.Config.Rect,
 		Rect:       b.Rect.Intersect(img.Config.Rect),
 
-		Children: layers,
+		Root: root,
 	}
+
 	r.Renderer.pool.New = r.Renderer.allocate
-	r.Renderer.layertree = r
+	r.Renderer.tree = r
 	return r, nil
 }
 

@@ -1,4 +1,4 @@
-package layertree
+package composite
 
 import (
 	"context"

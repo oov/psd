@@ -1,4 +1,4 @@
-package layertree
+package composite
 
 import (
 	"context"
@@ -12,18 +12,18 @@ import (
 )
 
 var (
-	errLayerNotFound = errors.New("layertree: layer not found")
-	errNoCanvas      = errors.New("layertree: no canvas")
+	errLayerNotFound = errors.New("composite: layer not found")
+	errNoCanvas      = errors.New("composite: no canvas")
 )
 
 // Thumbnail creates thumbnail.
-func (r *Root) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.RGBA, error) {
-	ld, ok := r.layerImage[seqID]
+func (t *Tree) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.RGBA, error) {
+	ld, ok := t.layerImage[seqID]
 	if !ok {
-		return nil, errors.Wrap(errLayerNotFound, "layertree: cannot create thumbnail")
+		return nil, errors.Wrap(errLayerNotFound, "composite: cannot create thumbnail")
 	}
 	if ld.Canvas == nil {
-		return nil, errors.Wrap(errNoCanvas, "layertree: cannot create thumbnail")
+		return nil, errors.Wrap(errNoCanvas, "composite: cannot create thumbnail")
 	}
 	rect := ld.Canvas.Rect()
 	src := &image.RGBA{
@@ -36,7 +36,7 @@ func (r *Root) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.RGBA, e
 		src.Pix = tempBuffer[:src.Stride*src.Rect.Dy()]
 	}
 	if err := ld.Canvas.Render(context.Background(), src); err != nil {
-		return nil, errors.Wrap(err, "layertree: failed to create thumbnail")
+		return nil, errors.Wrap(err, "composite: failed to create thumbnail")
 	}
 
 	var dest *image.RGBA
@@ -47,7 +47,7 @@ func (r *Root) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.RGBA, e
 		dest = image.NewRGBA(image.Rect(0, 0, sw*size/sh, size))
 	}
 	if err := downscale.RGBAFast(context.Background(), dest, src); err != nil {
-		return nil, errors.Wrap(err, "layertree: failed to create thumbnail")
+		return nil, errors.Wrap(err, "composite: failed to create thumbnail")
 	}
 	return dest, nil
 }
@@ -59,11 +59,9 @@ func gatherLayer(layers *[]*Layer, l *Layer) {
 	}
 }
 
-func (r *Root) Thumbnails(ctx context.Context, size int) (map[int]*image.RGBA, error) {
+func (t *Tree) Thumbnails(ctx context.Context, size int) (map[int]*image.RGBA, error) {
 	var layers []*Layer
-	for i := range r.Children {
-		gatherLayer(&layers, &r.Children[i])
-	}
+	gatherLayer(&layers, &t.Root)
 
 	nLayers := len(layers)
 	n := runtime.GOMAXPROCS(0)
@@ -77,10 +75,10 @@ func (r *Root) Thumbnails(ctx context.Context, size int) (map[int]*image.RGBA, e
 	m := make(map[int]*image.RGBA)
 	idx := 0
 	for i := 1; i < n; i++ {
-		go r.thumbnailsInner(pc, m, layers, size, idx, idx+step)
+		go t.thumbnailsInner(pc, m, layers, size, idx, idx+step)
 		idx += step
 	}
-	go r.thumbnailsInner(pc, m, layers, size, idx, nLayers)
+	go t.thumbnailsInner(pc, m, layers, size, idx, nLayers)
 	if err := pc.Wait(ctx); err != nil {
 		return nil, err
 	}
@@ -88,12 +86,12 @@ func (r *Root) Thumbnails(ctx context.Context, size int) (map[int]*image.RGBA, e
 
 }
 
-func (r *Root) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layers []*Layer, size, sIdx, eIdx int) {
+func (t *Tree) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layers []*Layer, size, sIdx, eIdx int) {
 	defer pc.Done()
 
 	bufLen := 0
 	for i := sIdx; i < eIdx; i++ {
-		ld, ok := r.layerImage[layers[i].SeqID]
+		ld, ok := t.layerImage[layers[i].SeqID]
 		if !ok || ld.Canvas == nil {
 			continue
 		}
@@ -109,7 +107,7 @@ func (r *Root) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layer
 	}
 
 	for i := sIdx; i < eIdx; i++ {
-		t, err := r.Thumbnail(layers[i].SeqID, size, buf)
+		t, err := t.Thumbnail(layers[i].SeqID, size, buf)
 		if err != nil {
 			continue
 		}
@@ -119,8 +117,8 @@ func (r *Root) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layer
 	}
 }
 
-func (r *Root) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[int]image.Rectangle, error) {
-	m, err := r.Thumbnails(ctx, size)
+func (t *Tree) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[int]image.Rectangle, error) {
+	m, err := t.Thumbnails(ctx, size)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -140,7 +138,7 @@ func (r *Root) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[i
 		textureSize += textureSize
 	}
 	if textureSize > 4096 {
-		return nil, nil, errors.New("layertree: could not create thumbnail sheet because too many layers")
+		return nil, nil, errors.New("composite: could not create thumbnail sheet because too many layers")
 	}
 	img := image.NewRGBA(image.Rect(0, 0, textureSize, textureSize))
 	mpt := make(map[int]image.Rectangle)
@@ -155,10 +153,10 @@ func (r *Root) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[i
 
 	idx := 0
 	for i := 1; i < n; i++ {
-		r.thumbnailSheetInner(pc, img, mpt, m, indices, idx, idx+step, size)
+		t.thumbnailSheetInner(pc, img, mpt, m, indices, idx, idx+step, size)
 		idx += step
 	}
-	r.thumbnailSheetInner(pc, img, mpt, m, indices, idx, nIndices, size)
+	t.thumbnailSheetInner(pc, img, mpt, m, indices, idx, nIndices, size)
 	if err := pc.Wait(ctx); err != nil {
 		return nil, nil, err
 	}
@@ -166,7 +164,7 @@ func (r *Root) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[i
 
 }
 
-func (r *Root) thumbnailSheetInner(pc *parallelContext, img *image.RGBA, mpt map[int]image.Rectangle, m map[int]*image.RGBA, indices []int, sIdx, eIdx, size int) {
+func (t *Tree) thumbnailSheetInner(pc *parallelContext, img *image.RGBA, mpt map[int]image.Rectangle, m map[int]*image.RGBA, indices []int, sIdx, eIdx, size int) {
 	defer pc.Done()
 	iw := img.Rect.Dx() / size
 	for i := sIdx; i < eIdx; i++ {

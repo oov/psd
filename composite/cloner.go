@@ -1,4 +1,4 @@
-package layertree
+package composite
 
 type cloner map[int]*Layer
 
@@ -26,20 +26,14 @@ func (cl cloner) registerClippingGroup(src *Layer, dest *Layer) {
 
 }
 
-func (cl cloner) Clone(r *Root) *Root {
-	rr := *r
-	rr.Renderer = &Renderer{
-		layertree: &rr,
-		cache:     map[int]*cache{},
+func (cl cloner) Clone(t *Tree) *Tree {
+	nt := *t
+	nt.Renderer = &Renderer{
+		tree:  &nt,
+		cache: map[int]*cache{},
 	}
-	rr.Renderer.pool.New = rr.Renderer.allocate
-
-	rr.Children = make([]Layer, len(r.Children))
-	for i := range rr.Children {
-		cl.clone(&r.Children[i], &rr.Children[i])
-	}
-	for i := range rr.Children {
-		cl.registerClippingGroup(&r.Children[i], &rr.Children[i])
-	}
-	return &rr
+	nt.Renderer.pool.New = nt.Renderer.allocate
+	cl.clone(&t.Root, &nt.Root)
+	cl.registerClippingGroup(&t.Root, &nt.Root)
+	return &nt
 }
