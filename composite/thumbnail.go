@@ -16,13 +16,60 @@ var (
 	errNoCanvas      = errors.New("composite: no canvas")
 )
 
+func trimUnusedArea(src *image.RGBA, threshold byte) {
+	w, h := src.Rect.Dx(), src.Rect.Dy()
+	stride := src.Stride
+	pix := src.Pix[:h*stride]
+	rect := image.Rectangle{Min: image.Point{X: w, Y: h}, Max: image.Point{X: -1, Y: -1}}
+	for y := 0; y < h; y++ {
+		for l := 0; l < w; l++ {
+			if pix[l*4+3] > threshold {
+				if l < rect.Min.X {
+					rect.Min.X = l
+				}
+				for r := w - 1; r >= l; r-- {
+					if pix[r*4+3] > threshold {
+						if r > rect.Max.X {
+							rect.Max.X = r
+						}
+						break
+					}
+				}
+				if y < rect.Min.Y {
+					rect.Min.Y = y
+				}
+				rect.Max.Y = y
+				break
+			}
+		}
+		pix = pix[stride:]
+	}
+
+	if rect.Dx()*rect.Dy() == w*h {
+		return
+	}
+
+	// trim
+	d := src.Pix[:h*stride]
+	s := d[stride*rect.Min.Y+rect.Min.X*4:]
+	w, h = rect.Dx()*4, rect.Dy()
+	for y := 0; y < h; y++ {
+		copy(d, s[:w])
+		d = d[w:]
+		s = s[stride:]
+	}
+	src.Rect = rect
+	src.Stride = w
+	src.Pix = src.Pix[:rect.Dy()*w]
+}
+
 // Thumbnail creates thumbnail.
 func (t *Tree) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.RGBA, error) {
 	ld, ok := t.layerImage[seqID]
 	if !ok {
 		return nil, errors.Wrap(errLayerNotFound, "composite: cannot create thumbnail")
 	}
-	if ld.Canvas == nil {
+	if ld.Canvas == nil || ld.Canvas.Rect().Empty() {
 		return nil, errors.Wrap(errNoCanvas, "composite: cannot create thumbnail")
 	}
 	rect := ld.Canvas.Rect()
@@ -38,6 +85,9 @@ func (t *Tree) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.RGBA, e
 	if err := ld.Canvas.Render(context.Background(), src); err != nil {
 		return nil, errors.Wrap(err, "composite: failed to create thumbnail")
 	}
+
+	trimUnusedArea(src, 0)
+	rect = src.Rect
 
 	var dest *image.RGBA
 	sw, sh := rect.Dx(), rect.Dy()
