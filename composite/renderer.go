@@ -162,7 +162,7 @@ func (r *Renderer) setDirtyByLayerRecursive(l *Layer, areaMap []image.Point) {
 
 func (r *Renderer) setDirtyByLayer(l *Layer) {
 	areaMap := r.buildAreaMap(l)
-	if l.Clipping {
+	if l.Clipping && l.ClippedBy != nil {
 		r.setDirtyByLayerRecursive(l.ClippedBy, areaMap)
 		return
 	}
