@@ -147,7 +147,11 @@ func (r *Renderer) setDirtyByLayerRecursive(l *Layer, areaMap []image.Point) {
 		}
 		c.M.Unlock()
 	}
-	if l.Parent != nil {
+	if l.Clipping {
+		if l.ClippedBy != nil {
+			r.setDirtyByLayerRecursive(l.ClippedBy, areaMap)
+		}
+	} else if l.Parent != nil {
 		sib := l.Parent.Children
 		for i := len(sib) - 1; i >= 0; i-- {
 			l2 := &sib[i]
@@ -162,10 +166,6 @@ func (r *Renderer) setDirtyByLayerRecursive(l *Layer, areaMap []image.Point) {
 
 func (r *Renderer) setDirtyByLayer(l *Layer) {
 	areaMap := r.buildAreaMap(l)
-	if l.Clipping && l.ClippedBy != nil {
-		r.setDirtyByLayerRecursive(l.ClippedBy, areaMap)
-		return
-	}
 	r.setDirtyByLayerRecursive(l, areaMap)
 }
 
