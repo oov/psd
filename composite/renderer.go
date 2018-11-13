@@ -52,15 +52,15 @@ func (r *Renderer) allocate() interface{} {
 	return make([]byte, r.tree.tileSize*r.tree.tileSize*4)
 }
 
-func (r *Renderer) getBuffer(pt image.Point) *image.RGBA {
-	return &image.RGBA{
+func (r *Renderer) getBuffer(pt image.Point) *image.NRGBA {
+	return &image.NRGBA{
 		Pix:    r.pool.Get().([]byte),
 		Stride: r.tree.tileSize * 4,
 		Rect:   image.Rect(pt.X, pt.Y, pt.X+r.tree.tileSize, pt.Y+r.tree.tileSize),
 	}
 }
 
-func (r *Renderer) putBuffer(b *image.RGBA) {
+func (r *Renderer) putBuffer(b *image.NRGBA) {
 	if b == nil {
 		return
 	}
@@ -318,7 +318,7 @@ func (r *Renderer) updateTile(pt image.Point, rootCache *cache, clst *changeList
 	return true, csCachedEmpty
 }
 
-func (r *Renderer) updateCache(dr drawResult, l *Layer, pt image.Point, b *image.RGBA, c *cache, clst *changeList) drawResult {
+func (r *Renderer) updateCache(dr drawResult, l *Layer, pt image.Point, b *image.NRGBA, c *cache, clst *changeList) drawResult {
 	if c == nil {
 		return dr
 	}
@@ -342,9 +342,9 @@ func (r *Renderer) updateCache(dr drawResult, l *Layer, pt image.Point, b *image
 	return dr
 }
 
-func (r *Renderer) drawLayer(pt image.Point, b *image.RGBA, clst *changeList, l *Layer, opacity int, blendMode psd.BlendMode, forceNoClip bool) drawResult {
+func (r *Renderer) drawLayer(pt image.Point, b *image.NRGBA, clst *changeList, l *Layer, opacity int, blendMode psd.BlendMode, forceNoClip bool) drawResult {
 	var c *cache
-	var buf *image.RGBA
+	var buf *image.NRGBA
 
 	if !l.Visible || opacity == 0 {
 		return r.updateCache(drInvisible, l, pt, buf, c, clst)

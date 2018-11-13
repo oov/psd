@@ -43,16 +43,11 @@ func drawWithOpacity(dst draw.Image, r image.Rectangle, src draw.Image, sp image
 	blendModes[bm].DrawMask(dst, r, src, sp, image.NewUniform(color.Alpha{uint8(opacity)}), image.Point{})
 }
 
-func removeAlpha(b *image.RGBA) {
+func removeAlpha(b *image.NRGBA) {
 	d := b.Pix
 	ln := len(d)
 	_ = d[ln-1]
 	for i := 0; i < ln; i += 4 {
-		if a := uint32(d[i+3]); a > 0 {
-			d[i+0] = uint8(uint32(d[i+0]) * 0xff / a)
-			d[i+1] = uint8(uint32(d[i+1]) * 0xff / a)
-			d[i+2] = uint8(uint32(d[i+2]) * 0xff / a)
-		}
 		d[i+3] = 255
 	}
 }

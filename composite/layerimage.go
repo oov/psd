@@ -22,7 +22,7 @@ type tiledImage map[image.Point]draw.Image
 func (t tiledImage) Get(tileSize int, pt image.Point) (draw.Image, bool) {
 	r, ok := t[pt]
 	if !ok {
-		r = image.NewRGBA(image.Rect(pt.X, pt.Y, pt.X+tileSize, pt.Y+tileSize))
+		r = image.NewNRGBA(image.Rect(pt.X, pt.Y, pt.X+tileSize, pt.Y+tileSize))
 		t[pt] = r
 	}
 	return r, ok
@@ -292,21 +292,13 @@ func newTiledImageInner(pc *parallelContext, t tiledImage, rect image.Rectangle,
 			dyMax = dyMax * tw
 			dxMin, dxMax = dxMin<<2, dxMax<<2
 			if a != nil {
-				var alpha uint32
 				for dy, sy := dyMin*tw, syMin*sw; dy < dyMax; dy += tw {
 					for dx, sx, dEnd := dy+dxMin, sy+sxMin, dy+dxMax; dx < dEnd; dx += 4 {
-						alpha = uint32(a[sx]) * 32897
-						if alpha == 255*32897 {
-							buf[dx+3] = 255
+						if a[sx] > 0 {
+							buf[dx+3] = a[sx]
 							buf[dx+2] = b[sx]
 							buf[dx+1] = g[sx]
 							buf[dx+0] = r[sx]
-							used = true
-						} else if alpha > 0 {
-							buf[dx+3] = a[sx]
-							buf[dx+2] = uint8((uint32(b[sx]) * alpha) >> 23)
-							buf[dx+1] = uint8((uint32(g[sx]) * alpha) >> 23)
-							buf[dx+0] = uint8((uint32(r[sx]) * alpha) >> 23)
 							used = true
 						}
 						sx += deltaX
@@ -328,7 +320,7 @@ func newTiledImageInner(pc *parallelContext, t tiledImage, rect image.Rectangle,
 			}
 			if used {
 				pc.M.Lock()
-				t[image.Pt(tx, ty)] = &image.RGBA{
+				t[image.Pt(tx, ty)] = &image.NRGBA{
 					Pix:    buf,
 					Stride: tileSize * 4,
 					Rect:   image.Rect(tx, ty, tx+tileSize, ty+tileSize),
