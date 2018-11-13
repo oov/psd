@@ -473,59 +473,6 @@ func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangl
 }
 
 var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d0, s0, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
-	alpha *= 32897
-	for ; y > 0; y-- {
-		dpix := dest[d0:]
-		spix := src[s0:]
-		for i, j := sx0, dx0; i != sx1; i, j = i+sxDelta, j+dxDelta {
-			sa := uint32(spix[i+3])
-			sb := uint32(spix[i+2])
-			sg := uint32(spix[i+1])
-			sr := uint32(spix[i])
-			tmp := (sa * alpha >> 23) * 32897
-			if tmp == 0 {
-				continue
-			}
-			da := uint32(dpix[j+3])
-			db := uint32(dpix[j+2])
-			dg := uint32(dpix[j+1])
-			dr := uint32(dpix[j])
-			a1 := (tmp * da) >> 23
-			a2 := (tmp * (255 - da)) >> 23
-			a3 := ((8388735 - tmp) * da) >> 23
-			a := a1 + a2 + a3
-			if a == 0 {
-				continue
-			}
-			var r, g, b uint32
-			{{if .CodePerChannel}}
-				{{.CodePerChannel.To8.Channel "r"}}
-				{{.CodePerChannel.To8.Channel "g"}}
-				{{.CodePerChannel.To8.Channel "b"}}
-			{{else if .Code}}
-				{{.Code.To8}}
-			{{else if .CodePerChannel16}}
-				{{.CodePerChannel16.To8.Channel "r"}}
-				{{.CodePerChannel16.To8.Channel "g"}}
-				{{.CodePerChannel16.To8.Channel "b"}}
-			{{else if .Code16}}
-				{{.Code16.To8}}
-			{{end}}
-			{{if .OverMax}}
-				dpix[j+3] = uint8(a)
-				dpix[j+2] = uint8(clip8((b*a1 + sb*a2 + db*a3) / a))
-				dpix[j+1] = uint8(clip8((g*a1 + sg*a2 + dg*a3) / a))
-				dpix[j+0] = uint8(clip8((r*a1 + sr*a2 + dr*a3) / a))
-			{{else}}
-				dpix[j+3] = uint8(a)
-				dpix[j+2] = uint8((b*a1 + sb*a2 + db*a3) / a)
-				dpix[j+1] = uint8((g*a1 + sg*a2 + dg*a3) / a)
-				dpix[j+0] = uint8((r*a1 + sr*a2 + dr*a3) / a)
-			{{end}}
-		}
-		d0 += dyDelta
-		s0 += syDelta
-	}
 {{define "drawMain1"}}
 	alpha *= 0x0101
 	for ; y > 0; y-- {
@@ -624,10 +571,10 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 		s0 += syDelta
 	}
 {{end}}
-{{template "drawMain1" .}}
-{{template "drawMain2" .}}
-{{template "drawMain2_SetNRGBA" .}}
-{{template "drawMain3" .}}
+	{{template "drawMain1" .}}
+	{{template "drawMain2" .}}
+	{{template "drawMain2_SetNRGBA" .}}
+	{{template "drawMain3" .}}
 }
 
 var draw{{.Name}}RGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d0, s0, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {

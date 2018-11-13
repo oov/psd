@@ -1,5 +1,3 @@
-//go:generate go run gendivtable.go
-//go:generate go run genrgba2nrgba.go
 //go:generate go run genblend.go
 //go:generate go run genporterduff.go
 
