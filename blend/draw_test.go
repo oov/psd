@@ -72,16 +72,16 @@ func verify(a image.Image, b image.Image) (float64, error) {
 				math.Abs(float64(ab)-float64(bb)) >= 0x1000 ||
 				math.Abs(float64(aa)-float64(ba)) >= 0x1000:
 				score += 64.0
-			case math.Abs(float64(ar)-float64(br)) >= 0x0800 ||
-				math.Abs(float64(ag)-float64(bg)) >= 0x0800 ||
-				math.Abs(float64(ab)-float64(bb)) >= 0x0800 ||
-				math.Abs(float64(aa)-float64(ba)) >= 0x0800:
-				score += 0.1
-			case math.Abs(float64(ar)-float64(br)) >= 0x0200 ||
-				math.Abs(float64(ag)-float64(bg)) >= 0x0200 ||
-				math.Abs(float64(ab)-float64(bb)) >= 0x0200 ||
-				math.Abs(float64(aa)-float64(ba)) >= 0x0200:
-				score += 0.01
+			case math.Abs(float64(ar)-float64(br)) >= 0x0400 ||
+				math.Abs(float64(ag)-float64(bg)) >= 0x0400 ||
+				math.Abs(float64(ab)-float64(bb)) >= 0x0400 ||
+				math.Abs(float64(aa)-float64(ba)) >= 0x0400:
+				score += 16.0
+			case math.Abs(float64(ar)-float64(br)) >= 0x0100 ||
+				math.Abs(float64(ag)-float64(bg)) >= 0x0100 ||
+				math.Abs(float64(ab)-float64(bb)) >= 0x0100 ||
+				math.Abs(float64(aa)-float64(ba)) >= 0x0100:
+				score += 1.0
 			}
 		}
 	}
@@ -218,7 +218,7 @@ func testDrawFallback(t *testing.T, path1 string, path2 string, d drawer) {
 	}
 
 	t.Logf("score: %f", score)
-	if score > 3.0 {
+	if score > 1 {
 		t.Errorf("too many erros: %f", score)
 	}
 }
