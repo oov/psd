@@ -273,13 +273,12 @@ func (d {{.Name.Lower}}) Draw(dst draw.Image, r image.Rectangle, src image.Image
 
 func (d {{.Name.Lower}}) drawNRGBAToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.NRGBA, sp image.Point, mask *image.Uniform) {
 {{define "draw"}}
-	alpha := uint32(0xff)
+	alpha := uint32(0xffff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare4to4(dst, src, dst.Stride, src.Stride, r, sp)
@@ -302,13 +301,12 @@ func (d {{.Name.Lower}}) drawRGBAToRGBAUniform(dst *image.RGBA, r image.Rectangl
 
 func (d {{.Name.Lower}}) drawAlphaToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Alpha, sp image.Point, mask *image.Uniform) {
 {{define "alpha"}}
-	alpha := uint32(0xff)
+	alpha := uint32(0xffff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	d0, dx0, dx1, dxDelta, dyDelta, s0, sx0, sx1, sxDelta, syDelta := prepare1to4(dst, src, dst.Stride, src.Stride, r, sp)
@@ -323,23 +321,22 @@ func (d {{.Name.Lower}}) drawAlphaToRGBAUniform(dst *image.RGBA, r image.Rectang
 
 func (d {{.Name.Lower}}) drawUniformToNRGBAUniform(dst *image.NRGBA, r image.Rectangle, src *image.Uniform, sp image.Point, mask *image.Uniform) {
 {{define "uniform"}}
-	alpha := uint32(0xff)
+	alpha := uint32(0xffff)
 	if mask != nil {
 		_, _, _, alpha = mask.C.RGBA()
 		if alpha == 0 {
 			return
 		}
-		alpha >>= 8
 	}
 
 	sr, sg, sb, sa := src.C.RGBA()
 	if alpha == 0x00 {
 		sr, sg, sb, sa = 0, 0, 0, 0
-	} else if alpha != 0xff {
-		sr = (sr >> 8) * alpha * 32897 >> 23
-		sg = (sg >> 8) * alpha * 32897 >> 23
-		sb = (sb >> 8) * alpha * 32897 >> 23
-		sa = (sa >> 8) * alpha * 32897 >> 23
+	} else if alpha != 0xffff {
+		sr = sr * alpha / 0xffff
+		sg = sg * alpha / 0xffff
+		sb = sb * alpha / 0xffff
+		sa = sa * alpha / 0xffff
 	}
 	{{.}}.Parallel(dst.Pix[dst.PixOffset(r.Min.X, r.Min.Y):], sr, sg, sb, sa, r.Dy(), 0, r.Dx()<<2, 4, dst.Stride)
 {{end}}
@@ -352,7 +349,6 @@ func (d {{.Name.Lower}}) drawUniformToRGBAUniform(dst *image.RGBA, r image.Recta
 
 var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uint32, d0, s0, y int, sx0 int, sx1 int, sxDelta int, syDelta int, dx0 int, dx1 int, dxDelta int, dyDelta int) {
 {{define "drawMain1"}}
-	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[d0:]
 {{if ne .SrcRead "skip"}}
@@ -360,83 +356,83 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 {{end}}
 		for i, j := sx0, dx0; i != sx1; i, j = i + sxDelta, j + dxDelta {
 {{if eq .SrcRead "alpha"}}
-			sa := (uint32(spix[i+3]) * alpha) >> 23
+			sa := uint32(spix[i+3]) * 0x0101 * alpha / 0xffff
 {{else if ne .SrcRead "skip"}}
-			sa := (uint32(spix[i+3]) * alpha) >> 23
-			sb := uint32(spix[i+2])
-			sg := uint32(spix[i+1])
-			sr := uint32(spix[i])
+			sa := uint32(spix[i+3]) * 0x0101 * alpha / 0xffff
+			sb := uint32(spix[i+2]) * 0x0101
+			sg := uint32(spix[i+1]) * 0x0101
+			sr := uint32(spix[i]) * 0x0101
 {{end}}
 
 {{if eq .DestRead "alpha"}}
-			da := uint32(dpix[j+3])
+			da := uint32(dpix[j+3]) * 0x0101
 {{else if ne .DestRead "skip"}}
-			da := uint32(dpix[j+3])
-			db := uint32(dpix[j+2])
-			dg := uint32(dpix[j+1])
-			dr := uint32(dpix[j])
+			da := uint32(dpix[j+3]) * 0x0101
+			db := uint32(dpix[j+2]) * 0x0101
+			dg := uint32(dpix[j+1]) * 0x0101
+			dr := uint32(dpix[j]) * 0x0101
 {{end}}
 {{end}}
 {{define "drawMain1_SrcNRGBAToRGBA"}}
-			if sa == 0 {
+			if sa == 0x0000 {
 				sr = 0
 				sg = 0
 				sb = 0
-			} else if sa < 255 {
-				sr = (sr * sa * 32897) >> 23
-				sg = (sg * sa * 32897) >> 23
-				sb = (sb * sa * 32897) >> 23
+			} else if sa < 0xffff {
+				sr = sr * 0xffff / sa
+				sg = sg * 0xffff / sa
+				sb = sb * 0xffff / sa
 			}
 {{end}}
 {{define "drawMain1_DestNRGBAToRGBA"}}
-			if da == 0 {
+			if da == 0x0000 {
 				dr = 0
 				dg = 0
 				db = 0
-			} else if da < 255 {
-				dr = (dr * da * 32897) >> 23
-				dg = (dg * da * 32897) >> 23
-				db = (db * da * 32897) >> 23
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
 			}
 {{end}}
 {{define "drawMain2"}}
 			var r, g, b, a, tmp uint32
 			_ = tmp
-			{{if .Alpha}}
-				{{.Alpha.To8.Channel "a"}}
-			{{else if .Alpha16}}
-				{{.Alpha16.To8.Channel "a"}}
+			{{if .Alpha16}}
+				{{.Alpha16.To16.Channel "a"}}
+			{{else if .Alpha}}
+				{{.Alpha.To16.Channel "a"}}
 			{{end}}
-			{{if .Code}}
-				{{.Code.To8.Channel "r"}}
-				{{.Code.To8.Channel "g"}}
-				{{.Code.To8.Channel "b"}}
-			{{else if .Code16}}
-				{{.Code16.To8.Channel "r"}}
-				{{.Code16.To8.Channel "g"}}
-				{{.Code16.To8.Channel "b"}}
+			{{if .Code16}}
+				{{.Code16.To16.Channel "r"}}
+				{{.Code16.To16.Channel "g"}}
+				{{.Code16.To16.Channel "b"}}
+			{{else if .Code}}
+				{{.Code.To16.Channel "r"}}
+				{{.Code.To16.Channel "g"}}
+				{{.Code.To16.Channel "b"}}
 			{{end}}
 {{end}}
 {{define "drawMain2_SetByRGBA"}}
-			dpix[j+3] = uint8(a)
-			dpix[j+2] = uint8(b)
-			dpix[j+1] = uint8(g)
-			dpix[j+0] = uint8(r)
+			dpix[j+3] = uint8(a >> 8)
+			dpix[j+2] = uint8(b >> 8)
+			dpix[j+1] = uint8(g >> 8)
+			dpix[j+0] = uint8(r >> 8)
 {{end}}
 {{define "drawMain2_SetByNRGBA"}}
-			dpix[j+3] = uint8(a)
-			if a == 255 {
-				dpix[j+2] = uint8(b)
-				dpix[j+1] = uint8(g)
-				dpix[j+0] = uint8(r)
+			dpix[j+3] = uint8(a >> 8)
+			if a == 0xffff {
+				dpix[j+2] = uint8(b >> 8)
+				dpix[j+1] = uint8(g >> 8)
+				dpix[j+0] = uint8(r >> 8)
 			} else if a == 0 {
 				dpix[j+2] = 0
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
-				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
-				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
+				dpix[j+2] = uint8((r * a / 0xffff) >> 8)
+				dpix[j+1] = uint8((g * a / 0xffff) >> 8)
+				dpix[j+0] = uint8((b * a / 0xffff) >> 8)
 			}
 {{end}}
 {{define "drawMain3"}}
@@ -491,7 +487,6 @@ var draw{{.Name}}AlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 		sg = 0
 		sr = 0
 	)
-	alpha *= 32897
 	for ; y > 0; y-- {
 		dpix := dest[d0:]
 {{if ne .SrcRead "skip"}}
@@ -499,67 +494,67 @@ var draw{{.Name}}AlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 {{end}}
 		for i, j := sx0, dx0; i != sx1; i, j = i + sxDelta, j + dxDelta {
 {{if ne .SrcRead "skip"}}
-			sa := (uint32(spix[i]) * alpha) >> 23
+			sa := uint32(spix[i]) * 0x0101 * alpha / 0xffff
 {{end}}
 
 {{if eq .DestRead "alpha"}}
-			da := uint32(dpix[j+3])
+			da := uint32(dpix[j+3]) * 0x0101
 {{else if ne .DestRead "skip"}}
-			da := uint32(dpix[j+3])
-			db := uint32(dpix[j+2])
-			dg := uint32(dpix[j+1])
-			dr := uint32(dpix[j])
+			da := uint32(dpix[j+3]) * 0x0101
+			db := uint32(dpix[j+2]) * 0x0101
+			dg := uint32(dpix[j+1]) * 0x0101
+			dr := uint32(dpix[j]) * 0x0101
 {{end}}
 {{end}}
 {{define "drawMainAlpha1_DestNRGBAToRGBA"}}
-			if da == 0 {
+			if da == 0x0000 {
 				dr = 0
 				dg = 0
 				db = 0
-			} else if da < 255 {
-				dr = (dr * da * 32897) >> 23
-				dg = (dg * da * 32897) >> 23
-				db = (db * da * 32897) >> 23
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
 			}
 {{end}}
 {{define "drawMainAlpha2"}}
 			var r, g, b, a, tmp uint32
 			_ = tmp
-			{{if .Alpha}}
-				{{.Alpha.To8.Channel "a"}}
-			{{else if .Alpha16}}
-				{{.Alpha16.To8.Channel "a"}}
+			{{if .Alpha16}}
+				{{.Alpha16.To16.Channel "a"}}
+			{{else if .Alpha}}
+				{{.Alpha.To16.Channel "a"}}
 			{{end}}
-			{{if .Code}}
-				{{.Code.To8.Channel "r"}}
-				{{.Code.To8.Channel "g"}}
-				{{.Code.To8.Channel "b"}}
-			{{else if .Code16}}
-				{{.Code16.To8.Channel "r"}}
-				{{.Code16.To8.Channel "g"}}
-				{{.Code16.To8.Channel "b"}}
+			{{if .Code16}}
+				{{.Code16.To16.Channel "r"}}
+				{{.Code16.To16.Channel "g"}}
+				{{.Code16.To16.Channel "b"}}
+			{{else if .Code}}
+				{{.Code.To16.Channel "r"}}
+				{{.Code.To16.Channel "g"}}
+				{{.Code.To16.Channel "b"}}
 			{{end}}
 {{end}}
 {{define "drawMainAlpha2_SetByRGBA"}}
-			dpix[j+3] = uint8(a)
-			dpix[j+2] = uint8(b)
-			dpix[j+1] = uint8(g)
-			dpix[j+0] = uint8(r)
+			dpix[j+3] = uint8(a >> 8)
+			dpix[j+2] = uint8(b >> 8)
+			dpix[j+1] = uint8(g >> 8)
+			dpix[j+0] = uint8(r >> 8)
 {{end}}
 {{define "drawMainAlpha2_SetByNRGBA"}}
-			dpix[j+3] = uint8(a)
-			if a == 255 {
-				dpix[j+2] = uint8(b)
-				dpix[j+1] = uint8(g)
-				dpix[j+0] = uint8(r)
+			dpix[j+3] = uint8(a >> 8)
+			if a == 0xffff {
+				dpix[j+2] = uint8(b >> 8)
+				dpix[j+1] = uint8(g >> 8)
+				dpix[j+0] = uint8(r >> 8)
 			} else if a == 0 {
 				dpix[j+2] = 0
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
-				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
-				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
+				dpix[j+2] = uint8((r * a / 0xffff) >> 8)
+				dpix[j+1] = uint8((g * a / 0xffff) >> 8)
+				dpix[j+0] = uint8((b * a / 0xffff) >> 8)
 			}
 {{end}}
 {{define "drawMainAlpha3"}}
@@ -591,63 +586,63 @@ var draw{{.Name}}UniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, 
 		dpix := dest[dPos:]
 		for j := dx0; j != dx1; j += dxDelta {
 {{if eq .DestRead "alpha"}}
-			da := uint32(dpix[j+3])
+			da := uint32(dpix[j+3]) * 0x0101
 {{else if ne .DestRead "skip"}}
-			da := uint32(dpix[j+3])
-			db := uint32(dpix[j+2])
-			dg := uint32(dpix[j+1])
-			dr := uint32(dpix[j])
+			da := uint32(dpix[j+3]) * 0x0101
+			db := uint32(dpix[j+2]) * 0x0101
+			dg := uint32(dpix[j+1]) * 0x0101
+			dr := uint32(dpix[j]) * 0x0101
 {{end}}
 {{end}}
 {{define "drawMainUniform1_DestNRGBAToRGBA"}}
-			if da == 0 {
+			if da == 0x0000 {
 				dr = 0
 				dg = 0
 				db = 0
-			} else if da < 255 {
-				dr = (dr * da * 32897) >> 23
-				dg = (dg * da * 32897) >> 23
-				db = (db * da * 32897) >> 23
+			} else if da < 0xffff {
+				dr = dr * 0xffff / da
+				dg = dg * 0xffff / da
+				db = db * 0xffff / da
 			}
 {{end}}
 {{define "drawMainUniform2"}}
 			var r, g, b, a, tmp uint32
 			_ = tmp
-			{{if .Alpha}}
-				{{.Alpha.To8.Channel "a"}}
-			{{else if .Alpha16}}
-				{{.Alpha16.To8.Channel "a"}}
+			{{if .Alpha16}}
+				{{.Alpha16.To16.Channel "a"}}
+			{{else if .Alpha}}
+				{{.Alpha.To16.Channel "a"}}
 			{{end}}
-			{{if .Code}}
-				{{.Code.To8.Channel "r"}}
-				{{.Code.To8.Channel "g"}}
-				{{.Code.To8.Channel "b"}}
-			{{else if .Code16}}
-				{{.Code16.To8.Channel "r"}}
-				{{.Code16.To8.Channel "g"}}
-				{{.Code16.To8.Channel "b"}}
+			{{if .Code16}}
+				{{.Code16.To16.Channel "r"}}
+				{{.Code16.To16.Channel "g"}}
+				{{.Code16.To16.Channel "b"}}
+			{{else if .Code}}
+				{{.Code.To16.Channel "r"}}
+				{{.Code.To16.Channel "g"}}
+				{{.Code.To16.Channel "b"}}
 			{{end}}
 {{end}}
 {{define "drawMainUniform2_SetByRGBA"}}
-			dpix[j+3] = uint8(a)
-			dpix[j+2] = uint8(b)
-			dpix[j+1] = uint8(g)
-			dpix[j+0] = uint8(r)
+			dpix[j+3] = uint8(a >> 8)
+			dpix[j+2] = uint8(b >> 8)
+			dpix[j+1] = uint8(g >> 8)
+			dpix[j+0] = uint8(r >> 8)
 {{end}}
 {{define "drawMainUniform2_SetByNRGBA"}}
-			dpix[j+3] = uint8(a)
-			if a == 255 {
-				dpix[j+2] = uint8(b)
-				dpix[j+1] = uint8(g)
-				dpix[j+0] = uint8(r)
+			dpix[j+3] = uint8(a >> 8)
+			if a == 0xffff {
+				dpix[j+2] = uint8(b >> 8)
+				dpix[j+1] = uint8(g >> 8)
+				dpix[j+0] = uint8(r >> 8)
 			} else if a == 0 {
 				dpix[j+2] = 0
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8(rgbaToNRGBATable[(b<<8)+a])
-				dpix[j+1] = uint8(rgbaToNRGBATable[(g<<8)+a])
-				dpix[j+0] = uint8(rgbaToNRGBATable[(r<<8)+a])
+				dpix[j+2] = uint8((r * a / 0xffff) >> 8)
+				dpix[j+1] = uint8((g * a / 0xffff) >> 8)
+				dpix[j+0] = uint8((b * a / 0xffff) >> 8)
 			}
 {{end}}
 {{define "drawMainUniform3"}}

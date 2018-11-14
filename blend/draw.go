@@ -132,7 +132,6 @@ func drawMask(d drawer, dst draw.Image, r image.Rectangle, src image.Image, sp i
 	if r.Empty() {
 		return
 	}
-
 	switch src0 := src.(type) {
 	case *image.RGBA:
 		if mask == nil {
