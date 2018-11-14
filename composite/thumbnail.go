@@ -16,7 +16,7 @@ var (
 	errNoCanvas      = errors.New("composite: no canvas")
 )
 
-func trimUnusedArea(src *image.RGBA, threshold byte) {
+func trimUnusedArea(src *image.NRGBA, threshold byte) {
 	w, h := src.Rect.Dx(), src.Rect.Dy()
 	stride := src.Stride
 	pix := src.Pix[:h*stride]
@@ -64,7 +64,7 @@ func trimUnusedArea(src *image.RGBA, threshold byte) {
 }
 
 // Thumbnail creates thumbnail.
-func (t *Tree) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.RGBA, error) {
+func (t *Tree) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.NRGBA, error) {
 	ld, ok := t.layerImage[seqID]
 	if !ok {
 		return nil, errors.Wrap(errLayerNotFound, "composite: cannot create thumbnail")
@@ -73,7 +73,7 @@ func (t *Tree) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.RGBA, e
 		return nil, errors.Wrap(errNoCanvas, "composite: cannot create thumbnail")
 	}
 	rect := ld.Canvas.Rect()
-	src := &image.RGBA{
+	src := &image.NRGBA{
 		Rect:   rect,
 		Stride: rect.Dx() * 4,
 	}
@@ -89,14 +89,14 @@ func (t *Tree) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.RGBA, e
 	trimUnusedArea(src, 0)
 	rect = src.Rect
 
-	var dest *image.RGBA
+	var dest *image.NRGBA
 	sw, sh := rect.Dx(), rect.Dy()
 	if sw > sh {
-		dest = image.NewRGBA(image.Rect(0, 0, size, sh*size/sw))
+		dest = image.NewNRGBA(image.Rect(0, 0, size, sh*size/sw))
 	} else {
-		dest = image.NewRGBA(image.Rect(0, 0, sw*size/sh, size))
+		dest = image.NewNRGBA(image.Rect(0, 0, sw*size/sh, size))
 	}
-	if err := downscale.RGBAFast(context.Background(), dest, src); err != nil {
+	if err := downscale.NRGBAFast(context.Background(), dest, src); err != nil {
 		return nil, errors.Wrap(err, "composite: failed to create thumbnail")
 	}
 	return dest, nil
@@ -109,7 +109,7 @@ func gatherLayer(layers *[]*Layer, l *Layer) {
 	}
 }
 
-func (t *Tree) Thumbnails(ctx context.Context, size int) (map[int]*image.RGBA, error) {
+func (t *Tree) Thumbnails(ctx context.Context, size int) (map[int]*image.NRGBA, error) {
 	var layers []*Layer
 	gatherLayer(&layers, &t.Root)
 
@@ -122,7 +122,7 @@ func (t *Tree) Thumbnails(ctx context.Context, size int) (map[int]*image.RGBA, e
 	pc.Wg.Add(n)
 	step := nLayers / n
 
-	m := make(map[int]*image.RGBA)
+	m := make(map[int]*image.NRGBA)
 	idx := 0
 	for i := 1; i < n; i++ {
 		go t.thumbnailsInner(pc, m, layers, size, idx, idx+step)
@@ -136,7 +136,7 @@ func (t *Tree) Thumbnails(ctx context.Context, size int) (map[int]*image.RGBA, e
 
 }
 
-func (t *Tree) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layers []*Layer, size, sIdx, eIdx int) {
+func (t *Tree) thumbnailsInner(pc *parallelContext, m map[int]*image.NRGBA, layers []*Layer, size, sIdx, eIdx int) {
 	defer pc.Done()
 
 	bufLen := 0
@@ -167,7 +167,7 @@ func (t *Tree) thumbnailsInner(pc *parallelContext, m map[int]*image.RGBA, layer
 	}
 }
 
-func (t *Tree) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[int]image.Rectangle, error) {
+func (t *Tree) ThumbnailSheet(ctx context.Context, size int) (*image.NRGBA, map[int]image.Rectangle, error) {
 	m, err := t.Thumbnails(ctx, size)
 	if err != nil {
 		return nil, nil, err
@@ -190,7 +190,7 @@ func (t *Tree) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[i
 	if textureSize > 4096 {
 		return nil, nil, errors.New("composite: could not create thumbnail sheet because too many layers")
 	}
-	img := image.NewRGBA(image.Rect(0, 0, textureSize, textureSize))
+	img := image.NewNRGBA(image.Rect(0, 0, textureSize, textureSize))
 	mpt := make(map[int]image.Rectangle)
 
 	n := runtime.GOMAXPROCS(0)
@@ -214,7 +214,7 @@ func (t *Tree) ThumbnailSheet(ctx context.Context, size int) (*image.RGBA, map[i
 
 }
 
-func (t *Tree) thumbnailSheetInner(pc *parallelContext, img *image.RGBA, mpt map[int]image.Rectangle, m map[int]*image.RGBA, indices []int, sIdx, eIdx, size int) {
+func (t *Tree) thumbnailSheetInner(pc *parallelContext, img *image.NRGBA, mpt map[int]image.Rectangle, m map[int]*image.NRGBA, indices []int, sIdx, eIdx, size int) {
 	defer pc.Done()
 	iw := img.Rect.Dx() / size
 	for i := sIdx; i < eIdx; i++ {
