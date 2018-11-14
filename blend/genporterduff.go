@@ -379,9 +379,9 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 				sg = 0
 				sb = 0
 			} else if sa < 0xffff {
-				sr = sr * 0xffff / sa
-				sg = sg * 0xffff / sa
-				sb = sb * 0xffff / sa
+				sr = sr * sa / 0xffff
+				sg = sg * sa / 0xffff
+				sb = sb * sa / 0xffff
 			}
 {{end}}
 {{define "drawMain1_DestNRGBAToRGBA"}}
@@ -390,9 +390,9 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 				dg = 0
 				db = 0
 			} else if da < 0xffff {
-				dr = dr * 0xffff / da
-				dg = dg * 0xffff / da
-				db = db * 0xffff / da
+				dr = dr * da / 0xffff
+				dg = dg * da / 0xffff
+				db = db * da / 0xffff
 			}
 {{end}}
 {{define "drawMain2"}}
@@ -430,9 +430,9 @@ var draw{{.Name}}NRGBAToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8((r * a / 0xffff) >> 8)
-				dpix[j+1] = uint8((g * a / 0xffff) >> 8)
-				dpix[j+0] = uint8((b * a / 0xffff) >> 8)
+				dpix[j+2] = uint8((b * 0xffff / a) >> 8)
+				dpix[j+1] = uint8((g * 0xffff / a) >> 8)
+				dpix[j+0] = uint8((r * 0xffff / a) >> 8)
 			}
 {{end}}
 {{define "drawMain3"}}
@@ -512,9 +512,9 @@ var draw{{.Name}}AlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 				dg = 0
 				db = 0
 			} else if da < 0xffff {
-				dr = dr * 0xffff / da
-				dg = dg * 0xffff / da
-				db = db * 0xffff / da
+				dr = dr * da / 0xffff
+				dg = dg * da / 0xffff
+				db = db * da / 0xffff
 			}
 {{end}}
 {{define "drawMainAlpha2"}}
@@ -552,9 +552,9 @@ var draw{{.Name}}AlphaToNRGBA drawFunc = func(dest []byte, src []byte, alpha uin
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8((r * a / 0xffff) >> 8)
-				dpix[j+1] = uint8((g * a / 0xffff) >> 8)
-				dpix[j+0] = uint8((b * a / 0xffff) >> 8)
+				dpix[j+2] = uint8((b * 0xffff / a) >> 8)
+				dpix[j+1] = uint8((g * 0xffff / a) >> 8)
+				dpix[j+0] = uint8((r * 0xffff / a) >> 8)
 			}
 {{end}}
 {{define "drawMainAlpha3"}}
@@ -600,9 +600,9 @@ var draw{{.Name}}UniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, 
 				dg = 0
 				db = 0
 			} else if da < 0xffff {
-				dr = dr * 0xffff / da
-				dg = dg * 0xffff / da
-				db = db * 0xffff / da
+				dr = dr * da / 0xffff
+				dg = dg * da / 0xffff
+				db = db * da / 0xffff
 			}
 {{end}}
 {{define "drawMainUniform2"}}
@@ -640,9 +640,9 @@ var draw{{.Name}}UniformToNRGBA drawUniformFunc = func(dest []byte, sr, sg, sb, 
 				dpix[j+1] = 0
 				dpix[j+0] = 0
 			} else {
-				dpix[j+2] = uint8((r * a / 0xffff) >> 8)
-				dpix[j+1] = uint8((g * a / 0xffff) >> 8)
-				dpix[j+0] = uint8((b * a / 0xffff) >> 8)
+				dpix[j+2] = uint8((b * 0xffff / a) >> 8)
+				dpix[j+1] = uint8((g * 0xffff / a) >> 8)
+				dpix[j+0] = uint8((r * 0xffff / a) >> 8)
 			}
 {{end}}
 {{define "drawMainUniform3"}}

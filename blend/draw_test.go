@@ -251,7 +251,7 @@ func testDrawNRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer) {
 	}
 
 	t.Logf("score: %f", score)
-	if score > 3.0 {
+	if score > 1 {
 		t.Errorf("too many erros: %f", score)
 	}
 }
@@ -284,7 +284,7 @@ func testDrawRGBAToNRGBA(t *testing.T, path1 string, path2 string, d drawer) {
 	}
 
 	t.Logf("score: %f", score)
-	if score > 3.0 {
+	if score > 1 {
 		t.Errorf("too many erros: %f", score)
 	}
 }
@@ -317,7 +317,7 @@ func testDrawNRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer) {
 	}
 
 	t.Logf("score: %f", score)
-	if score > 3.0 {
+	if score > 1 {
 		t.Errorf("too many erros: %f", score)
 	}
 }
@@ -350,7 +350,7 @@ func testDrawRGBAToRGBA(t *testing.T, path1 string, path2 string, d drawer) {
 	}
 
 	t.Logf("score: %f", score)
-	if score > 3.0 {
+	if score > 1 {
 		t.Errorf("too many erros: %f", score)
 	}
 }
@@ -383,7 +383,7 @@ func testDrawAlphaToRGBA(t *testing.T, path1 string, path2 string, d alphaDrawer
 	}
 
 	t.Logf("score: %f", score)
-	if score > 3.0 {
+	if score > 1 {
 		t.Errorf("too many erros: %f", score)
 	}
 }
@@ -416,7 +416,7 @@ func testDrawAlphaToNRGBA(t *testing.T, path1 string, path2 string, d alphaDrawe
 	}
 
 	t.Logf("score: %f", score)
-	if score > 3.0 {
+	if score > 1 {
 		t.Errorf("too many erros: %f", score)
 	}
 }
