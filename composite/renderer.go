@@ -202,16 +202,16 @@ func (cl *changeList) Add(l *Layer, pt image.Point) {
 }
 
 // Render renders image.
-func (r *Renderer) Render(ctx context.Context, dest *image.RGBA) error {
+func (r *Renderer) Render(ctx context.Context, dest *image.NRGBA) error {
 	return r.render(ctx, dest, false)
 }
 
 // RenderDiff renders only the place changed since last time.
-func (r *Renderer) RenderDiff(ctx context.Context, dest *image.RGBA) error {
+func (r *Renderer) RenderDiff(ctx context.Context, dest *image.NRGBA) error {
 	return r.render(ctx, dest, true)
 }
 
-func (r *Renderer) render(ctx context.Context, dest *image.RGBA, diffOnly bool) error {
+func (r *Renderer) render(ctx context.Context, dest *image.NRGBA, diffOnly bool) error {
 	r.renderM.Lock()
 	defer r.renderM.Unlock()
 
@@ -271,7 +271,7 @@ func (r *Renderer) render(ctx context.Context, dest *image.RGBA, diffOnly bool) 
 	return nil
 }
 
-func (r *Renderer) renderInner(pc *parallelContext, dest *image.RGBA, diffOnly bool, rootCache *cache, clst *changeList, x0, x1, y0, y1 int) {
+func (r *Renderer) renderInner(pc *parallelContext, dest *image.NRGBA, diffOnly bool, rootCache *cache, clst *changeList, x0, x1, y0, y1 int) {
 	defer pc.Done()
 	tileSize := r.tree.tileSize
 	for ty := y0; ty < y1; ty += tileSize {
