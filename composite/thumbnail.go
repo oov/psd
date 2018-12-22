@@ -91,6 +91,9 @@ func (t *Tree) Thumbnail(seqID int, size int, tempBuffer []byte) (*image.NRGBA, 
 
 	var dest *image.NRGBA
 	sw, sh := rect.Dx(), rect.Dy()
+	if sw*sh == 0 {
+		return nil, errors.Wrap(errNoCanvas, "composite: failed to create thumbnail")
+	}
 	if sw > sh {
 		dest = image.NewNRGBA(image.Rect(0, 0, size, sh*size/sw))
 	} else {
