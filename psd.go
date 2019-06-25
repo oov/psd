@@ -285,7 +285,10 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 
 func decode(r io.Reader) (image.Image, error) {
 	psd, _, err := Decode(r, &DecodeOptions{SkipLayerImage: true})
-	return psd.Picker, err
+	if err != nil {
+		return nil, err
+	}
+	return psd.Picker, nil
 }
 
 func decodeConfig(r io.Reader) (image.Config, error) {
