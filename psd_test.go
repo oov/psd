@@ -427,3 +427,31 @@ func Benchmark2MB(b *testing.B) {
 		r.Reset(buf)
 	}
 }
+
+func TestDecodeFail(t *testing.T) {
+	brokenImages := []struct {
+		b []byte
+		n string
+	}{
+		{
+			b: []byte{'8', 'B', 'P', 'S', 0, 1},
+			n: "psd",
+		},
+		{
+			b: []byte{'8', 'B', 'P', 'S', 0, 2},
+			n: "psb",
+		},
+	}
+	for _, bi := range brokenImages {
+		img, name, err := image.Decode(bytes.NewReader(bi.b))
+		if err != io.ErrUnexpectedEOF {
+			t.Error("unexpected error:", err)
+		}
+		if name != bi.n {
+			t.Error("unexpected format name: want", bi.n, "got", name)
+		}
+		if img != nil {
+			t.Error("img is not nil")
+		}
+	}
+}
