@@ -531,6 +531,64 @@ func readLayerExtraData(r io.Reader, layer *Layer, cfg *Config, o *DecodeOptions
 		return read, err
 	}
 
+	l, err = readLayerMaskAndAdjustmentLayerData(r, layer, cfg, o)
+	read += l
+	if err != nil {
+		return read, err
+	}
+
+	// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_21332
+	// Layer blending ranges data
+	if l, err = io.ReadFull(r, b[:4]); err != nil {
+		return read, err
+	}
+	read += l
+	if blendingRangesLen := int(readUint32(b, 0)); blendingRangesLen > 0 {
+		if Debug != nil {
+			Debug.Println("  layer blending ranges data skipped:", blendingRangesLen)
+		}
+		// TODO(oov): implement
+		if l, err = io.ReadFull(r, make([]byte, blendingRangesLen)); err != nil {
+			return read, err
+		}
+		read += l
+	}
+
+	// Layer name: Pascal string, padded to a multiple of 4 bytes.
+	if layer.MBCSName, l, err = readPascalString(r); err != nil {
+		return read, err
+	}
+	read += l
+	if l, err = adjustAlign4(r, l); err != nil {
+		return read, err
+	}
+	read += l
+
+	if read < extraDataLen+4 {
+		var layers []Layer
+		if layer.AdditionalLayerInfo, layers, l, err = readAdditionalLayerInfo(r, extraDataLen+4-read, cfg, o); err != nil {
+			return read, err
+		}
+		read += l
+		if len(layers) > 0 {
+			return read, errors.New("psd: unexpected layer structure")
+		}
+	} else {
+		layer.AdditionalLayerInfo = map[AdditionalInfoKey][]byte{}
+	}
+
+	if extraDataLen+4 != read {
+		return read, errors.New("psd: layer extra info read size mismatched. expected " + itoa(extraDataLen+4) + " actual " + itoa(read))
+	}
+	if Debug != nil {
+		Debug.Println("end - layer extra data section")
+	}
+	return read, nil
+}
+
+func readLayerMaskAndAdjustmentLayerData(r io.Reader, layer *Layer, cfg *Config, o *DecodeOptions) (read int, err error) {
+	var l int
+	b := make([]byte, 16)
 	if l, err = io.ReadFull(r, b[:4]); err != nil {
 		return read, err
 	}
@@ -646,52 +704,6 @@ func readLayerExtraData(r io.Reader, layer *Layer, cfg *Config, o *DecodeOptions
 		}
 	}
 
-	// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_21332
-	// Layer blending ranges data
-	if l, err = io.ReadFull(r, b[:4]); err != nil {
-		return read, err
-	}
-	read += l
-	if blendingRangesLen := int(readUint32(b, 0)); blendingRangesLen > 0 {
-		if Debug != nil {
-			Debug.Println("  layer blending ranges data skipped:", blendingRangesLen)
-		}
-		// TODO(oov): implement
-		if l, err = io.ReadFull(r, make([]byte, blendingRangesLen)); err != nil {
-			return read, err
-		}
-		read += l
-	}
-
-	// Layer name: Pascal string, padded to a multiple of 4 bytes.
-	if layer.MBCSName, l, err = readPascalString(r); err != nil {
-		return read, err
-	}
-	read += l
-	if l, err = adjustAlign4(r, l); err != nil {
-		return read, err
-	}
-	read += l
-
-	if read < extraDataLen+4 {
-		var layers []Layer
-		if layer.AdditionalLayerInfo, layers, l, err = readAdditionalLayerInfo(r, extraDataLen+4-read, cfg, o); err != nil {
-			return read, err
-		}
-		read += l
-		if len(layers) > 0 {
-			return read, errors.New("psd: unexpected layer structure")
-		}
-	} else {
-		layer.AdditionalLayerInfo = map[AdditionalInfoKey][]byte{}
-	}
-
-	if extraDataLen+4 != read {
-		return read, errors.New("psd: layer extra info read size mismatched. expected " + itoa(extraDataLen+4) + " actual " + itoa(read))
-	}
-	if Debug != nil {
-		Debug.Println("end - layer extra data section")
-	}
 	return read, nil
 }
 
