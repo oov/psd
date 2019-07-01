@@ -587,122 +587,208 @@ func readLayerExtraData(r io.Reader, layer *Layer, cfg *Config, o *DecodeOptions
 }
 
 func readLayerMaskAndAdjustmentLayerData(r io.Reader, layer *Layer, cfg *Config, o *DecodeOptions) (read int, err error) {
+	// Layer mask / adjustment layer data
+	// Can be 40 bytes, 24 bytes, or 4 bytes if no layer mask.
+	// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_22582
 	var l int
 	b := make([]byte, 16)
 	if l, err = io.ReadFull(r, b[:4]); err != nil {
 		return read, err
 	}
 	read += l
-	if maskLen := int(readUint32(b, 0)); maskLen > 0 {
-		var readMask int
-		// Layer mask / adjustment layer data
-		// Can be 40 bytes, 24 bytes, or 4 bytes if no layer mask.
-		// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_22582
-		if l, err = io.ReadFull(r, b[:16]); err != nil {
+
+	maskLen := int(readUint32(b, 0))
+	if maskLen == 0 {
+		// no layer mask
+		return read, nil
+	}
+	var readMask int
+
+	if maskLen-readMask < 16 {
+		// "Rectangle enclosing layer mask" is not present.
+		if maskLen-readMask > 0 {
+			l, err = discard(r, maskLen-readMask)
+			read += l
+			if err != nil {
+				return read, err
+			}
+		}
+		return read, nil
+	}
+	if l, err = io.ReadFull(r, b[:16]); err != nil {
+		return read, err
+	}
+	read += l
+	readMask += l
+	layer.Mask.Rect = image.Rect(
+		int(int32(readUint32(b, 4))), int(int32(readUint32(b, 0))),
+		int(int32(readUint32(b, 12))), int(int32(readUint32(b, 8))),
+	)
+
+	if maskLen-readMask < 1 {
+		// "Default color" is not present.
+		return read, nil
+	}
+	if l, err = io.ReadFull(r, b[:1]); err != nil {
+		return read, err
+	}
+	read += l
+	readMask += l
+	layer.Mask.DefaultColor = int(b[0])
+
+	// bit 0 = position relative to layer
+	// bit 1 = layer mask disabled
+	// bit 2 = invert layer mask when blending (Obsolete)
+	// bit 3 = indicates that the user mask actually came from rendering other data
+	// bit 4 = indicates that the user and/or vector masks have parameters applied to them
+	if maskLen-readMask < 1 {
+		// "Flags" is not present.
+		return read, nil
+	}
+	if l, err = io.ReadFull(r, b[:1]); err != nil {
+		return read, err
+	}
+	read += l
+	readMask += l
+	layer.Mask.Flags = int(b[0])
+
+	layer.Mask.UserMaskDensity = 255
+	layer.Mask.VectorMaskDensity = 255
+
+	// Mask Parameters. Only present if bit 4 of Flags set above.
+	if layer.Mask.Flags&16 != 0 {
+		if maskLen-readMask < 1 {
+			// "Mask Parameters" is not present.
+			return read, nil
+		}
+		if l, err = io.ReadFull(r, b[:1]); err != nil {
 			return read, err
 		}
 		read += l
 		readMask += l
-		layer.Mask.Rect = image.Rect(
-			int(int32(readUint32(b, 4))), int(int32(readUint32(b, 0))),
-			int(int32(readUint32(b, 12))), int(int32(readUint32(b, 8))),
-		)
 
-		if l, err = io.ReadFull(r, b[:2]); err != nil {
-			return read, err
-		}
-		read += l
-		readMask += l
-		layer.Mask.DefaultColor = int(b[0])
-
-		// bit 0 = position relative to layer
-		// bit 1 = layer mask disabled
-		// bit 2 = invert layer mask when blending (Obsolete)
-		// bit 3 = indicates that the user mask actually came from rendering other data
-		// bit 4 = indicates that the user and/or vector masks have parameters applied to them
-		layer.Mask.Flags = int(b[1])
-
-		layer.Mask.UserMaskDensity = 255
-		layer.Mask.VectorMaskDensity = 255
-
-		// Mask Parameters. Only present if bit 4 of Flags set above.
-		if layer.Mask.Flags&16 != 0 {
+		// Mask Parameters bit flags present as follows:
+		// bit 0 = user mask density, 1 byte
+		// bit 1 = user mask feather, 8 byte, double
+		// bit 2 = vector mask density, 1 byte
+		// bit 3 = vector mask feather, 8 bytes, double
+		maskParam := int(b[0])
+		if maskParam&1 != 0 {
+			if maskLen-readMask < 1 {
+				// "user mask density" is not present.
+				return read, nil
+			}
 			if l, err = io.ReadFull(r, b[:1]); err != nil {
 				return read, err
 			}
 			read += l
 			readMask += l
-
-			// Mask Parameters bit flags present as follows:
-			// bit 0 = user mask density, 1 byte
-			// bit 1 = user mask feather, 8 byte, double
-			// bit 2 = vector mask density, 1 byte
-			// bit 3 = vector mask feather, 8 bytes, double
-			maskParam := int(b[0])
-			if maskParam&1 != 0 {
-				if l, err = io.ReadFull(r, b[:1]); err != nil {
-					return read, err
-				}
-				read += l
-				readMask += l
-				layer.Mask.UserMaskDensity = int(b[0])
-			}
-			if maskParam&2 != 0 {
-				if l, err = io.ReadFull(r, b[:8]); err != nil {
-					return read, err
-				}
-				read += l
-				readMask += l
-				layer.Mask.UserMaskFeather = readFloat64(b, 0)
-			}
-			if maskParam&4 != 0 {
-				if l, err = io.ReadFull(r, b[:1]); err != nil {
-					return read, err
-				}
-				read += l
-				readMask += l
-				layer.Mask.VectorMaskDensity = int(b[0])
-			}
-			if maskParam&8 != 0 {
-				if l, err = io.ReadFull(r, b[:8]); err != nil {
-					return read, err
-				}
-				read += l
-				readMask += l
-				layer.Mask.VectorMaskFeather = readFloat64(b, 0)
-			}
+			layer.Mask.UserMaskDensity = int(b[0])
 		}
-
-		if maskLen == 20 {
-			// Padding. Only present if size = 20.
-			if l, err = io.ReadFull(r, b[:2]); err != nil {
+		if maskParam&2 != 0 {
+			if maskLen-readMask < 8 {
+				// "user mask feather" is not present.
+				if maskLen-readMask > 0 {
+					l, err = discard(r, maskLen-readMask)
+					read += l
+					if err != nil {
+						return read, err
+					}
+				}
+				return read, nil
+			}
+			if l, err = io.ReadFull(r, b[:8]); err != nil {
 				return read, err
 			}
 			read += l
 			readMask += l
-		} else {
-			if l, err = io.ReadFull(r, b[:2]); err != nil {
-				return read, err
-			}
-			read += l
-			readMask += l
-			layer.Mask.RealFlags = int(b[0])
-			layer.Mask.RealBackgroundColor = int(b[1])
-
-			if l, err = io.ReadFull(r, b); err != nil {
-				return read, err
-			}
-			read += l
-			readMask += l
-			layer.Mask.RealRect = image.Rect(
-				int(readUint32(b, 4)), int(readUint32(b, 0)),
-				int(readUint32(b, 12)), int(readUint32(b, 8)),
-			)
+			layer.Mask.UserMaskFeather = readFloat64(b, 0)
 		}
-		if maskLen != readMask {
-			return read, errors.New("psd: layer mask / adjustment layer data read size mismatched. expected " + itoa(maskLen) + " actual " + itoa(readMask))
+		if maskParam&4 != 0 {
+			if maskLen-readMask < 1 {
+				// "vector mask density" is not present.
+				return read, nil
+			}
+			if l, err = io.ReadFull(r, b[:1]); err != nil {
+				return read, err
+			}
+			read += l
+			readMask += l
+			layer.Mask.VectorMaskDensity = int(b[0])
+		}
+		if maskParam&8 != 0 {
+			if maskLen-readMask < 8 {
+				// "vector mask feather" is not present.
+				if maskLen-readMask > 0 {
+					l, err = discard(r, maskLen-readMask)
+					read += l
+					if err != nil {
+						return read, err
+					}
+				}
+				return read, nil
+			}
+			if l, err = io.ReadFull(r, b[:8]); err != nil {
+				return read, err
+			}
+			read += l
+			readMask += l
+			layer.Mask.VectorMaskFeather = readFloat64(b, 0)
 		}
 	}
+
+	if maskLen == 20 {
+		// Padding. Only present if size = 20.
+		if l, err = io.ReadFull(r, b[:2]); err != nil {
+			return read, err
+		}
+		read += l
+		readMask += l
+		return read, nil
+	}
+
+	if maskLen-readMask < 1 {
+		// "Real Flags" is not present.
+		return read, nil
+	}
+	if l, err = io.ReadFull(r, b[:1]); err != nil {
+		return read, err
+	}
+	read += l
+	readMask += l
+	layer.Mask.RealFlags = int(b[0])
+
+	if maskLen-readMask < 1 {
+		// "Real user mask background" is not present.
+		return read, nil
+	}
+	if l, err = io.ReadFull(r, b[:1]); err != nil {
+		return read, err
+	}
+	read += l
+	readMask += l
+	layer.Mask.RealBackgroundColor = int(b[0])
+
+	if maskLen-readMask < 16 {
+		// "Rectangle enclosing layer mask" is not present.
+		if maskLen-readMask > 0 {
+			l, err = discard(r, maskLen-readMask)
+			read += l
+			if err != nil {
+				return read, err
+			}
+		}
+		return read, nil
+	}
+	if l, err = io.ReadFull(r, b[:16]); err != nil {
+		return read, err
+	}
+	read += l
+	readMask += l
+	layer.Mask.RealRect = image.Rect(
+		int(readUint32(b, 4)), int(readUint32(b, 0)),
+		int(readUint32(b, 12)), int(readUint32(b, 8)),
+	)
 
 	return read, nil
 }
