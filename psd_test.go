@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"image/png"
+	"io"
 	"io/ioutil"
 	"os"
 	"runtime"
@@ -454,4 +455,13 @@ func TestDecodeFail(t *testing.T) {
 			t.Error("img is not nil")
 		}
 	}
+}
+
+func TestSketchBookPSDFail(t *testing.T) {
+	// https://github.com/oov/psd/issues/3
+	Debug = &testLogger{t}
+	testOne(testImage{
+		Name: "PSD(Autodesk SketchBook)",
+		PSD:  "sketchbook.psd",
+	}, t)
 }
