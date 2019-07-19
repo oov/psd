@@ -83,6 +83,10 @@ func decodePackBitsPerLine(dest []byte, buf []byte, lens []int) {
 				i += l + 1
 				continue
 			}
+			if buf[i] == 0x80 {
+				i++
+				continue
+			}
 			l = int(-buf[i]) + 1
 			for j, c := 0, buf[i+1]; j < l; j++ {
 				dest[j] = c
