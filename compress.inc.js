@@ -27,7 +27,7 @@ $global['$github.com/oov/psd$'] = {
                     continue;
                 }
                 if (buf[ofs] == 0x80) {
-                    j++;
+                    ofs++;
                     continue;
                 }
                 for (var k = 0, l = 256 - buf[ofs++] + 1, c = buf[ofs++]; k < l; ++k) {
