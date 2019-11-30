@@ -484,7 +484,14 @@ func readLayerImage(lcis []layerChannelInfo, r io.Reader, cfg *Config, o *Decode
 				readCh += l
 				read += l
 			}
-
+			// It seems we can discard in this case
+			if readCh < j.DataLen {
+				if l, err = discard(r, j.DataLen-readCh); err != nil {
+					return read, err
+				}
+				readCh += l
+				read += l
+			}
 			if readCh != j.DataLen {
 				return read, errors.New("psd: layer: " + itoa(i) + " channel: " + itoa(j.ChIndex) + " read size mismatched. expected " + itoa(j.DataLen) + " actual " + itoa(readCh))
 			}

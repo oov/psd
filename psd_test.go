@@ -364,7 +364,7 @@ func (l *testLogger) Println(v ...interface{}) {
 func TestOneShot(t *testing.T) {
 	Debug = &testLogger{t}
 	tImg := testImages[20]
-	tImg.PSD = "test.psb"
+	tImg.PSD = "test1.psd"
 	testOne(tImg, t)
 }
 
@@ -463,5 +463,13 @@ func TestSketchBookPSDFail(t *testing.T) {
 	testOne(testImage{
 		Name: "PSD(Autodesk SketchBook)",
 		PSD:  "sketchbook.psd",
+	}, t)
+}
+
+func TestPhotopeaPSDFail(t *testing.T) {
+	Debug = &testLogger{t}
+	testOne(testImage{
+		Name: "PSD(Photopea)",
+		PSD:  "photopea.psd",
 	}, t)
 }
