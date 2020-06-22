@@ -30,6 +30,8 @@ func (b *builder) buildLayer(l *Layer, psdl *psd.Layer) {
 	} else {
 		l.Name = psdl.UnicodeName
 	}
+	// Some software may contain terminating nulls that are not necessary for Go string.
+	l.Name = strings.TrimSuffix(l.Name, "\x00")
 
 	if psdl.Folder() {
 		l.BlendMode = psdl.SectionDividerSetting.BlendMode
