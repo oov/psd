@@ -473,3 +473,11 @@ func TestPhotopeaPSDFail(t *testing.T) {
 		PSD:  "photopea.psd",
 	}, t)
 }
+
+func TestIbispaintPSDFail(t *testing.T) {
+	Debug = &testLogger{t}
+	testOne(testImage{
+		Name: "PSD(ibispaint)",
+		PSD:  "ibispaint.psd",
+	}, t)
+}

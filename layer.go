@@ -451,12 +451,13 @@ func readLayerImage(lcis []layerChannelInfo, r io.Reader, cfg *Config, o *Decode
 		pickerChs := make([][]byte, cfg.ColorMode.Channels(), 8)
 		for _, j := range lci.ChannelData {
 			var readCh int
-			if l, err = io.ReadFull(r, b[:2]); err != nil {
-				return read, err
+			if j.DataLen >= 2 {
+				if l, err = io.ReadFull(r, b[:2]); err != nil {
+					return read, err
+				}
+				readCh += l
+				read += l
 			}
-			readCh += l
-			read += l
-
 			cmpMethod := CompressionMethod(readUint16(b, 0))
 			if Debug != nil {
 				Debug.Printf("  layer #%d %q channel #%d image data", i, lci.Layer.Name, j.ChIndex)
