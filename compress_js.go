@@ -1,3 +1,4 @@
+// +build !wasm
 // +build js
 
 package psd
