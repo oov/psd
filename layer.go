@@ -747,11 +747,13 @@ func readLayerMaskAndAdjustmentLayerData(r io.Reader, layer *Layer, cfg *Config,
 
 	if maskLen == 20 {
 		// Padding. Only present if size = 20.
-		if l, err = io.ReadFull(r, b[:2]); err != nil {
-			return read, err
+		if read < maskLen && maskLen-read <= 2 {
+			if l, err = io.ReadFull(r, b[:maskLen-read]); err != nil {
+				return read, err
+			}
+			read += l
+			readMask += l
 		}
-		read += l
-		readMask += l
 		return read, nil
 	}
 
