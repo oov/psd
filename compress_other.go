@@ -11,7 +11,7 @@ import (
 
 func recoverFromPanic(errorChan chan<- error) {
 	if r := recover(); r != nil {
-		errorChan <-fmt.Errorf("psd: decodePackBitsPerLine failed with %v", r)
+		errorChan <- fmt.Errorf("psd: decodePackBitsPerLine failed with %v", r)
 	}
 }
 
@@ -65,6 +65,7 @@ func decodePackBits(dest []byte, r io.Reader, width int, lines int, large bool) 
 	step := lines / n
 	ofs = 0
 	errorChan := make(chan error)
+	defer close(errorChan)
 	wgDoneChan := make(chan bool)
 	go func() {
 		wg.Wait()
@@ -84,12 +85,18 @@ func decodePackBits(dest []byte, r io.Reader, width int, lines int, large bool) 
 		decodePackBitsPerLine(dest[ofs*width:], buf[offsets[ofs]:], lens[ofs:])
 	}()
 
-	select {
-	case <-wgDoneChan:
-		return
-	case err := <-errorChan:
-		close(errorChan)
-		return 0, err
+	for {
+		select {
+		case <-wgDoneChan: // wait until done
+			if err != nil {
+				return 0, err
+			}
+			return read, nil
+		case e := <-errorChan:
+			if err == nil {
+				err = e
+			}
+		}
 	}
 }
 
