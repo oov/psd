@@ -481,3 +481,35 @@ func TestIbispaintPSDFail(t *testing.T) {
 		PSD:  "ibispaint.psd",
 	}, t)
 }
+
+func TestPackBits(t *testing.T) {
+	dest := make([]byte, 4)
+	for _, d := range []struct{
+		Caption string
+		Data []byte
+		Expected error
+	}{
+		{"1 ok", []byte{0x00, 0x00}, nil},
+		{"1 truncated", []byte{0x00}, errBrokenPackBits},
+		{"2 ok", []byte{0x01, 0x00, 0x00}, nil},
+		{"2 truncated", []byte{0x01, 0x00}, errBrokenPackBits},
+		{"2 dest too small", []byte{0x04, 0x00, 0x00, 0x00, 0x00, 0x00}, errBrokenPackBits},
+		{"3 ok", []byte{0xff, 0x00}, nil},
+		{"3 truncated", []byte{0xff}, errBrokenPackBits},
+		{"3 dest too small", []byte{0xfc, 0x00}, errBrokenPackBits},
+		{"4 ok", []byte{0xff, 0x00, 0x00, 0x00}, nil},
+		{"4 truncated", []byte{0xff, 0x00, 0x00}, errBrokenPackBits},
+		{"5 ok", []byte{0xff, 0x00, 0x01, 0x00, 0x00}, nil},
+		{"5 truncated", []byte{0xff, 0x00, 0x01, 0x00}, errBrokenPackBits},
+		{"5 dest too small", []byte{0xff, 0x00, 0x02, 0x00, 0x00, 0x00}, errBrokenPackBits},
+		{"6 ok", []byte{0xff, 0x00, 0xff, 0x00}, nil},
+		{"6 truncated", []byte{0xff, 0x00, 0xff}, errBrokenPackBits},
+		{"6 dest too small", []byte{0xff, 0x00, 0xfe, 0x00}, errBrokenPackBits},
+	} {
+		err := decodePackBitsPerLine(dest, d.Data, []int{len(d.Data)})
+		if err != d.Expected {
+			t.Error(d.Caption, "want", d.Expected, "got", err)
+			return
+		}
+	}
+}
