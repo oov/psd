@@ -482,13 +482,15 @@ func TestIbispaintPSDFail(t *testing.T) {
 	}, t)
 }
 
+type TestData struct {
+	Caption  string
+	Data     []byte
+	Expected error
+}
+
 func TestPackBits(t *testing.T) {
 	dest := make([]byte, 4)
-	for _, d := range []struct{
-		Caption string
-		Data []byte
-		Expected error
-	}{
+	for _, d := range []TestData{
 		{"1 ok", []byte{0x00, 0x00}, nil},
 		{"1 truncated", []byte{0x00}, errBrokenPackBits},
 		{"2 ok", []byte{0x01, 0x00, 0x00}, nil},
