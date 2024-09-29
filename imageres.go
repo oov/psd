@@ -2,6 +2,7 @@ package psd
 
 import (
 	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -9,6 +10,7 @@ import (
 
 // ImageResource represents the image resource that is used in psd file.
 type ImageResource struct {
+	ID   int
 	Name string
 	Data []byte
 }
@@ -60,6 +62,7 @@ func readImageResource(r io.Reader) (resMap map[int]ImageResource, read int, err
 		// Image resource IDs contains a list of resource IDs used by Photoshop.
 		// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_38034
 		id = int(readUint16(b, 4))
+		res.ID = id
 
 		// Name: Pascal string, padded to make the size even
 		// (a null name consists of two bytes of 0)
@@ -119,13 +122,13 @@ func hasAlphaID0(Res map[int]ImageResource) bool {
 }
 
 type AlphaNames struct {
-	Names []string
+	Names []string // pascal format strings
 }
 
-// pascal even byte length encoded
+const idAlphaNames = 1006
 
-func NewAlphaNames(psd *PSD) (*AlphaNames, error) {
-	res, ok := psd.Config.Res[1006]
+func (c *Config) ParseAlphaNames() (*AlphaNames, error) {
+	res, ok := c.Res[idAlphaNames]
 	if !ok {
 		return nil, fmt.Errorf("no alpha names defined")
 	}
@@ -142,17 +145,73 @@ func NewAlphaNames(psd *PSD) (*AlphaNames, error) {
 	}
 	return &AlphaNames{names}, nil
 }
-func (an *AlphaNames) AddToResources(psd *PSD) error {
+func (an *AlphaNames) Encode() (*ImageResource, error) {
 	data := []byte{}
 	for _, n := range an.Names {
 		b, err := stringToPascalBytes(n)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		data = append(data, b...)
 	}
-	psd.Config.Res[1006] = ImageResource{
+	return &ImageResource{
+		ID:   idAlphaNames,
 		Data: data,
+	}, nil
+}
+
+type DisplayInfo struct {
+	Channels []DisplayInfoChannel
+}
+type DisplayInfoChannel struct {
+	ColorSpace uint16 // TODO: define enum for this
+	Color      [4]uint16
+	Opacity    uint16
+	Mode       DisplayInfoChannelMode
+}
+
+type DisplayInfoChannelMode uint8
+
+const (
+	DisplayChannelModeAlpha DisplayInfoChannelMode = iota
+	DisplayChannelModeAlphaInverted
+	DisplayChannelModeSpot
+)
+
+const idDisplayInfo = 1077
+
+func (c *Config) ParseDisplayInfo() (*DisplayInfo, error) {
+	res, ok := c.Res[idDisplayInfo]
+	if !ok {
+		return nil, fmt.Errorf("no alpha names defined")
 	}
-	return nil
+	read := 4 // start reading after version
+	channels := make([]DisplayInfoChannel, 0)
+	for read < len(res.Data) {
+		r := bytes.NewReader(res.Data[read : read+13])
+		c := &DisplayInfoChannel{}
+		if err := binary.Read(r, binary.BigEndian, c); err != nil {
+			return nil, err
+		}
+		read += 13
+		channels = append(channels, *c)
+	}
+	return &DisplayInfo{channels}, nil
+}
+func (di *DisplayInfo) Encode() (*ImageResource, error) {
+	data := bytes.NewBuffer([]byte{})
+	// version
+	if err := binaryWrite(data, uint32(1)); err != nil {
+		return nil, err
+	}
+	// channels
+	for _, c := range di.Channels {
+		if err := binaryWrite(data, c); err != nil {
+			return nil, err
+		}
+	}
+	return &ImageResource{
+		ID:   idDisplayInfo,
+		Data: data.Bytes(),
+	}, nil
 }
