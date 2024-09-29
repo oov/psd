@@ -1,6 +1,7 @@
 package psd
 
 import (
+	"bytes"
 	"io"
 	"io/ioutil"
 	"math"
@@ -155,4 +156,25 @@ func reportReaderPosition(format string, r io.Reader) error {
 	}
 	Debug.Printf(format, pos)
 	return nil
+}
+
+func stringToPascalBytes(str string) ([]byte, error) {
+	n := len(str)
+	if n == 0 {
+		return []byte{0}, nil
+	}
+
+	buf := &bytes.Buffer{}
+	if _, err := buf.Write([]byte{byte(n)}); err != nil {
+		return nil, err
+	}
+	n, err := buf.WriteString(str)
+	if err != nil {
+		return nil, err
+	}
+	remainder := n % 2
+	if remainder != 0 {
+		buf.Write([]byte{0})
+	}
+	return buf.Bytes(), nil
 }

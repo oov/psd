@@ -1,7 +1,9 @@
 package psd
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"io"
 )
 
@@ -114,4 +116,43 @@ func hasAlphaID0(Res map[int]ImageResource) bool {
 		}
 	}
 	return false
+}
+
+type AlphaNames struct {
+	Names []string
+}
+
+// pascal even byte length encoded
+
+func NewAlphaNames(psd *PSD) (*AlphaNames, error) {
+	res, ok := psd.Config.Res[1006]
+	if !ok {
+		return nil, fmt.Errorf("no alpha names defined")
+	}
+	r := bytes.NewReader(res.Data)
+	names := make([]string, 0)
+	read := 0
+	for read < len(res.Data) {
+		s, n, err := readPascalString(r)
+		if err != nil {
+			return nil, err
+		}
+		names = append(names, s)
+		read += n
+	}
+	return &AlphaNames{names}, nil
+}
+func (an *AlphaNames) AddToResources(psd *PSD) error {
+	data := []byte{}
+	for _, n := range an.Names {
+		b, err := stringToPascalBytes(n)
+		if err != nil {
+			return err
+		}
+		data = append(data, b...)
+	}
+	psd.Config.Res[1006] = ImageResource{
+		Data: data,
+	}
+	return nil
 }

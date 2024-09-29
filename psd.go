@@ -16,7 +16,8 @@ type logger interface {
 // Debug is useful for debugging.
 //
 // You can use by performing the following steps.
-// 	psd.Debug = log.New(os.Stdout, "psd: ", log.Lshortfile)
+//
+//	psd.Debug = log.New(os.Stdout, "psd: ", log.Lshortfile)
 var Debug logger
 
 const (
@@ -68,13 +69,14 @@ const (
 
 // Config represents Photoshop image file configuration.
 type Config struct {
-	Version       int
-	Rect          image.Rectangle
-	Channels      int
-	Depth         int // 1 or 8 or 16 or 32
-	ColorMode     ColorMode
-	ColorModeData []byte
-	Res           map[int]ImageResource
+	Version           int
+	Rect              image.Rectangle
+	Channels          int
+	Depth             int // 1 or 8 or 16 or 32
+	ColorMode         ColorMode
+	ColorModeData     []byte
+	Res               map[int]ImageResource
+	CompressionMethod CompressionMethod
 }
 
 // PSB returns whether image is large document format.
@@ -266,6 +268,7 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 		}
 		read += l
 		cmpMethod := CompressionMethod(readUint16(b, 0))
+		psd.Config.CompressionMethod = cmpMethod
 		l, err = cmpMethod.Decode(
 			psd.Data,
 			r,
