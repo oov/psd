@@ -1,5 +1,7 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/depp/packbits v1.1.0 h1:8X9+Jejw2+MhDTiy/EEg4N59Og96+zpbOLdwoooXSQo=
+github.com/depp/packbits v1.1.0/go.mod h1:wDV3NXiMB4a+KztSJ93UMH9cBKj5cEGooAbgRXTpQ78=
 github.com/gopherjs/gopherjs v1.17.2 h1:fQnZVsXk8uxXIStYb0N4bGk7jeyTalG/wsZjQ25dO0g=
 github.com/gopherjs/gopherjs v1.17.2/go.mod h1:pRRIvn/QzFLrKfvEz3qUuEhtE/zLCWfreZ6J5gM2i+k=
 github.com/oov/downscale v0.0.0-20170819221759-1bbcb5d498e2 h1:DOkvJh3Bh7i1p5QitV4aJEyxBIivy1GhPk7S19bWn9c=

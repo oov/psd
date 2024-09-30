@@ -4,28 +4,22 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"image"
 	"io"
-)
 
-func (psd *PSD) AddChannelData(imgs []*image.Image) error {
-	// TODO: with compression
-	return nil
-}
+	"github.com/depp/packbits"
+)
 
 func Encode(psd *PSD, w io.Writer) error {
 	if err := psd.Config.encode(w); err != nil {
 		return err
 	}
+	// FIXME write layer header
 	if len(psd.Layer) > 0 {
 		return fmt.Errorf("encoding layers not yet supported")
 	}
 
 	// image data
-	if err := psd.Config.CompressionMethod.encode(psd.Data, &psd.Config, w); err != nil {
-		return err
-	}
-	return nil
+	return psd.Config.CompressionMethod.encode(psd.Data, &psd.Config, w)
 }
 
 func (c *Config) encode(w io.Writer) error {
@@ -80,17 +74,36 @@ func (i *ImageResource) encode(id int, w io.Writer) error {
 }
 
 func (c CompressionMethod) encode(imgDataRaw []byte, cfg *Config, w io.Writer) error {
+	// compression method
 	if err := binaryWrite(w, uint16(c)); err != nil {
 		return err
 	}
+	// data
 	switch c {
 	case CompressionMethodRaw:
 		if _, err := w.Write(imgDataRaw); err != nil {
 			return err
 		}
+	case CompressionMethodRLE:
+		rowSize := cfg.Rect.Dx() * cfg.Depth / 8
+		buf := bytes.NewBuffer([]byte{})
+		read := 0
+		for i := 0; i < cfg.Rect.Dy(); i++ {
+			n, err := buf.Write(packbits.Pack(imgDataRaw[read : read+rowSize]))
+			if err != nil {
+				return err
+			}
+			read += rowSize
+			if err := binaryWrite(w, uint16(n)); err != nil {
+				return err
+			}
+		}
+
+		if _, err := w.Write(buf.Bytes()); err != nil {
+			return err
+		}
 	default:
-		// TODO: support RLE compression
-		return fmt.Errorf("econding only supported for the raw compression method")
+		return fmt.Errorf("%d image data econding not supported", c)
 	}
 	return nil
 }

@@ -2,6 +2,7 @@ package psd
 
 import (
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"io"
@@ -313,4 +314,37 @@ func decodeConfig(r io.Reader) (image.Config, error) {
 func init() {
 	image.RegisterFormat("psd", headerSignature+"\x00\x01", decode, decodeConfig)
 	image.RegisterFormat("psb", headerSignature+"\x00\x02", decode, decodeConfig)
+}
+
+func (psd *PSD) AddImageChannelData(imgs []*image.Gray) error {
+	// convert image.Image -> psd.Data (uncompressed merged image data)
+	// raw data has dimensions: (channels, width, height)
+	if len(imgs) != psd.Config.Channels {
+		return fmt.Errorf("got n=%d images but expecting n=m=%d channels", len(imgs), psd.Config.Channels)
+	}
+	plane := (psd.Config.Rect.Dx()*psd.Config.Depth + 7) >> 3 * psd.Config.Rect.Dy()
+	psd.Data = make([]byte, plane*psd.Config.Channels)
+	chs := make([][]byte, psd.Config.Channels)
+	psd.Channel = make(map[int]Channel)
+	for i := 0; i < psd.Config.Channels; i++ {
+		var pix []uint8
+		if imgs[i] == nil {
+			pix = make([]uint8, psd.Config.Rect.Dx()*psd.Config.Rect.Dy())
+		} else {
+			pix = imgs[i].Pix
+		}
+		chs[i] = pix
+		pk := findGrayPicker(psd.Config.Depth)
+		pk.setSource(psd.Config.Rect, chs[i])
+		psd.Channel[i] = Channel{
+			Data:   chs[i],
+			Picker: pk,
+		}
+		for j, d := range chs[i] {
+			psd.Data[plane*i+j] = d
+		}
+
+	}
+
+	return nil
 }
