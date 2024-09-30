@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/color"
 	"io"
+	"log"
 )
 
 // logger is subset of log.Logger.
@@ -280,6 +281,7 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 			psd.Config.PSB(),
 		)
 		if err != nil {
+			log.Printf("decode failed with n=%d. len(data)=%d. read=%d", l, len(psd.Data), read)
 			return nil, read, err
 		}
 		read += l

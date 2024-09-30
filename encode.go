@@ -13,13 +13,23 @@ func Encode(psd *PSD, w io.Writer) error {
 	if err := psd.Config.encode(w); err != nil {
 		return err
 	}
-	// FIXME write layer header
-	if len(psd.Layer) > 0 {
-		return fmt.Errorf("encoding layers not yet supported")
+	if err := psd.encodeLayers(w); err != nil {
+		return err
 	}
 
 	// image data
 	return psd.Config.CompressionMethod.encode(psd.Data, &psd.Config, w)
+}
+
+func (psd *PSD) encodeLayers(w io.Writer) error {
+	// empty data block for layers
+	if err := writeDataBlock([]byte{}, w); err != nil {
+		return err
+	}
+	if len(psd.Layer) > 0 {
+		return fmt.Errorf("encoding layers not yet supported")
+	}
+	return nil
 }
 
 func (c *Config) encode(w io.Writer) error {

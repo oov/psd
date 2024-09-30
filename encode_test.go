@@ -3,6 +3,7 @@ package psd_test
 import (
 	"image"
 	"image/draw"
+	"log"
 	"os"
 	"testing"
 
@@ -10,9 +11,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEncode(t *testing.T) {
-	doc, an, di := buildNew(t)
+func TestEncodeDecode(t *testing.T) {
+	doc, _, _ := buildNew(t, psd.CompressionMethodRaw)
+
+	// re-read and compare image data again
+	docReread := writeRead(t, doc)
+	assert.Equal(t, doc.Config.Channels, docReread.Config.Channels)
+}
+
+func TestDecodeImageResources(t *testing.T) {
 	docOrig, alphaNames, displayInfo := getOrig(t)
+	doc, an, di := buildNew(t, psd.CompressionMethodRLE)
 
 	// config matches original
 	assert.Equal(t, docOrig.Config.Channels, doc.Config.Channels)
@@ -22,7 +31,11 @@ func TestEncode(t *testing.T) {
 	assert.Equal(t, docOrig.Config.CompressionMethod, doc.Config.CompressionMethod)
 	assert.EqualValues(t, an, alphaNames)
 	assert.EqualValues(t, di, displayInfo)
+}
 
+func TestImageData(t *testing.T) {
+	doc, _, _ := buildNew(t, psd.CompressionMethodRLE)
+	docOrig, _, _ := getOrig(t)
 	// read images
 	imgs := make([]*image.Gray, 6)
 	for c := range imgs {
@@ -40,19 +53,7 @@ func TestEncode(t *testing.T) {
 	assert.EqualValues(t, docOrig.Channel[4].Data, doc.Channel[4].Data)
 	assert.EqualValues(t, docOrig.Channel[5].Data, doc.Channel[5].Data)
 
-	// write
-	fw, err := os.Create("testdata/cmyk-adam-encode.psd")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer fw.Close()
-	if err := psd.Encode(doc, fw); err != nil {
-		t.Fatal(err)
-	}
-
-	// re-read and compare image data again
-	docReread := readNew(t)
-	assert.EqualValues(t, docOrig.Data, docReread.Data)
+	writeRead(t, doc)
 }
 
 func getOrig(t *testing.T) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
@@ -75,7 +76,7 @@ func getOrig(t *testing.T) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
 	return docOrig, alphaNames, displayInfo
 }
 
-func buildNew(t *testing.T) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
+func buildNew(t *testing.T, cmp psd.CompressionMethod) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
 	doc := &psd.PSD{
 		Config: psd.Config{
 			Version:           1,
@@ -83,7 +84,7 @@ func buildNew(t *testing.T) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
 			Channels:          6, // CMYK plus two spot channels
 			Depth:             8,
 			ColorMode:         psd.ColorModeCMYK,
-			CompressionMethod: psd.CompressionMethodRLE,
+			CompressionMethod: cmp,
 		},
 	}
 	an := &psd.AlphaNames{[]string{"coral", "light teal"}}
@@ -118,19 +119,46 @@ func buildNew(t *testing.T) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
 	imgResources[irDisplayInfo.ID] = *irDisplayInfo
 	doc.Config.Res = imgResources
 
+	// dummy image data
+	imgs := make([]*image.Gray, 6)
+	for i := range imgs {
+		imgs[i] = image.NewGray(doc.Config.Rect)
+	}
+	if err := doc.AddImageChannelData(imgs); err != nil {
+		t.Fatal(err)
+	}
+
 	return doc, an, di
 }
 
-func readNew(t *testing.T) *psd.PSD {
-	fr, err := os.Open("testdata/cmyk-adam-encode.psd")
+func writeRead(t *testing.T, doc *psd.PSD) *psd.PSD {
+	fnm := "testdata/cmyk-adam-encode.psd"
+	// write
+	fw, err := os.Create(fnm)
 	if err != nil {
 		t.Fatal(err)
 	}
-	doc, _, err := psd.Decode(fr, nil)
+	defer fw.Close()
+	if err := psd.Encode(doc, fw); err != nil {
+		t.Fatal(err)
+	}
+
+	fr, err := os.Open(fnm)
 	if err != nil {
 		t.Fatal(err)
 	}
-	return doc
+
+	stat, err := fr.Stat()
+	if err != nil {
+		t.Fatal(err)
+	}
+	log.Printf("The file is %d bytes long", stat.Size())
+
+	out, _, err := psd.Decode(fr, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return out
 }
 
 func imgToGray(img image.Image) *image.Gray {
