@@ -41,20 +41,8 @@ func TestImageData(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// write imges to debug
-	for c, img := range imgs {
-		if c < 3 {
-			continue
-		}
-		w, err := os.Create(fmt.Sprintf("output/c%d.png", c))
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer w.Close()
-		if err := png.Encode(w, img); err != nil {
-			t.Fatal(err)
-		}
-	}
+	writeImage(t, imgs, "orig") // write imges to compare
+
 	// add images to new doc
 	doc, _, _ := buildNew(t, psd.CompressionMethodRLE)
 	if err := doc.AddImageChannelData(imgs); err != nil {
@@ -83,6 +71,14 @@ func TestImageData(t *testing.T) {
 	if err := psd.Encode(doc, fw); err != nil {
 		t.Fatal(err)
 	}
+
+	// read again and write those images to compare
+	docNew := writeRead(t, doc)
+	imgsEnc, err := docNew.GetChannelImages()
+	if err != nil {
+		t.Fatal(err)
+	}
+	writeImage(t, imgsEnc, "encoded")
 }
 
 func getOrig(t *testing.T) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
@@ -173,4 +169,20 @@ func writeRead(t *testing.T, doc *psd.PSD) *psd.PSD {
 		t.Fatal(err)
 	}
 	return out
+}
+
+func writeImage(t *testing.T, imgs []*image.Gray, prefix string) {
+	for c, img := range imgs {
+		if c < 3 {
+			continue
+		}
+		w, err := os.Create(fmt.Sprintf("output/%s-c%d.png", prefix, c))
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer w.Close()
+		if err := png.Encode(w, img); err != nil {
+			t.Fatal(err)
+		}
+	}
 }

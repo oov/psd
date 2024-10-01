@@ -98,7 +98,7 @@ func (c CompressionMethod) encode(imgDataRaw []byte, cfg *Config, w io.Writer) e
 		rowSize := cfg.Rect.Dx() * cfg.Depth / 8
 		buf := bytes.NewBuffer([]byte{})
 		read := 0
-		for i := 0; i < cfg.Rect.Dy(); i++ {
+		for i := 0; i < cfg.Rect.Dy()*cfg.Channels; i++ {
 			n, err := buf.Write(packbits.Pack(imgDataRaw[read : read+rowSize]))
 			if err != nil {
 				return err
