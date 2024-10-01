@@ -60,7 +60,7 @@ func TestImageData(t *testing.T) {
 	assert.EqualValues(t, docOrig.Channel[5].Data, doc.Channel[5].Data)
 
 	// write
-	fw, err := os.Create("testdata/cmyk-spot/encoded.psd")
+	fw, err := os.Create("output/cmyk-spot.psd")
 	if err != nil {
 		t.Fatal(err)
 	}
