@@ -319,11 +319,25 @@ func init() {
 	image.RegisterFormat("psb", headerSignature+"\x00\x02", decode, decodeConfig)
 }
 
+func (psd *PSD) GetChannelImages() ([]*image.Gray, error) {
+	if psd.Config.Depth != 8 {
+		return nil, fmt.Errorf("depth!=8 not supported")
+	}
+	imgs := make([]*image.Gray, psd.Config.Channels)
+	for c := range imgs {
+		imgs[c] = imgToGray(psd.Channel[c].Picker)
+	}
+	return imgs, nil
+}
+
 func (psd *PSD) AddImageChannelData(imgs []*image.Gray) error {
 	// convert image.Image -> psd.Data (uncompressed merged image data)
 	// raw data has dimensions: (channels, width, height)
 	if len(imgs) != psd.Config.Channels {
 		return fmt.Errorf("got n=%d images but expecting n=m=%d channels", len(imgs), psd.Config.Channels)
+	}
+	if psd.Config.Depth != 8 {
+		return fmt.Errorf("depth!=8 not supported")
 	}
 	plane := (psd.Config.Rect.Dx()*psd.Config.Depth + 7) >> 3 * psd.Config.Rect.Dy()
 	psd.Data = make([]byte, plane*psd.Config.Channels)

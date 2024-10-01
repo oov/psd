@@ -2,8 +2,9 @@ package psd_test
 
 import (
 	"bytes"
+	"fmt"
 	"image"
-	"image/draw"
+	"image/png"
 	"log"
 	"os"
 	"testing"
@@ -35,13 +36,27 @@ func TestDecodeImageResources(t *testing.T) {
 
 func TestImageData(t *testing.T) {
 	docOrig, _, _ := getOrig(t)
-	doc, _, _ := buildNew(t, psd.CompressionMethodRLE)
 	// read images
-	imgs := make([]*image.Gray, 6)
-	for c := range imgs {
-		imgs[c] = imgToGray(docOrig.Channel[c].Picker)
+	imgs, err := docOrig.GetChannelImages()
+	if err != nil {
+		t.Fatal(err)
+	}
+	// write imges to debug
+	for c, img := range imgs {
+		if c < 3 {
+			continue
+		}
+		w, err := os.Create(fmt.Sprintf("output/c%d.png", c))
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer w.Close()
+		if err := png.Encode(w, img); err != nil {
+			t.Fatal(err)
+		}
 	}
 	// add images to new doc
+	doc, _, _ := buildNew(t, psd.CompressionMethodRLE)
 	if err := doc.AddImageChannelData(imgs); err != nil {
 		t.Fatal(err)
 	}
@@ -157,11 +172,5 @@ func writeRead(t *testing.T, doc *psd.PSD) *psd.PSD {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return out
-}
-
-func imgToGray(img image.Image) *image.Gray {
-	out := image.NewGray(img.Bounds())
-	draw.Draw(out, out.Rect, img, image.Point{}, draw.Src)
 	return out
 }

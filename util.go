@@ -2,6 +2,8 @@ package psd
 
 import (
 	"bytes"
+	"image"
+	"image/draw"
 	"io"
 	"io/ioutil"
 	"math"
@@ -179,4 +181,10 @@ func stringToPascalBytes(str string) ([]byte, error) {
 		buf.Write([]byte{0})
 	}
 	return buf.Bytes(), nil
+}
+
+func imgToGray(img image.Image) *image.Gray {
+	out := image.NewGray(img.Bounds())
+	draw.Draw(out, out.Rect, img, image.Point{}, draw.Src)
+	return out
 }
