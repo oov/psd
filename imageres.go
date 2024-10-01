@@ -28,6 +28,9 @@ func readImageResource(r io.Reader) (resMap map[int]ImageResource, read int, err
 	}
 	read += l
 	imageResourceLen := int(readUint32(b, 0))
+	if Debug != nil {
+		Debug.Println("image resources bytes=", imageResourceLen)
+	}
 	if imageResourceLen == 0 {
 		return map[int]ImageResource{}, read, nil
 	}
@@ -97,6 +100,7 @@ func readImageResource(r io.Reader) (resMap map[int]ImageResource, read int, err
 	}
 	if Debug != nil {
 		Debug.Println("end - image resources section")
+		reportReaderPosition("  file offset: %d", r)
 	}
 	return resMap, read, nil
 }

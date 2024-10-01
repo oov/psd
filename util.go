@@ -161,7 +161,9 @@ func reportReaderPosition(format string, r io.Reader) error {
 func stringToPascalBytes(str string) ([]byte, error) {
 	n := len(str)
 	if n == 0 {
-		return []byte{0}, nil
+		// bytes are always even length
+		// (so a null name consists of two bytes of 0)
+		return []byte{0, 0}, nil
 	}
 
 	buf := &bytes.Buffer{}

@@ -199,6 +199,7 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 		Debug.Printf("  channels: %d depth: %d colorMode %d", cfg.Channels, cfg.Depth, cfg.ColorMode)
 		Debug.Printf("  colorModeDataLen: %d", len(cfg.ColorModeData))
 		Debug.Println("end - header")
+		reportReaderPosition("  file offset: %d", r)
 	}
 
 	if cfg.Res, l, err = readImageResource(r); err != nil {

@@ -1,6 +1,7 @@
 package psd_test
 
 import (
+	"bytes"
 	"image"
 	"image/draw"
 	"log"
@@ -11,6 +12,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	psd.Debug = log.New(os.Stdout, "psd: ", log.Lshortfile)
+}
+
 func TestEncodeDecode(t *testing.T) {
 	doc, _, _ := buildNew(t, psd.CompressionMethodRaw)
 
@@ -20,22 +25,17 @@ func TestEncodeDecode(t *testing.T) {
 }
 
 func TestDecodeImageResources(t *testing.T) {
-	docOrig, alphaNames, displayInfo := getOrig(t)
-	doc, an, di := buildNew(t, psd.CompressionMethodRLE)
+	_, alphaNames, displayInfo := getOrig(t)
+	_, an, di := buildNew(t, psd.CompressionMethodRLE)
 
-	// config matches original
-	assert.Equal(t, docOrig.Config.Channels, doc.Config.Channels)
-	assert.Equal(t, docOrig.Config.ColorMode, doc.Config.ColorMode)
-	assert.Equal(t, docOrig.Config.Depth, doc.Config.Depth)
-	assert.Equal(t, docOrig.Config.Rect, doc.Config.Rect)
-	assert.Equal(t, docOrig.Config.CompressionMethod, doc.Config.CompressionMethod)
+	// image resources decoding matches
 	assert.EqualValues(t, an, alphaNames)
 	assert.EqualValues(t, di, displayInfo)
 }
 
 func TestImageData(t *testing.T) {
-	doc, _, _ := buildNew(t, psd.CompressionMethodRLE)
 	docOrig, _, _ := getOrig(t)
+	doc, _, _ := buildNew(t, psd.CompressionMethodRLE)
 	// read images
 	imgs := make([]*image.Gray, 6)
 	for c := range imgs {
@@ -45,6 +45,12 @@ func TestImageData(t *testing.T) {
 	if err := doc.AddImageChannelData(imgs); err != nil {
 		t.Fatal(err)
 	}
+	// config should be the same
+	assert.Equal(t, docOrig.Config.Channels, doc.Config.Channels)
+	assert.Equal(t, docOrig.Config.ColorMode, doc.Config.ColorMode)
+	assert.Equal(t, docOrig.Config.Depth, doc.Config.Depth)
+	assert.Equal(t, docOrig.Config.Rect, doc.Config.Rect)
+	assert.Equal(t, docOrig.Config.CompressionMethod, doc.Config.CompressionMethod)
 
 	// compare image data
 	assert.Len(t, doc.Data, doc.Config.Channels*doc.Config.Rect.Dx()*doc.Config.Rect.Dy())
@@ -53,11 +59,19 @@ func TestImageData(t *testing.T) {
 	assert.EqualValues(t, docOrig.Channel[4].Data, doc.Channel[4].Data)
 	assert.EqualValues(t, docOrig.Channel[5].Data, doc.Channel[5].Data)
 
-	writeRead(t, doc)
+	// write
+	fw, err := os.Create("testdata/cmyk-spot/encoded.psd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer fw.Close()
+	if err := psd.Encode(doc, fw); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func getOrig(t *testing.T) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
-	fr, err := os.Open("testdata/cmyk-adam.psd")
+	fr, err := os.Open("testdata/cmyk-spot/orig.psd")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -132,29 +146,14 @@ func buildNew(t *testing.T, cmp psd.CompressionMethod) (*psd.PSD, *psd.AlphaName
 }
 
 func writeRead(t *testing.T, doc *psd.PSD) *psd.PSD {
-	fnm := "testdata/cmyk-adam-encode.psd"
-	// write
-	fw, err := os.Create(fnm)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer fw.Close()
-	if err := psd.Encode(doc, fw); err != nil {
+	buf := bytes.NewBuffer([]byte{})
+	if err := psd.Encode(doc, buf); err != nil {
 		t.Fatal(err)
 	}
 
-	fr, err := os.Open(fnm)
-	if err != nil {
-		t.Fatal(err)
-	}
+	log.Printf("The file is %d bytes long", len(buf.Bytes()))
 
-	stat, err := fr.Stat()
-	if err != nil {
-		t.Fatal(err)
-	}
-	log.Printf("The file is %d bytes long", stat.Size())
-
-	out, _, err := psd.Decode(fr, nil)
+	out, _, err := psd.Decode(buf, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
