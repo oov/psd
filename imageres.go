@@ -152,7 +152,7 @@ func (c *Config) ParseAlphaNames() (*AlphaNames, error) {
 func (an *AlphaNames) Encode() (*ImageResource, error) {
 	data := []byte{}
 	for _, n := range an.Names {
-		b, err := stringToPascalBytes(n)
+		b, err := stringToPascalBytes(n, false)
 		if err != nil {
 			return nil, err
 		}

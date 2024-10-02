@@ -34,6 +34,16 @@ func TestDecodeImageResources(t *testing.T) {
 	assert.EqualValues(t, di, displayInfo)
 }
 
+func TestEncodeAlphaNames(t *testing.T) {
+	doc, _, _ := getOrig(t)
+	an := &psd.AlphaNames{[]string{"coral", "light teal"}}
+	ir, err := an.Encode()
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.EqualValues(t, doc.Config.Res[ir.ID].Data, ir.Data)
+}
+
 func TestImageData(t *testing.T) {
 	docOrig, _, _ := getOrig(t)
 	// read images

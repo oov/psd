@@ -132,6 +132,7 @@ func discard(r io.Reader, skip int) (read int, err error) {
 }
 
 func readPascalString(r io.Reader) (str string, read int, err error) {
+	// no padding
 	b := make([]byte, 1)
 	if _, err := io.ReadFull(r, b); err != nil {
 		return "", 0, err
@@ -160,9 +161,9 @@ func reportReaderPosition(format string, r io.Reader) error {
 	return nil
 }
 
-func stringToPascalBytes(str string) ([]byte, error) {
+func stringToPascalBytes(str string, padEven bool) ([]byte, error) {
 	n := len(str)
-	if n == 0 {
+	if n == 0 && padEven {
 		// bytes are always even length
 		// (so a null name consists of two bytes of 0)
 		return []byte{0, 0}, nil
@@ -176,9 +177,11 @@ func stringToPascalBytes(str string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	remainder := n % 2
-	if remainder != 0 {
-		buf.Write([]byte{0})
+	if padEven {
+		remainder := n % 2
+		if remainder != 0 {
+			buf.Write([]byte{0})
+		}
 	}
 	return buf.Bytes(), nil
 }

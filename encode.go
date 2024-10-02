@@ -73,7 +73,7 @@ func (i *ImageResource) encode(id int, w io.Writer) error {
 	if err := binaryWrite(w, uint16(id)); err != nil {
 		return err
 	}
-	b, err := stringToPascalBytes(i.Name)
+	b, err := stringToPascalBytes(i.Name, true)
 	if err != nil {
 		return err
 	}
