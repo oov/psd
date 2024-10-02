@@ -346,7 +346,11 @@ func (psd *PSD) AddImageChannelData(imgs []*image.Gray) error {
 	for i := 0; i < psd.Config.Channels; i++ {
 		var pix []uint8
 		if imgs[i] == nil {
+			// set empty images to all white
 			pix = make([]uint8, psd.Config.Rect.Dx()*psd.Config.Rect.Dy())
+			for p := range pix {
+				pix[p] = 255
+			}
 		} else {
 			pix = imgs[i].Pix
 		}
