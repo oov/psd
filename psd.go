@@ -325,7 +325,7 @@ func (psd *PSD) GetChannelImages() ([]*image.Gray, error) {
 	}
 	imgs := make([]*image.Gray, psd.Config.Channels)
 	for c := range imgs {
-		imgs[c] = imgToGray(psd.Channel[c].Picker)
+		imgs[c] = ImgToGray(psd.Channel[c].Picker)
 	}
 	return imgs, nil
 }
@@ -352,6 +352,9 @@ func (psd *PSD) AddImageChannelData(imgs []*image.Gray) error {
 				pix[p] = 255
 			}
 		} else {
+			if imgs[i].Rect.Dx() != psd.Config.Rect.Dx() || imgs[i].Rect.Dy() != psd.Config.Rect.Dy() {
+				return fmt.Errorf("expected config dim=%s but got image dim=%s", psd.Config.Rect, imgs[i].Rect)
+			}
 			pix = imgs[i].Pix
 		}
 		chs[i] = pix

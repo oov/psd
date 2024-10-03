@@ -186,7 +186,7 @@ func stringToPascalBytes(str string, padEven bool) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func imgToGray(img image.Image) *image.Gray {
+func ImgToGray(img image.Image) *image.Gray {
 	out := image.NewGray(img.Bounds())
 	draw.Draw(out, out.Rect, img, image.Point{}, draw.Src)
 	return out

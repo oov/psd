@@ -36,7 +36,7 @@ func TestDecodeImageResources(t *testing.T) {
 
 func TestEncodeAlphaNames(t *testing.T) {
 	doc, _, _ := getOrig(t)
-	an := &psd.AlphaNames{[]string{"coral", "light teal"}}
+	an := &psd.AlphaNames{[]string{"blue", "fluorescent pink", "yellow"}}
 	ir, err := an.Encode()
 	if err != nil {
 		t.Fatal(err)
@@ -44,33 +44,42 @@ func TestEncodeAlphaNames(t *testing.T) {
 	assert.EqualValues(t, doc.Config.Res[ir.ID].Data, ir.Data)
 }
 
-func TestImageData(t *testing.T) {
-	docOrig, _, _ := getOrig(t)
-	// read images
-	imgs, err := docOrig.GetChannelImages()
+func TestDecodeChannelImages(t *testing.T) {
+	doc, _, _ := getOrig(t)
+	imgs, err := doc.GetChannelImages()
 	if err != nil {
 		t.Fatal(err)
 	}
 	writeImage(t, imgs, "orig") // write imges to compare
+}
 
+func TestEncodeChannelImages(t *testing.T) {
 	// add images to new doc
 	doc, _, _ := buildNew(t, psd.CompressionMethodRLE)
+	imgs := make([]*image.Gray, doc.Config.Channels)
+
+	var err error
+	for i, fnm := range []string{
+		"testdata/cmyk-spot-channel-5.png",
+		"testdata/cmyk-spot-channel-6.png",
+		"testdata/cmyk-spot-channel-7.png",
+	} {
+		imgs[i+4], err = readGrayImage(fnm)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
 	if err := doc.AddImageChannelData(imgs); err != nil {
 		t.Fatal(err)
 	}
-	// config should be the same
-	assert.Equal(t, docOrig.Config.Channels, doc.Config.Channels)
-	assert.Equal(t, docOrig.Config.ColorMode, doc.Config.ColorMode)
-	assert.Equal(t, docOrig.Config.Depth, doc.Config.Depth)
-	assert.Equal(t, docOrig.Config.Rect, doc.Config.Rect)
-	assert.Equal(t, docOrig.Config.CompressionMethod, doc.Config.CompressionMethod)
 
 	// compare image data
+	docOrig, _, _ := getOrig(t)
 	assert.Len(t, doc.Data, doc.Config.Channels*doc.Config.Rect.Dx()*doc.Config.Rect.Dy())
 	assert.EqualValues(t, docOrig.Data, doc.Data)
-	assert.EqualValues(t, docOrig.Channel[3].Data, doc.Channel[3].Data)
-	assert.EqualValues(t, docOrig.Channel[4].Data, doc.Channel[4].Data)
-	assert.EqualValues(t, docOrig.Channel[5].Data, doc.Channel[5].Data)
+	for i := 4; i < doc.Config.Channels; i++ {
+		assert.EqualValues(t, docOrig.Channel[i].Data, doc.Channel[i].Data)
+	}
 
 	// write
 	fw, err := os.Create("output/cmyk-spot.psd")
@@ -92,7 +101,7 @@ func TestImageData(t *testing.T) {
 }
 
 func getOrig(t *testing.T) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
-	fr, err := os.Open("testdata/cmyk-spot/orig.psd")
+	fr, err := os.Open("testdata/cmyk-spot.psd")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -115,28 +124,28 @@ func buildNew(t *testing.T, cmp psd.CompressionMethod) (*psd.PSD, *psd.AlphaName
 	doc := &psd.PSD{
 		Config: psd.Config{
 			Version:           1,
-			Rect:              image.Rect(0, 0, 2400, 3554),
-			Channels:          6, // CMYK plus two spot channels
+			Rect:              image.Rect(0, 0, 640, 637),
+			Channels:          7, // CMYK plus three spot channels
 			Depth:             8,
 			ColorMode:         psd.ColorModeCMYK,
 			CompressionMethod: cmp,
 		},
 	}
-	an := &psd.AlphaNames{[]string{"coral", "light teal"}}
+	an := &psd.AlphaNames{[]string{"blue", "fluorescent pink", "yellow"}}
 
 	di := &psd.DisplayInfo{
 		Channels: []psd.DisplayInfoChannel{
 			{
-				ColorSpace: 9009, // what is this??
-				Color:      [4]uint16{25650, 25954, 25956, 0},
-				Opacity:    0,
-				Mode:       psd.DisplayChannelModeSpot,
+				Color: [4]uint16{0, 30840, 49087, 0},
+				Mode:  psd.DisplayChannelModeSpot,
 			},
 			{
-				ColorSpace: 9009,
-				Color:      [4]uint16{13670, 25400, 13157, 0},
-				Opacity:    0,
-				Mode:       psd.DisplayChannelModeSpot,
+				Color: [4]uint16{65535, 18504, 45232, 0},
+				Mode:  psd.DisplayChannelModeSpot,
+			},
+			{
+				Color: [4]uint16{65535, 59624, 0, 0},
+				Mode:  psd.DisplayChannelModeSpot,
 			},
 		},
 	}
@@ -155,7 +164,7 @@ func buildNew(t *testing.T, cmp psd.CompressionMethod) (*psd.PSD, *psd.AlphaName
 	doc.Config.Res = imgResources
 
 	// dummy image data
-	imgs := make([]*image.Gray, 6)
+	imgs := make([]*image.Gray, doc.Config.Channels)
 	for i := range imgs {
 		imgs[i] = image.NewGray(doc.Config.Rect)
 	}
@@ -183,9 +192,6 @@ func writeRead(t *testing.T, doc *psd.PSD) *psd.PSD {
 
 func writeImage(t *testing.T, imgs []*image.Gray, prefix string) {
 	for c, img := range imgs {
-		if c < 3 {
-			continue
-		}
 		w, err := os.Create(fmt.Sprintf("output/%s-c%d.png", prefix, c))
 		if err != nil {
 			t.Fatal(err)
@@ -195,4 +201,18 @@ func writeImage(t *testing.T, imgs []*image.Gray, prefix string) {
 			t.Fatal(err)
 		}
 	}
+}
+
+func readGrayImage(fnm string) (*image.Gray, error) {
+	r, err := os.Open(fnm)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+
+	img, _, err := image.Decode(r)
+	if err != nil {
+		return nil, err
+	}
+	return psd.ImgToGray(img), nil
 }
