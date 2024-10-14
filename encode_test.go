@@ -17,35 +17,28 @@ func init() {
 	psd.Debug = log.New(os.Stdout, "psd: ", log.Lshortfile)
 }
 
+func getOrig(t *testing.T) *psd.PSD {
+	fr, err := os.Open("testdata/cmyk-spot.psd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc, _, err := psd.Decode(fr, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return doc
+}
+
 func TestEncodeDecode(t *testing.T) {
-	doc, _, _ := buildNew(t, psd.CompressionMethodRaw)
+	doc := buildNew(t, psd.CompressionMethodRaw)
 
 	// re-read and compare image data again
 	docReread := writeRead(t, doc)
 	assert.Equal(t, doc.Config.Channels, docReread.Config.Channels)
 }
 
-func TestDecodeImageResources(t *testing.T) {
-	_, alphaNames, displayInfo := getOrig(t)
-	_, an, di := buildNew(t, psd.CompressionMethodRLE)
-
-	// image resources decoding matches
-	assert.EqualValues(t, an, alphaNames)
-	assert.EqualValues(t, di, displayInfo)
-}
-
-func TestEncodeAlphaNames(t *testing.T) {
-	doc, _, _ := getOrig(t)
-	an := &psd.AlphaNames{[]string{"blue", "fluorescent pink", "yellow"}}
-	ir, err := an.Encode()
-	if err != nil {
-		t.Fatal(err)
-	}
-	assert.EqualValues(t, doc.Config.Res[ir.ID].Data, ir.Data)
-}
-
 func TestDecodeChannelImages(t *testing.T) {
-	doc, _, _ := getOrig(t)
+	doc := getOrig(t)
 	imgs, err := doc.GetChannelImages()
 	if err != nil {
 		t.Fatal(err)
@@ -55,7 +48,7 @@ func TestDecodeChannelImages(t *testing.T) {
 
 func TestEncodeChannelImages(t *testing.T) {
 	// add images to new doc
-	doc, _, _ := buildNew(t, psd.CompressionMethodRLE)
+	doc := buildNew(t, psd.CompressionMethodRLE)
 	imgs := make([]*image.Gray, doc.Config.Channels)
 
 	var err error
@@ -74,7 +67,7 @@ func TestEncodeChannelImages(t *testing.T) {
 	}
 
 	// compare image data
-	docOrig, _, _ := getOrig(t)
+	docOrig := getOrig(t)
 	assert.Len(t, doc.Data, doc.Config.Channels*doc.Config.Rect.Dx()*doc.Config.Rect.Dy())
 	assert.EqualValues(t, docOrig.Data, doc.Data)
 	for i := 4; i < doc.Config.Channels; i++ {
@@ -100,27 +93,7 @@ func TestEncodeChannelImages(t *testing.T) {
 	writeImage(t, imgsEnc, "encoded")
 }
 
-func getOrig(t *testing.T) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
-	fr, err := os.Open("testdata/cmyk-spot.psd")
-	if err != nil {
-		t.Fatal(err)
-	}
-	docOrig, _, err := psd.Decode(fr, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	alphaNames, err := docOrig.Config.ParseAlphaNames()
-	if err != nil {
-		t.Fatal(err)
-	}
-	displayInfo, err := docOrig.Config.ParseDisplayInfo()
-	if err != nil {
-		t.Fatal(err)
-	}
-	return docOrig, alphaNames, displayInfo
-}
-
-func buildNew(t *testing.T, cmp psd.CompressionMethod) (*psd.PSD, *psd.AlphaNames, *psd.DisplayInfo) {
+func buildNew(t *testing.T, cmp psd.CompressionMethod) *psd.PSD {
 	doc := &psd.PSD{
 		Config: psd.Config{
 			Version:           1,
@@ -131,36 +104,22 @@ func buildNew(t *testing.T, cmp psd.CompressionMethod) (*psd.PSD, *psd.AlphaName
 			CompressionMethod: cmp,
 		},
 	}
-	an := &psd.AlphaNames{[]string{"blue", "fluorescent pink", "yellow"}}
-
-	di := &psd.DisplayInfo{
-		Channels: []psd.DisplayInfoChannel{
-			{
-				Color: [4]uint16{0, 30840, 49087, 0},
-				Mode:  psd.DisplayChannelModeSpot,
-			},
-			{
-				Color: [4]uint16{65535, 18504, 45232, 0},
-				Mode:  psd.DisplayChannelModeSpot,
-			},
-			{
-				Color: [4]uint16{65535, 59624, 0, 0},
-				Mode:  psd.DisplayChannelModeSpot,
-			},
-		},
-	}
-
 	imgResources := make(map[int]psd.ImageResource)
-	irAlphaNames, err := an.Encode()
+	irAlphaNames, err := testAlphaNames.Encode()
 	if err != nil {
 		t.Fatal(err)
 	}
-	irDisplayInfo, err := di.Encode()
+	irDisplayInfo, err := testDisplayInfo.Encode()
+	if err != nil {
+		t.Fatal(err)
+	}
+	irResInfo, err := testResolutionInfo.Encode()
 	if err != nil {
 		t.Fatal(err)
 	}
 	imgResources[irAlphaNames.ID] = *irAlphaNames
 	imgResources[irDisplayInfo.ID] = *irDisplayInfo
+	imgResources[irResInfo.ID] = *irResInfo
 	doc.Config.Res = imgResources
 
 	// dummy image data
@@ -171,8 +130,7 @@ func buildNew(t *testing.T, cmp psd.CompressionMethod) (*psd.PSD, *psd.AlphaName
 	if err := doc.AddImageChannelData(imgs); err != nil {
 		t.Fatal(err)
 	}
-
-	return doc, an, di
+	return doc
 }
 
 func writeRead(t *testing.T, doc *psd.PSD) *psd.PSD {

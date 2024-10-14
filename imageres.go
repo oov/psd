@@ -134,7 +134,7 @@ const idAlphaNames = 1006
 func (c *Config) ParseAlphaNames() (*AlphaNames, error) {
 	res, ok := c.Res[idAlphaNames]
 	if !ok {
-		return nil, fmt.Errorf("no alpha names defined")
+		return nil, fmt.Errorf("no alpha names data defined")
 	}
 	r := bytes.NewReader(res.Data)
 	names := make([]string, 0)
@@ -187,7 +187,7 @@ const idDisplayInfo = 1077
 func (c *Config) ParseDisplayInfo() (*DisplayInfo, error) {
 	res, ok := c.Res[idDisplayInfo]
 	if !ok {
-		return nil, fmt.Errorf("no alpha names defined")
+		return nil, fmt.Errorf("no display info data defined")
 	}
 	read := 4 // start reading after version
 	channels := make([]DisplayInfoChannel, 0)
@@ -216,6 +216,41 @@ func (di *DisplayInfo) Encode() (*ImageResource, error) {
 	}
 	return &ImageResource{
 		ID:   idDisplayInfo,
+		Data: data.Bytes(),
+	}, nil
+}
+
+const idResolutionInfo = 1005
+
+type ResolutionInfo struct {
+	HorizontalRes  uint32
+	HorizontalUnit uint16
+	WidthUnit      uint16
+	VerticalRes    uint32
+	VerticalUnit   uint16
+	HeightUnit     uint16
+}
+
+func (c *Config) ParseResolutionInfo() (*ResolutionInfo, error) {
+	res, ok := c.Res[idResolutionInfo]
+	if !ok {
+		return nil, fmt.Errorf("no resolution info data defined")
+	}
+
+	r := bytes.NewReader(res.Data)
+	out := &ResolutionInfo{}
+	if err := binary.Read(r, binary.BigEndian, out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+func (ri *ResolutionInfo) Encode() (*ImageResource, error) {
+	data := bytes.NewBuffer([]byte{})
+	if err := binaryWrite(data, ri); err != nil {
+		return nil, err
+	}
+	return &ImageResource{
+		ID:   idResolutionInfo,
 		Data: data.Bytes(),
 	}, nil
 }
