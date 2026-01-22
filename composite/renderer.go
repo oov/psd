@@ -46,6 +46,9 @@ type Renderer struct {
 	cacheM          sync.Mutex
 
 	pool sync.Pool
+
+	// dirtyTiles is reused to avoid allocation on each render
+	dirtyTiles []image.Point
 }
 
 func (r *Renderer) allocate() interface{} {
@@ -203,15 +206,28 @@ func (cl *changeList) Add(l *Layer, pt image.Point) {
 
 // Render renders image.
 func (r *Renderer) Render(ctx context.Context, dest *image.NRGBA) error {
-	return r.render(ctx, dest, false)
+	_, err := r.render(ctx, dest, false)
+	return err
 }
 
 // RenderDiff renders only the place changed since last time.
 func (r *Renderer) RenderDiff(ctx context.Context, dest *image.NRGBA) error {
+	_, err := r.render(ctx, dest, true)
+	return err
+}
+
+// RenderDiffWithDirtyTiles renders only changed places and returns the tile coordinates
+// that were modified. The returned slice is reused between calls; copy it if needed.
+func (r *Renderer) RenderDiffWithDirtyTiles(ctx context.Context, dest *image.NRGBA) ([]image.Point, error) {
 	return r.render(ctx, dest, true)
 }
 
-func (r *Renderer) render(ctx context.Context, dest *image.NRGBA, diffOnly bool) error {
+// TileSize returns the tile size used for rendering.
+func (r *Renderer) TileSize() int {
+	return r.tree.tileSize
+}
+
+func (r *Renderer) render(ctx context.Context, dest *image.NRGBA, diffOnly bool) ([]image.Point, error) {
 	r.renderM.Lock()
 	defer r.renderM.Unlock()
 
@@ -264,11 +280,17 @@ func (r *Renderer) render(ctx context.Context, dest *image.NRGBA, diffOnly bool)
 			}
 			c.M.Unlock()
 		}
-		return err
+		return nil, err
 	} else if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	// Collect dirty tiles from root level changes
+	r.dirtyTiles = r.dirtyTiles[:0]
+	if pts, ok := clst.Map[SeqIDRoot]; ok && pts != nil {
+		r.dirtyTiles = append(r.dirtyTiles, *pts...)
+	}
+	return r.dirtyTiles, nil
 }
 
 func (r *Renderer) renderInner(pc *parallelContext, dest *image.NRGBA, diffOnly bool, rootCache *cache, clst *changeList, x0, x1, y0, y1 int) {
