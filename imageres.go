@@ -1,12 +1,16 @@
 package psd
 
 import (
+	"bytes"
+	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 )
 
 // ImageResource represents the image resource that is used in psd file.
 type ImageResource struct {
+	ID   int
 	Name string
 	Data []byte
 }
@@ -24,6 +28,9 @@ func readImageResource(r io.Reader) (resMap map[int]ImageResource, read int, err
 	}
 	read += l
 	imageResourceLen := int(readUint32(b, 0))
+	if Debug != nil {
+		Debug.Println("image resources bytes=", imageResourceLen)
+	}
 	if imageResourceLen == 0 {
 		return map[int]ImageResource{}, read, nil
 	}
@@ -58,6 +65,7 @@ func readImageResource(r io.Reader) (resMap map[int]ImageResource, read int, err
 		// Image resource IDs contains a list of resource IDs used by Photoshop.
 		// http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_38034
 		id = int(readUint16(b, 4))
+		res.ID = id
 
 		// Name: Pascal string, padded to make the size even
 		// (a null name consists of two bytes of 0)
@@ -92,6 +100,7 @@ func readImageResource(r io.Reader) (resMap map[int]ImageResource, read int, err
 	}
 	if Debug != nil {
 		Debug.Println("end - image resources section")
+		reportReaderPosition("  file offset: %d", r)
 	}
 	return resMap, read, nil
 }
@@ -114,4 +123,134 @@ func hasAlphaID0(Res map[int]ImageResource) bool {
 		}
 	}
 	return false
+}
+
+type AlphaNames struct {
+	Names []string // pascal format strings
+}
+
+const idAlphaNames = 1006
+
+func (c *Config) ParseAlphaNames() (*AlphaNames, error) {
+	res, ok := c.Res[idAlphaNames]
+	if !ok {
+		return nil, fmt.Errorf("no alpha names data defined")
+	}
+	r := bytes.NewReader(res.Data)
+	names := make([]string, 0)
+	read := 0
+	for read < len(res.Data) {
+		s, n, err := readPascalString(r)
+		if err != nil {
+			return nil, err
+		}
+		names = append(names, s)
+		read += n
+	}
+	return &AlphaNames{names}, nil
+}
+func (an *AlphaNames) Encode() (*ImageResource, error) {
+	data := []byte{}
+	for _, n := range an.Names {
+		b, err := stringToPascalBytes(n, false)
+		if err != nil {
+			return nil, err
+		}
+		data = append(data, b...)
+	}
+	return &ImageResource{
+		ID:   idAlphaNames,
+		Data: data,
+	}, nil
+}
+
+type DisplayInfo struct {
+	Channels []DisplayInfoChannel
+}
+type DisplayInfoChannel struct {
+	ColorSpace uint16 // TODO: define enum for this
+	Color      [4]uint16
+	Opacity    uint16
+	Mode       DisplayInfoChannelMode
+}
+
+type DisplayInfoChannelMode uint8
+
+const (
+	DisplayChannelModeAlpha DisplayInfoChannelMode = iota
+	DisplayChannelModeAlphaInverted
+	DisplayChannelModeSpot
+)
+
+const idDisplayInfo = 1077
+
+func (c *Config) ParseDisplayInfo() (*DisplayInfo, error) {
+	res, ok := c.Res[idDisplayInfo]
+	if !ok {
+		return nil, fmt.Errorf("no display info data defined")
+	}
+	read := 4 // start reading after version
+	channels := make([]DisplayInfoChannel, 0)
+	for read < len(res.Data) {
+		r := bytes.NewReader(res.Data[read : read+13])
+		c := &DisplayInfoChannel{}
+		if err := binary.Read(r, binary.BigEndian, c); err != nil {
+			return nil, err
+		}
+		read += 13
+		channels = append(channels, *c)
+	}
+	return &DisplayInfo{channels}, nil
+}
+func (di *DisplayInfo) Encode() (*ImageResource, error) {
+	data := bytes.NewBuffer([]byte{})
+	// version
+	if err := binaryWrite(data, uint32(1)); err != nil {
+		return nil, err
+	}
+	// channels
+	for _, c := range di.Channels {
+		if err := binaryWrite(data, c); err != nil {
+			return nil, err
+		}
+	}
+	return &ImageResource{
+		ID:   idDisplayInfo,
+		Data: data.Bytes(),
+	}, nil
+}
+
+const idResolutionInfo = 1005
+
+type ResolutionInfo struct {
+	HorizontalRes  uint32
+	HorizontalUnit uint16
+	WidthUnit      uint16
+	VerticalRes    uint32
+	VerticalUnit   uint16
+	HeightUnit     uint16
+}
+
+func (c *Config) ParseResolutionInfo() (*ResolutionInfo, error) {
+	res, ok := c.Res[idResolutionInfo]
+	if !ok {
+		return nil, fmt.Errorf("no resolution info data defined")
+	}
+
+	r := bytes.NewReader(res.Data)
+	out := &ResolutionInfo{}
+	if err := binary.Read(r, binary.BigEndian, out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+func (ri *ResolutionInfo) Encode() (*ImageResource, error) {
+	data := bytes.NewBuffer([]byte{})
+	if err := binaryWrite(data, ri); err != nil {
+		return nil, err
+	}
+	return &ImageResource{
+		ID:   idResolutionInfo,
+		Data: data.Bytes(),
+	}, nil
 }

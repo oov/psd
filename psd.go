@@ -2,9 +2,11 @@ package psd
 
 import (
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"io"
+	"log"
 )
 
 // logger is subset of log.Logger.
@@ -16,7 +18,8 @@ type logger interface {
 // Debug is useful for debugging.
 //
 // You can use by performing the following steps.
-// 	psd.Debug = log.New(os.Stdout, "psd: ", log.Lshortfile)
+//
+//	psd.Debug = log.New(os.Stdout, "psd: ", log.Lshortfile)
 var Debug logger
 
 const (
@@ -68,13 +71,14 @@ const (
 
 // Config represents Photoshop image file configuration.
 type Config struct {
-	Version       int
-	Rect          image.Rectangle
-	Channels      int
-	Depth         int // 1 or 8 or 16 or 32
-	ColorMode     ColorMode
-	ColorModeData []byte
-	Res           map[int]ImageResource
+	Version           int
+	Rect              image.Rectangle
+	Channels          int
+	Depth             int // 1 or 8 or 16 or 32
+	ColorMode         ColorMode
+	ColorModeData     []byte
+	Res               map[int]ImageResource
+	CompressionMethod CompressionMethod
 }
 
 // PSB returns whether image is large document format.
@@ -195,6 +199,7 @@ func DecodeConfig(r io.Reader) (cfg Config, read int, err error) {
 		Debug.Printf("  channels: %d depth: %d colorMode %d", cfg.Channels, cfg.Depth, cfg.ColorMode)
 		Debug.Printf("  colorModeDataLen: %d", len(cfg.ColorModeData))
 		Debug.Println("end - header")
+		reportReaderPosition("  file offset: %d", r)
 	}
 
 	if cfg.Res, l, err = readImageResource(r); err != nil {
@@ -266,6 +271,7 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 		}
 		read += l
 		cmpMethod := CompressionMethod(readUint16(b, 0))
+		psd.Config.CompressionMethod = cmpMethod
 		l, err = cmpMethod.Decode(
 			psd.Data,
 			r,
@@ -276,6 +282,7 @@ func Decode(r io.Reader, o *DecodeOptions) (psd *PSD, read int, err error) {
 			psd.Config.PSB(),
 		)
 		if err != nil {
+			log.Printf("decode failed with n=%d. len(data)=%d. read=%d", l, len(psd.Data), read)
 			return nil, read, err
 		}
 		read += l
@@ -310,4 +317,58 @@ func decodeConfig(r io.Reader) (image.Config, error) {
 func init() {
 	image.RegisterFormat("psd", headerSignature+"\x00\x01", decode, decodeConfig)
 	image.RegisterFormat("psb", headerSignature+"\x00\x02", decode, decodeConfig)
+}
+
+func (psd *PSD) GetChannelImages() ([]*image.Gray, error) {
+	if psd.Config.Depth != 8 {
+		return nil, fmt.Errorf("depth!=8 not supported")
+	}
+	imgs := make([]*image.Gray, psd.Config.Channels)
+	for c := range imgs {
+		imgs[c] = ImgToGray(psd.Channel[c].Picker)
+	}
+	return imgs, nil
+}
+
+func (psd *PSD) AddImageChannelData(imgs []*image.Gray) error {
+	// convert image.Image -> psd.Data (uncompressed merged image data)
+	// raw data has dimensions: (channels, width, height)
+	if len(imgs) != psd.Config.Channels {
+		return fmt.Errorf("got n=%d images but expecting n=m=%d channels", len(imgs), psd.Config.Channels)
+	}
+	if psd.Config.Depth != 8 {
+		return fmt.Errorf("depth!=8 not supported")
+	}
+	plane := (psd.Config.Rect.Dx()*psd.Config.Depth + 7) >> 3 * psd.Config.Rect.Dy()
+	psd.Data = make([]byte, plane*psd.Config.Channels)
+	chs := make([][]byte, psd.Config.Channels)
+	psd.Channel = make(map[int]Channel)
+	for i := 0; i < psd.Config.Channels; i++ {
+		var pix []uint8
+		if imgs[i] == nil {
+			// set empty images to all white
+			pix = make([]uint8, psd.Config.Rect.Dx()*psd.Config.Rect.Dy())
+			for p := range pix {
+				pix[p] = 255
+			}
+		} else {
+			if imgs[i].Rect.Dx() != psd.Config.Rect.Dx() || imgs[i].Rect.Dy() != psd.Config.Rect.Dy() {
+				return fmt.Errorf("expected config dim=%s but got image dim=%s", psd.Config.Rect, imgs[i].Rect)
+			}
+			pix = imgs[i].Pix
+		}
+		chs[i] = pix
+		pk := findGrayPicker(psd.Config.Depth)
+		pk.setSource(psd.Config.Rect, chs[i])
+		psd.Channel[i] = Channel{
+			Data:   chs[i],
+			Picker: pk,
+		}
+		for j, d := range chs[i] {
+			psd.Data[plane*i+j] = d
+		}
+
+	}
+
+	return nil
 }
