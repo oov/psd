@@ -83,9 +83,17 @@ func writeUint32(b []byte, v uint32, offset int) {
 }
 
 func readUnicodeString(b []byte) string {
-	ln := readUint32(b, 0)
+	if len(b) < 4 {
+		return ""
+	}
+	ln := int(readUint32(b, 0))
 	if ln == 0 {
 		return ""
+	}
+	// ln counts UTF-16 code units, each 2 bytes, following the 4-byte length.
+	// Never read (or allocate) beyond what the buffer actually holds.
+	if avail := (len(b) - 4) >> 1; ln > avail {
+		ln = avail
 	}
 	buf := make([]uint16, ln)
 	for i := range buf {
