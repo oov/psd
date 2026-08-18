@@ -37,8 +37,8 @@ func craftPSDWithLuni() []byte {
 	b.Write([]byte{0x00, 0x03})             // color mode: RGB
 	b.Write([]byte{0x00, 0x00, 0x00, 0x00}) // color mode data length
 	b.Write([]byte{0x00, 0x00, 0x00, 0x00}) // image resource length
-	b.Write([]byte{0x00, 0x00, 0x00, 0xFF}) // layer and mask info length
-	b.Write([]byte{0x00, 0x00, 0x00, 0xFF}) // layer info length
+	b.Write([]byte{0x00, 0x00, 0x00, 0x44}) // layer and mask info length
+	b.Write([]byte{0x00, 0x00, 0x00, 0x40}) // layer info length
 	b.Write([]byte{0x00, 0x01})             // layer count
 	b.Write(make([]byte, 16))               // layer rectangle
 	b.Write([]byte{0x00, 0x00})             // channel count
