@@ -24,7 +24,7 @@ var tree = load()
 
 func BenchmarkRender(b *testing.B) {
 	ctx := context.Background()
-	dest := image.NewRGBA(tree.CanvasRect)
+	dest := image.NewNRGBA(tree.CanvasRect)
 	if err := tree.Renderer.Render(ctx, dest); err != nil {
 		b.Fatal(err)
 	}

@@ -122,7 +122,7 @@ func readLayerAndMaskInfo(r io.Reader, cfg *Config, o *DecodeOptions) (psd *PSD,
 	layerAndMaskInfoLen := int(readUint(b, 0, intSize))
 	if Debug != nil {
 		Debug.Println("  layerAndMaskInfoLen:", layerAndMaskInfoLen)
-		reportReaderPosition("  file offset: 0x%08x", r)
+		reportReaderPosition("  file offset: %d", r)
 	}
 	if layerAndMaskInfoLen == 0 {
 		return psd, read, nil
